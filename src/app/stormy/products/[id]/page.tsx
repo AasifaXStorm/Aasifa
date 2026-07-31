@@ -41,17 +41,13 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuthAndLoad = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/admin/login');
-        return;
-      }
-      setSessionChecked(true);
-      await fetchProductData();
-    };
-
-    checkAuthAndLoad();
+    const session = localStorage.getItem('aasifa_admin_session');
+    if (session !== 'y.storm1_session') {
+      router.push('/stormy/login');
+      return;
+    }
+    setSessionChecked(true);
+    fetchProductData();
   }, [id, router]);
 
   const fetchProductData = async () => {
@@ -197,7 +193,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       if (variantError) throw variantError;
 
       setUploadProgress('Success!');
-      router.push('/admin');
+      router.push('/stormy');
       router.refresh();
     } catch (err: any) {
       console.error(err);
@@ -224,7 +220,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
           throw error;
         }
       } else {
-        router.push('/admin');
+        router.push('/stormy');
         router.refresh();
       }
     } catch (err: any) {
@@ -248,7 +244,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
         
         {/* Back Link */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '35px' }}>
-          <Link href="/admin" style={{
+          <Link href="/stormy" style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',

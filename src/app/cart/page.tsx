@@ -22,6 +22,11 @@ export default function CartPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successOrder, setSuccessOrder] = useState<string | null>(null);
 
+  // Promo Code States
+  const [promoInput, setPromoInput] = useState('');
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [promoError, setPromoError] = useState<string | null>(null);
+
   useEffect(() => {
     setCart(getCart());
     setMounted(true);
@@ -68,7 +73,7 @@ export default function CartPage() {
     }));
 
     try {
-      const response = await processCheckout(name, email, checkoutItems);
+      const response = await processCheckout(name, email, checkoutItems, promoApplied ? 'STORM10' : undefined);
 
       if (response.success && response.orderId) {
         setSuccessOrder(response.orderId);
@@ -252,7 +257,7 @@ export default function CartPage() {
             </div>
 
             {/* Summary / Checkout Column */}
-            <div style={{ flex: '1 1 350px', display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div style={{ flex: '1 1 350px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {/* Summary Block */}
               <div className="glass-panel" style={{ padding: '30px', border: '1px solid #1a1a1a' }}>
                 <h3 style={{ fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '20px', borderBottom: '1px solid #1a1a1a', paddingBottom: '15px' }}>
@@ -264,6 +269,12 @@ export default function CartPage() {
                     <span>Subtotal</span>
                     <span style={{ color: '#fff' }}>{subtotal} EGP</span>
                   </div>
+                  {promoApplied && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#22c55e' }}>
+                      <span>Discount (STORM10 - 10%)</span>
+                      <span>-{(subtotal * 0.10)} EGP</span>
+                    </div>
+                  )}
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Shipping</span>
                     <span style={{ color: '#22c55e', fontWeight: 600 }}>FREE</span>
@@ -278,9 +289,43 @@ export default function CartPage() {
                     fontWeight: 'bold'
                   }}>
                     <span>Total</span>
-                    <span>{subtotal} EGP</span>
+                    <span>{promoApplied ? subtotal * 0.90 : subtotal} EGP</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Promo Code Block */}
+              <div className="glass-panel" style={{ padding: '25px', border: '1px solid #1a1a1a' }}>
+                <label className="form-label" style={{ marginBottom: '10px' }}>Promo Code</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Enter code (e.g. STORM10)"
+                    value={promoInput}
+                    onChange={(e) => setPromoInput(e.target.value)}
+                    disabled={promoApplied}
+                    style={{ textTransform: 'uppercase' }}
+                  />
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => {
+                      if (promoInput.trim().toUpperCase() === 'STORM10') {
+                        setPromoApplied(true);
+                        setPromoError(null);
+                      } else {
+                        setPromoError('Invalid promo code.');
+                      }
+                    }}
+                    disabled={promoApplied}
+                    style={{ padding: '8px 15px', fontSize: '0.8rem' }}
+                  >
+                    {promoApplied ? 'Applied' : 'Apply'}
+                  </button>
+                </div>
+                {promoError && <span style={{ color: '#ff4444', fontSize: '0.75rem', marginTop: '5px', display: 'block' }}>{promoError}</span>}
+                {promoApplied && <span style={{ color: '#22c55e', fontSize: '0.75rem', marginTop: '5px', display: 'block', fontWeight: 600 }}>Code STORM10 applied successfully (10% off)!</span>}
               </div>
 
               {/* Checkout Form */}

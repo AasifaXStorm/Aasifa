@@ -22,7 +22,8 @@ export interface CheckoutResponse {
 export async function processCheckout(
   customerName: string,
   customerEmail: string,
-  items: CheckoutItem[]
+  items: CheckoutItem[],
+  promoCode?: string
 ): Promise<CheckoutResponse> {
   if (!customerName || !customerEmail || !items || items.length === 0) {
     return { success: false, error: 'Customer information and items are required.' };
@@ -82,6 +83,11 @@ export async function processCheckout(
         unitPrice: Number(product.price),
         currentStock: variant.stock_quantity,
       });
+    }
+
+    // Apply discount code if valid
+    if (promoCode === 'STORM10') {
+      totalAmount = totalAmount * 0.90; // 10% discount
     }
 
     // 2. Create the order

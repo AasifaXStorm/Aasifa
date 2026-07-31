@@ -31,15 +31,12 @@ export default function NewProductPage() {
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/admin/login');
-      } else {
-        setSessionChecked(true);
-      }
-    };
-    checkAuth();
+    const session = localStorage.getItem('aasifa_admin_session');
+    if (session !== 'y.storm1_session') {
+      router.push('/stormy/login');
+    } else {
+      setSessionChecked(true);
+    }
   }, [router]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,7 +145,7 @@ export default function NewProductPage() {
       }
 
       setUploadProgress('Success!');
-      router.push('/admin');
+      router.push('/stormy');
       router.refresh();
     } catch (err: any) {
       console.error(err);
@@ -170,7 +167,7 @@ export default function NewProductPage() {
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         
         {/* Back Link */}
-        <Link href="/admin" style={{
+        <Link href="/stormy" style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px',

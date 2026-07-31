@@ -12,7 +12,8 @@ import {
   Plus, 
   Edit, 
   Trash2, 
-  ExternalLink 
+  ExternalLink,
+  BarChart3
 } from 'lucide-react';
 import { Product } from '@/components/ProductCard';
 
@@ -26,22 +27,25 @@ export default function AdminDashboardPage() {
     ordersCount: 0,
     unitsSold: 0
   });
+  const [categorySales, setCategorySales] = useState<Record<string, number>>({
+    Shirts: 0,
+    Hoodies: 0,
+    Pants: 0,
+    Accessories: 0
+  });
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuthAndLoad = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/admin/login');
-        return;
-      }
-      
-      setSessionChecked(true);
-      await loadDashboardData();
-    };
-
-    checkAuthAndLoad();
+    // Hardcoded authentication check
+    const session = localStorage.getItem('aasifa_admin_session');
+    if (session !== 'y.storm1_session') {
+      router.push('/stormy/login');
+      return;
+    }
+    
+    setSessionChecked(true);
+    loadDashboardData();
   }, [router]);
 
   const loadDashboardData = async () => {
@@ -64,21 +68,62 @@ export default function AdminDashboardPage() {
 
       if (ordError) throw ordError;
 
-      // 3. Fetch order items (to count units sold)
+      // 3. Fetch order items with nested product categories to compile analytics
       const { data: itemsData, error: itemsError } = await supabase
         .from('order_items')
-        .select('quantity');
+        .select(`
+          quantity,
+          unit_price,
+          product_variants (
+            size,
+            products (
+              category
+            )
+          )
+        `);
 
       if (itemsError) throw itemsError;
 
       // Compute statistics
-      const revenue = (ordersData || []).reduce((sum, o) => sum + Number(o.total_amount), 0);
+      const revenue = (ordersData || []).reduce((sum, o) => {
+        // Only sum completed orders for revenue, pending/canceled can be excluded or added
+        if (o.status !== 'cancelled') {
+          return sum + Number(o.total_amount);
+        }
+        return sum;
+      }, 0);
       const ordersCount = (ordersData || []).length;
-      const unitsSold = (itemsData || []).reduce((sum, item) => sum + item.quantity, 0);
+      
+      let unitsSold = 0;
+      const salesMap: Record<string, number> = {
+        Shirts: 0,
+        Hoodies: 0,
+        Pants: 0,
+        Accessories: 0
+      };
+
+      if (itemsData) {
+        for (const item of itemsData) {
+          unitsSold += item.quantity;
+          
+          // Traverse relations safely
+          const parentVariant = item.product_variants as any;
+          const parentProduct = parentVariant?.products;
+          const category = parentProduct?.category || 'Shirts';
+          const itemRevenue = Number(item.unit_price) * item.quantity;
+
+          if (salesMap[category] !== undefined) {
+            salesMap[category] += itemRevenue;
+          } else {
+            salesMap[category] = itemRevenue;
+          }
+        }
+      }
 
       setProducts(productsData || []);
       setOrders(ordersData || []);
       setStats({ revenue, ordersCount, unitsSold });
+      setCategorySales(salesMap);
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || 'Failed to load dashboard data.');
@@ -87,9 +132,38 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/admin/login');
+  const handleLogout = () => {
+    localStorage.removeItem('aasifa_admin_session');
+    router.push('/stormy/login');
+  };
+
+  const handleStatusChange = async (orderId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: newStatus })
+        .eq('id', orderId);
+
+      if (error) {
+        alert(`Error updating order status: ${error.message}`);
+      } else {
+        // Update local state to reflect new status
+        const updatedOrders = orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o);
+        setOrders(updatedOrders);
+
+        // Recalculate revenue if order was cancelled or restored
+        const revenue = updatedOrders.reduce((sum, o) => {
+          if (o.status !== 'cancelled') {
+            return sum + Number(o.total_amount);
+          }
+          return sum;
+        }, 0);
+        setStats(prev => ({ ...prev, revenue }));
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert('An error occurred while updating the order status.');
+    }
   };
 
   const handleDeleteProduct = async (id: string, name: string) => {
@@ -103,12 +177,11 @@ export default function AdminDashboardPage() {
 
       if (error) {
         if (error.message.includes('violates foreign key constraint')) {
-          alert('Cannot delete this product because it is referenced in past orders. Please update its stock quantities to 0 to deactivate it instead.');
+          alert('Cannot delete this product because it is referenced in past orders. Please set all size variant stock quantities to 0 in the editor to deactivate it instead.');
         } else {
           alert(`Error deleting product: ${error.message}`);
         }
       } else {
-        // Refresh local state
         setProducts(products.filter(p => p.id !== id));
       }
     } catch (err: any) {
@@ -125,6 +198,10 @@ export default function AdminDashboardPage() {
     );
   }
 
+  // Find max value in category sales for chart scaling
+  const salesValues = Object.values(categorySales);
+  const maxSalesValue = Math.max(...salesValues, 1000); // default minimum scale at 1000 EGP
+
   return (
     <div style={{ background: '#030303', minHeight: '100vh', padding: '40px 5%' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -139,8 +216,8 @@ export default function AdminDashboardPage() {
           marginBottom: '40px',
         }}>
           <div>
-            <span style={{ fontSize: '0.8rem', color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Management Console</span>
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, marginTop: '5px' }}>Aasifa Admin</h1>
+            <span style={{ fontSize: '0.8rem', color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Storm Console</span>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, marginTop: '5px' }}>y.storm1 Dashboard</h1>
           </div>
           <div style={{ display: 'flex', gap: '15px' }}>
             <Link href="/" target="_blank" className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 15px', fontSize: '0.8rem' }}>
@@ -203,6 +280,57 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
+        {/* Analytics bar chart section */}
+        {!loading && !errorMsg && (
+          <div className="glass-panel" style={{ padding: '30px', marginBottom: '50px', border: '1px solid #1a1a1a' }}>
+            <h3 style={{ fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <BarChart3 size={18} style={{ color: '#a855f7' }} /> Category Revenue Distribution
+            </h3>
+
+            {/* Custom SVG/HTML Bar Chart */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-around',
+              alignItems: 'flex-end',
+              height: '200px',
+              paddingBottom: '20px',
+              borderBottom: '1px solid #222',
+            }}>
+              {Object.entries(categorySales).map(([category, value]) => {
+                const heightPercentage = (value / maxSalesValue) * 100;
+                return (
+                  <div key={category} style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '60px',
+                    height: '100%',
+                    justifyContent: 'flex-end',
+                  }}>
+                    {/* Value indicator */}
+                    <span style={{ fontSize: '0.75rem', color: '#fff', marginBottom: '8px', fontWeight: 600 }}>
+                      {value > 0 ? `${value} EGP` : '—'}
+                    </span>
+                    {/* Bar */}
+                    <div style={{
+                      width: '32px',
+                      height: `${Math.max(heightPercentage, 2)}%`,
+                      background: 'linear-gradient(to top, #1a1a1a 0%, #ffffff 100%)',
+                      border: '1px solid #333',
+                      boxShadow: '0 0 10px rgba(255,255,255,0.05)',
+                      transition: 'height 1s ease',
+                    }} />
+                    {/* Category Label */}
+                    <span style={{ fontSize: '0.75rem', color: '#666', marginTop: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {category}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <p style={{ color: '#888', textAlign: 'center' }}>Loading dashboard details...</p>
         ) : (
@@ -212,7 +340,7 @@ export default function AdminDashboardPage() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h2 style={{ fontSize: '1.3rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Catalog & Stock</h2>
-                <Link href="/admin/products/new" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', fontSize: '0.8rem' }}>
+                <Link href="/stormy/products/new" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', fontSize: '0.8rem' }}>
                   <Plus size={14} /> Add Product
                 </Link>
               </div>
@@ -261,7 +389,7 @@ export default function AdminDashboardPage() {
                             </td>
                             <td style={{ padding: '15px', textAlign: 'right' }}>
                               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                                <Link href={`/admin/products/${p.id}`} style={{ color: '#bbb', padding: '6px' }} title="Edit Product">
+                                <Link href={`/stormy/products/${p.id}`} style={{ color: '#bbb', padding: '6px' }} title="Edit Product">
                                   <Edit size={16} />
                                 </Link>
                                 <button onClick={() => handleDeleteProduct(p.id, p.name)} style={{ color: '#888', padding: '6px' }} className="delete-btn-hover" title="Delete Product">
@@ -309,17 +437,39 @@ export default function AdminDashboardPage() {
                           </td>
                           <td style={{ padding: '15px', fontWeight: 600, color: '#fff' }}>{o.total_amount} EGP</td>
                           <td style={{ padding: '15px' }}>
-                            <span style={{
-                              fontSize: '0.75rem',
-                              background: o.status === 'completed' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-                              border: o.status === 'completed' ? '1px solid #22c55e' : '1px solid #ef4444',
-                              color: o.status === 'completed' ? '#22c55e' : '#ef4444',
-                              padding: '2px 8px',
-                              textTransform: 'uppercase',
-                              fontWeight: 'bold',
-                            }}>
-                              {o.status}
-                            </span>
+                            {/* Order Status Switcher Dropdown */}
+                            <select
+                              value={o.status}
+                              onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                              style={{
+                                padding: '4px 8px',
+                                background: o.status === 'completed' 
+                                  ? 'rgba(34,197,94,0.1)' 
+                                  : o.status === 'cancelled'
+                                    ? 'rgba(239,68,68,0.1)'
+                                    : 'rgba(234,179,8,0.1)',
+                                border: '1px solid',
+                                borderColor: o.status === 'completed' 
+                                  ? '#22c55e' 
+                                  : o.status === 'cancelled'
+                                    ? '#ef4444'
+                                    : '#eab308',
+                                color: o.status === 'completed' 
+                                  ? '#22c55e' 
+                                  : o.status === 'cancelled'
+                                    ? '#ef4444'
+                                    : '#eab308',
+                                fontSize: '0.75rem',
+                                fontWeight: 'bold',
+                                textTransform: 'uppercase',
+                                outline: 'none',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <option value="pending" style={{ background: '#0a0a0a', color: '#eab308' }}>Pending</option>
+                              <option value="completed" style={{ background: '#0a0a0a', color: '#22c55e' }}>Completed</option>
+                              <option value="cancelled" style={{ background: '#0a0a0a', color: '#ef4444' }}>Cancelled</option>
+                            </select>
                           </td>
                         </tr>
                       ))}

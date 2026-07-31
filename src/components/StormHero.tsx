@@ -149,13 +149,8 @@ export function StormHero() {
     const render = () => {
       const now = Date.now();
 
-      // Clear with dark storm gradient (deep dark charcoal to absolute black)
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, '#040406');
-      bgGrad.addColorStop(0.5, '#020203');
-      bgGrad.addColorStop(1, '#000000');
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
+      // Clear canvas so the CSS background image shows through
+      ctx.clearRect(0, 0, width, height);
 
       // Draw clouds (parallax drift)
       for (const cloud of clouds) {
@@ -200,7 +195,7 @@ export function StormHero() {
           isStriking = false;
           activeBolts = [];
           flashOpacity = 0;
-          nextStrikeTime = now + 4000 + Math.random() * 6000; // strike every 4-10s
+          nextStrikeTime = now + 5000; // strike exactly every 5 seconds
         } else {
           // Complex flicker pattern to simulate real lightning behavior
           let visibilityFactor = 0;
@@ -277,6 +272,9 @@ export function StormHero() {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
+      backgroundImage: 'linear-gradient(rgba(3, 3, 3, 0.45), rgba(3, 3, 3, 0.85)), url("https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=1920&q=80")',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
     }}>
       {/* Background Canvas */}
       <canvas
@@ -332,7 +330,7 @@ export function StormHero() {
           fontWeight: 300,
           letterSpacing: '0.05em',
         }}>
-          Minimalist streetwear crafted to survive the storm.
+          STORM IN YOUR STYLE.
         </p>
 
         {/* CTA Button */}

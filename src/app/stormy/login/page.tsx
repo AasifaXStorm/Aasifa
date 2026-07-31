@@ -2,54 +2,41 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Eye, EyeOff, Lock, User } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Check if already authenticated, if so redirect to dashboard
   useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        router.push('/admin');
-      }
-    };
-    checkUser();
+    // Check if already logged in via hardcoded session
+    const session = localStorage.getItem('aasifa_admin_session');
+    if (session === 'y.storm1_session') {
+      router.push('/stormy');
+    }
   }, [router]);
 
-  const handleLoginSubmit = async (e: React.FormEvent) => {
+  const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) {
-      setErrorMsg('Please enter email and password.');
+    if (!username.trim() || !password.trim()) {
+      setErrorMsg('Please enter username and password.');
       return;
     }
 
     setLoading(true);
     setErrorMsg(null);
 
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        setErrorMsg(error.message || 'Authentication failed.');
-      } else if (data.session) {
-        router.push('/admin');
-        router.refresh();
-      }
-    } catch (err: any) {
-      console.error(err);
-      setErrorMsg('An unexpected error occurred. Please try again.');
-    } finally {
+    // Hardcoded credentials verification
+    if (username === 'y.storm1' && password === 'aasifabaskotaaaaatt1_Stotm') {
+      localStorage.setItem('aasifa_admin_session', 'y.storm1_session');
+      router.push('/stormy');
+      router.refresh();
+    } else {
+      setErrorMsg('Invalid username or password.');
       setLoading(false);
     }
   };
@@ -77,7 +64,7 @@ export default function AdminLoginPage() {
             Portal Access
           </span>
           <h1 className="brand-title" style={{ fontSize: '1.6rem', fontWeight: 900 }}>
-            ADMIN LOGIN
+            STORMY LOGIN
           </h1>
         </div>
 
@@ -95,18 +82,18 @@ export default function AdminLoginPage() {
         )}
 
         <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Email */}
+          {/* Username */}
           <div className="form-group" style={{ margin: 0 }}>
-            <label className="form-label">Email Address</label>
+            <label className="form-label">Username</label>
             <div style={{ position: 'relative' }}>
-              <Mail size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#555' }} />
+              <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#555' }} />
               <input
-                type="email"
+                type="text"
                 required
                 className="form-input"
-                placeholder="admin@aasifa.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="y.storm1"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
                 style={{ paddingLeft: '42px' }}
               />
@@ -152,7 +139,7 @@ export default function AdminLoginPage() {
             style={{ width: '100%', padding: '14px', marginTop: '10px' }}
             disabled={loading}
           >
-            {loading ? 'Authenticating...' : 'Sign In'}
+            {loading ? 'Verifying...' : 'Sign In'}
           </button>
         </form>
       </div>

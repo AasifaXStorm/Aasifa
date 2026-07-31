@@ -1,7 +1,8 @@
 import React from 'react';
 import { supabase } from '@/lib/supabase';
 import { StormHero } from '@/components/StormHero';
-import { ProductCard, Product } from '@/components/ProductCard';
+import { ProductCatalog } from '@/components/ProductCatalog';
+import { Product } from '@/components/ProductCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -87,23 +88,15 @@ export default async function Home() {
                 OUT OF STORM
               </span>
               <p style={{ color: '#888888', fontSize: '0.9rem', maxWidth: '400px', margin: '0 auto', marginBottom: '25px', lineHeight: '1.6' }}>
-                We are currently preparing the next drop. Access the admin portal to manage inventory and list new items.
+                We are currently preparing the next drop. Access the administration portal to manage inventory and list new items.
               </p>
-              <a href="/admin" className="btn-secondary" style={{ display: 'inline-block' }}>
+              <a href="/stormy" className="btn-secondary" style={{ display: 'inline-block' }}>
                 Manage Inventory
               </a>
             </div>
           ) : (
-            /* Products Grid */
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '40px 30px',
-            }}>
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            /* Interactive Catalog Grid with Filters */
+            <ProductCatalog products={products} />
           )}
         </div>
       </section>
