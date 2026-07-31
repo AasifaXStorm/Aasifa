@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Lock, User } from 'lucide-react';
+import { verifyAdminLogin, verifyAdminSession } from '@/app/actions/auth';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -13,14 +14,17 @@ export default function AdminLoginPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if already logged in via hardcoded session
-    const session = localStorage.getItem('aasifa_admin_session');
-    if (session === 'y.storm1_session') {
-      router.push('/stormy');
-    }
+    // Check if already logged in via server session
+    const checkSession = async () => {
+      const isLoggedIn = await verifyAdminSession();
+      if (isLoggedIn) {
+        router.push('/stormy');
+      }
+    };
+    checkSession();
   }, [router]);
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !password.trim()) {
       setErrorMsg('Please enter username and password.');
@@ -30,20 +34,27 @@ export default function AdminLoginPage() {
     setLoading(true);
     setErrorMsg(null);
 
-    // Hardcoded credentials verification
-    if (username === 'y.storm1' && password === 'aasifabaskotaaaaatt1_Stotm') {
-      localStorage.setItem('aasifa_admin_session', 'y.storm1_session');
-      router.push('/stormy');
-      router.refresh();
-    } else {
-      setErrorMsg('Invalid username or password.');
+    try {
+      // Secure server-side credential check
+      const res = await verifyAdminLogin(username, password);
+      
+      if (res.success) {
+        router.push('/stormy');
+        router.refresh();
+      } else {
+        setErrorMsg(res.error || 'Invalid credentials.');
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('An unexpected error occurred during login.');
       setLoading(false);
     }
   };
 
   return (
     <div style={{
-      background: '#030303',
+      background: '#0a0a0a',
       minHeight: 'calc(100vh - 70px)',
       display: 'flex',
       alignItems: 'center',
@@ -57,13 +68,14 @@ export default function AdminLoginPage() {
         display: 'flex',
         flexDirection: 'column',
         gap: '30px',
+        border: '1px solid #1a1a1a',
       }}>
         {/* Title */}
         <div style={{ textAlign: 'center' }}>
           <span style={{ fontSize: '0.75rem', color: '#555', letterSpacing: '0.2em', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
             Portal Access
           </span>
-          <h1 className="brand-title" style={{ fontSize: '1.6rem', fontWeight: 900 }}>
+          <h1 className="brand-title" style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--accent-color)', textShadow: '0 0 10px rgba(207,224,255,0.1)' }}>
             STORMY LOGIN
           </h1>
         </div>
@@ -86,7 +98,7 @@ export default function AdminLoginPage() {
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Username</label>
             <div style={{ position: 'relative' }}>
-              <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#555' }} />
+              <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-color)' }} />
               <input
                 type="text"
                 required
@@ -104,7 +116,7 @@ export default function AdminLoginPage() {
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Password</label>
             <div style={{ position: 'relative' }}>
-              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#555' }} />
+              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-color)' }} />
               <input
                 type={showPassword ? 'text' : 'password'}
                 required

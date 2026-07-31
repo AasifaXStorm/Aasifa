@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useTranslation } from '@/context/LanguageContext';
 
 interface Point {
   x: number;
@@ -25,6 +26,7 @@ interface Cloud {
 
 export function StormHero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { t } = useTranslation();
 
   // Dynamic configuration refs
   const intervalRef = useRef(5000);
@@ -325,25 +327,13 @@ export function StormHero() {
         alignItems: 'center',
         padding: '0 20px',
       }}>
-        {/* Arabic subhead */}
-        <span style={{
-          fontSize: '1rem',
-          color: '#888888',
-          letterSpacing: '0.3em',
-          marginBottom: '15px',
-          fontWeight: 300,
-          textTransform: 'uppercase',
-        }}>
-          عاصفة
-        </span>
-
         {/* Brand Title */}
         <h1 className="brand-title" style={{
           fontSize: 'clamp(2.5rem, 8vw, 5.5rem)',
           lineHeight: '1.1',
           marginBottom: '30px',
         }}>
-          AASIFA
+          {t('brand.title')}
         </h1>
 
         {/* Moody subtitle */}
@@ -356,12 +346,12 @@ export function StormHero() {
           fontWeight: 300,
           letterSpacing: '0.05em',
         }}>
-          STORM IN YOUR STYLE.
+          {t('brand.slogan')}
         </p>
 
         {/* CTA Button */}
         <a href="#shop" className="btn-primary">
-          Explore Collection
+          {t('explore.collection')}
         </a>
       </div>
 
@@ -372,7 +362,7 @@ export function StormHero() {
         left: 0,
         width: '100%',
         height: '150px',
-        background: 'linear-gradient(to top, #030303 0%, rgba(3, 3, 3, 0) 100%)',
+        background: 'linear-gradient(to top, #0a0a0a 0%, rgba(10, 10, 10, 0) 100%)',
         zIndex: 2,
         pointerEvents: 'none',
       }} />

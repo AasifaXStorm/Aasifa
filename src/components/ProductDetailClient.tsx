@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from '@/context/LanguageContext';
 import Link from 'next/link';
 import { Product } from './ProductCard';
 import { addToCart } from '@/lib/cart';
@@ -11,6 +12,7 @@ interface ProductDetailClientProps {
 }
 
 export function ProductDetailClient({ product }: ProductDetailClientProps) {
+  const { t } = useTranslation();
   const images = product.images?.length ? product.images : [
     'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80'
   ];
@@ -163,7 +165,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   style={{
                     width: '70px',
                     height: '90px',
-                    border: activeImgIdx === idx ? '1px solid #ffffff' : '1px solid #222222',
+                    border: activeImgIdx === idx ? '1px solid var(--accent-color)' : '1px solid #222222',
                     padding: 0,
                     overflow: 'hidden',
                     background: '#0a0a0a',
@@ -210,18 +212,18 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
               <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#888' }}>
-                Select Size
+                {t('product.select_size')}
               </span>
               {selectedSize && (
                 <span style={{ fontSize: '0.85rem', color: maxStock > 0 ? '#888' : '#ff4444' }}>
-                  {maxStock > 0 ? `${maxStock} pieces available` : 'Sold out in this size'}
+                  {maxStock > 0 ? t('product.only_left').replace('{qty}', String(maxStock)) : t('product.out_of_stock')}
                 </span>
               )}
             </div>
 
             {isFullyOutOfStock ? (
               <div style={{ color: '#ff4444', fontSize: '0.95rem', fontWeight: 'bold' }}>
-                This product is entirely sold out.
+                {t('product.out_of_stock')}
               </div>
             ) : (
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -242,12 +244,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                         fontSize: '0.9rem',
                         fontWeight: 600,
                         border: isSelected 
-                          ? '1px solid #ffffff' 
+                          ? '1px solid var(--accent-color)' 
                           : isAvailable 
                             ? '1px solid #222222' 
                             : '1px dashed #222222',
                         background: isSelected 
-                          ? '#ffffff' 
+                          ? 'var(--accent-color)' 
                           : 'transparent',
                         color: isSelected 
                           ? '#030303' 
@@ -309,7 +311,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 }}
               >
                 <ShoppingBag size={18} />
-                {feedback ? 'ADDED TO CART ✔' : 'ADD TO CART'}
+                {feedback ? t('product.added').toUpperCase() : t('product.add_to_cart').toUpperCase()}
               </button>
             </div>
           )}
@@ -327,7 +329,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 cursor: 'not-allowed',
               }}
             >
-              Select A Size
+              {t('product.select_size')}
             </button>
           )}
         </div>

@@ -31,13 +31,9 @@ export default function NewProductPage() {
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
 
   useEffect(() => {
-    const session = localStorage.getItem('aasifa_admin_session');
-    if (session !== 'y.storm1_session') {
-      router.push('/stormy/login');
-    } else {
-      setSessionChecked(true);
-    }
-  }, [router]);
+    // Session is validated server-side by Next.js middleware
+    setSessionChecked(true);
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { logoutAdmin } from '@/app/actions/auth';
 import { 
   LogOut, 
   DollarSign, 
@@ -40,19 +41,14 @@ export default function AdminDashboardPage() {
   const [tweaksInterval, setTweaksInterval] = useState(5000);
   const [tweaksColor, setTweaksColor] = useState('#ffffff');
   const [tweaksGlow, setTweaksGlow] = useState('#e8f4fd');
+  const [tweaksShowFooter, setTweaksShowFooter] = useState(true);
   const [savingTweaks, setSavingTweaks] = useState(false);
 
   useEffect(() => {
-    // Hardcoded authentication check
-    const session = localStorage.getItem('aasifa_admin_session');
-    if (session !== 'y.storm1_session') {
-      router.push('/stormy/login');
-      return;
-    }
-    
+    // Gated securely server-side via Next.js Middleware
     setSessionChecked(true);
     loadDashboardData();
-  }, [router]);
+  }, []);
 
   const loadDashboardData = async () => {
     setLoading(true);
@@ -141,6 +137,7 @@ export default function AdminDashboardPage() {
           if (parsed.interval) setTweaksInterval(parsed.interval);
           if (parsed.color) setTweaksColor(parsed.color);
           if (parsed.glow) setTweaksGlow(parsed.glow);
+          if (parsed.show_footer_links !== undefined) setTweaksShowFooter(!!parsed.show_footer_links);
         } catch (e) {
           console.error('Failed parsing site configuration:', e);
         }
@@ -153,9 +150,10 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('aasifa_admin_session');
+  const handleLogout = async () => {
+    await logoutAdmin();
     router.push('/stormy/login');
+    router.refresh();
   };
 
   const handleSaveTweaks = async () => {
@@ -172,7 +170,8 @@ export default function AdminDashboardPage() {
         description: JSON.stringify({
           interval: Number(tweaksInterval),
           color: tweaksColor,
-          glow: tweaksGlow
+          glow: tweaksGlow,
+          show_footer_links: tweaksShowFooter
         }),
         price: 0,
         category: 'System',
@@ -197,6 +196,8 @@ export default function AdminDashboardPage() {
         alert(`Error saving tweaks: ${saveError.message}`);
       } else {
         alert('Site tweaks updated successfully!');
+        // Dispatch reload event for components to instantly refresh configuration
+        window.dispatchEvent(new Event('aasifa_config_updated'));
       }
     } catch (e: any) {
       console.error(e);
@@ -466,6 +467,37 @@ export default function AdminDashboardPage() {
                       />
                     </div>
                   </div>
+
+                  {/* Generic Boolean Settings/Toggles List */}
+                  {[
+                    {
+                      key: 'show_footer_links',
+                      label: 'Show footer links in bolt menu',
+                      value: tweaksShowFooter,
+                      onChange: (val: boolean) => setTweaksShowFooter(val),
+                      description: 'Display quick navigation links (About, Contact, Shop, etc.) in the bottom-left fixed lightning bolt flyout menu.',
+                    }
+                  ].map((setting) => (
+                    <div key={setting.key} className="form-group" style={{ margin: 0, gridColumn: '1 / -1', marginTop: '10px' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={setting.value}
+                          onChange={(e) => setting.onChange(e.target.checked)}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            cursor: 'pointer',
+                            accentColor: 'var(--accent-color)',
+                          }}
+                        />
+                        <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff' }}>{setting.label}</span>
+                      </label>
+                      <span style={{ fontSize: '0.75rem', color: '#555', marginTop: '5px', display: 'block', paddingLeft: '30px' }}>
+                        {setting.description}
+                      </span>
+                    </div>
+                  ))}
 
                 </div>
 

@@ -12,8 +12,10 @@ import {
   CartItem 
 } from '@/lib/cart';
 import { processCheckout } from '../actions/checkout';
+import { useTranslation } from '@/context/LanguageContext';
 
 export default function CartPage() {
+  const { t } = useTranslation();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [mounted, setMounted] = useState(false);
   const [name, setName] = useState('');
@@ -93,7 +95,7 @@ export default function CartPage() {
   if (successOrder) {
     return (
       <div style={{
-        background: '#030303',
+        background: '#0a0a0a',
         minHeight: 'calc(100vh - 70px)',
         display: 'flex',
         alignItems: 'center',
@@ -110,12 +112,12 @@ export default function CartPage() {
           alignItems: 'center',
           gap: '20px',
         }}>
-          <CheckCircle size={60} color="#22c55e" />
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            ORDER CONFIRMED
+          <CheckCircle size={60} color="#cfe0ff" />
+          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--accent-color)' }}>
+            {t('cart.success').toUpperCase()}
           </h1>
           <p style={{ color: '#888', fontSize: '0.9rem', lineHeight: '1.6' }}>
-            Thank you for shopping with Aasifa. Your order has been placed successfully and is currently being processed.
+            {t('cart.thank_you')}
           </p>
           <div style={{
             background: '#0a0a0a',
@@ -127,10 +129,10 @@ export default function CartPage() {
             color: '#e5e5e5',
             margin: '10px 0',
           }}>
-            Order ID: {successOrder}
+            {t('cart.order_id')} {successOrder}
           </div>
           <Link href="/#shop" className="btn-primary" style={{ marginTop: '10px', display: 'inline-block' }}>
-            Continue Shopping
+            {t('explore.collection')}
           </Link>
         </div>
       </div>
@@ -141,13 +143,13 @@ export default function CartPage() {
 
   return (
     <div style={{
-      background: '#030303',
+      background: '#0a0a0a',
       minHeight: 'calc(100vh - 70px)',
       padding: '60px 5%',
     }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '40px' }}>
-          Your Cart
+          {t('cart.title')}
         </h1>
 
         {cart.length === 0 ? (
@@ -160,10 +162,10 @@ export default function CartPage() {
           }}>
             <ShoppingBag size={48} style={{ color: '#333', marginBottom: '20px' }} />
             <span style={{ fontSize: '1.2rem', color: '#888', display: 'block', marginBottom: '20px' }}>
-              Your cart is empty.
+              {t('cart.empty')}
             </span>
             <Link href="/#shop" className="btn-primary" style={{ display: 'inline-block' }}>
-              Explore Collection
+              {t('explore.collection')}
             </Link>
           </div>
         ) : (
@@ -265,19 +267,19 @@ export default function CartPage() {
                 </h3>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', fontSize: '0.9rem', color: '#888' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Subtotal</span>
-                    <span style={{ color: '#fff' }}>{subtotal} EGP</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cfe0ff' }}>
+                    <span>Discount (STORM10 - 10%)</span>
+                    <span>-{(subtotal * 0.10)} EGP</span>
                   </div>
                   {promoApplied && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#22c55e' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-color)' }}>
                       <span>Discount (STORM10 - 10%)</span>
                       <span>-{(subtotal * 0.10)} EGP</span>
                     </div>
                   )}
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Shipping</span>
-                    <span style={{ color: '#22c55e', fontWeight: 600 }}>FREE</span>
+                    <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>{t('cart.free')}</span>
                   </div>
                   <div style={{
                     display: 'flex', 
@@ -288,7 +290,7 @@ export default function CartPage() {
                     color: '#fff',
                     fontWeight: 'bold'
                   }}>
-                    <span>Total</span>
+                    <span>{t('cart.total')}</span>
                     <span>{promoApplied ? subtotal * 0.90 : subtotal} EGP</span>
                   </div>
                 </div>
@@ -296,7 +298,7 @@ export default function CartPage() {
 
               {/* Promo Code Block */}
               <div className="glass-panel" style={{ padding: '25px', border: '1px solid #1a1a1a' }}>
-                <label className="form-label" style={{ marginBottom: '10px' }}>Promo Code</label>
+                <label className="form-label" style={{ marginBottom: '10px' }}>{t('cart.promo')}</label>
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <input
                     type="text"
@@ -321,17 +323,17 @@ export default function CartPage() {
                     disabled={promoApplied}
                     style={{ padding: '8px 15px', fontSize: '0.8rem' }}
                   >
-                    {promoApplied ? 'Applied' : 'Apply'}
+                    {promoApplied ? t('cart.applied') : t('cart.apply')}
                   </button>
                 </div>
                 {promoError && <span style={{ color: '#ff4444', fontSize: '0.75rem', marginTop: '5px', display: 'block' }}>{promoError}</span>}
-                {promoApplied && <span style={{ color: '#22c55e', fontSize: '0.75rem', marginTop: '5px', display: 'block', fontWeight: 600 }}>Code STORM10 applied successfully (10% off)!</span>}
+                {promoApplied && <span style={{ color: 'var(--accent-color)', fontSize: '0.75rem', marginTop: '5px', display: 'block', fontWeight: 600 }}>Code STORM10 applied successfully (10% off)!</span>}
               </div>
 
               {/* Checkout Form */}
               <form onSubmit={handleCheckoutSubmit} className="glass-panel" style={{ padding: '30px', border: '1px solid #1a1a1a' }}>
                 <h3 style={{ fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '20px', borderBottom: '1px solid #1a1a1a', paddingBottom: '15px' }}>
-                  Shipping Information
+                  {t('cart.shipping_info')}
                 </h3>
 
                 {errorMessage && (
@@ -348,7 +350,7 @@ export default function CartPage() {
                 )}
 
                 <div className="form-group">
-                  <label className="form-label">Full Name</label>
+                  <label className="form-label">{t('cart.name')}</label>
                   <input
                     type="text"
                     required
@@ -361,7 +363,7 @@ export default function CartPage() {
                 </div>
 
                 <div className="form-group" style={{ marginBottom: '25px' }}>
-                  <label className="form-label">Email Address</label>
+                  <label className="form-label">{t('cart.email')}</label>
                   <input
                     type="email"
                     required
@@ -379,7 +381,7 @@ export default function CartPage() {
                   style={{ width: '100%', padding: '15px' }}
                   disabled={loading}
                 >
-                  {loading ? 'Processing Order...' : 'Complete Order'}
+                  {loading ? 'Processing Order...' : t('cart.place_order')}
                 </button>
               </form>
             </div>

@@ -1,13 +1,13 @@
 :root {
-  --background: #030303;
+  --background: #0a0a0a;
   --foreground: #e5e5e5;
   --primary: #ffffff;
   --secondary: #1a1a1a;
-  --gray-light: #888888;
+  --gray-light: #a0a0a0;
   --gray-dark: #121212;
-  --border-color: #222222;
-  --accent-color: #555555;
-  --lightning-flash: rgba(230, 240, 255, 0.9);
+  --border-color: #2a2a2a;
+  --accent-color: #cfe0ff;
+  --lightning-flash: rgba(207, 224, 255, 0.9);
   
   --font-inter: 'Inter', sans-serif;
   --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -98,13 +98,14 @@ button {
 
 .btn-primary:hover {
   background: transparent;
-  color: var(--primary);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 15px rgba(207, 224, 255, 0.3);
 }
 
 .btn-primary:disabled {
-  background: var(--accent-color);
-  border-color: var(--accent-color);
+  background: var(--secondary);
+  border-color: var(--border-color);
   color: var(--gray-light);
   cursor: not-allowed;
   box-shadow: none;
@@ -124,7 +125,9 @@ button {
 
 .btn-secondary:hover {
   background: var(--secondary);
-  border-color: var(--primary);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  box-shadow: 0 0 15px rgba(207, 224, 255, 0.15);
 }
 
 /* Layout Utilities */
@@ -166,8 +169,8 @@ button {
 }
 
 .form-input:focus, .form-textarea:focus, .form-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 10px rgba(207, 224, 255, 0.15);
 }
 
 /* Scrollbar customization */
@@ -191,8 +194,8 @@ button {
   transition: var(--transition-smooth);
 }
 .product-card-hover:hover {
-  border-color: #333333 !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(207, 224, 255, 0.05);
   transform: translateY(-2px);
 }
 .product-card-hover:hover .product-card-img {
@@ -210,9 +213,20 @@ button {
 
 /* Secret Admin Entrance Portal styling */
 .secret-entrance:hover {
-  color: #ffffff !important;
-  filter: drop-shadow(0 0 10px #ffffff) !important;
+  color: var(--accent-color) !important;
+  filter: drop-shadow(0 0 10px var(--accent-color)) !important;
   transform: scale(1.2) rotate(-5deg) !important;
+}
+
+/* Background scattered lightning slow flicker animation */
+@keyframes distant-flicker {
+  0%, 30%, 36%, 42%, 70%, 76%, 82%, 100% { opacity: 0.02; }
+  33%, 79% { opacity: 0.08; }
+  35%, 81% { opacity: 0.03; }
+}
+
+.distant-flicker-bolt {
+  animation: distant-flicker 16s infinite ease-in-out;
 }
 
 /* Mobile-specific overrides for ultimate compatibility (320px+) */

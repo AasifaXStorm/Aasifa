@@ -41,14 +41,10 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
 
   useEffect(() => {
-    const session = localStorage.getItem('aasifa_admin_session');
-    if (session !== 'y.storm1_session') {
-      router.push('/stormy/login');
-      return;
-    }
+    // Session is validated server-side by Next.js middleware
     setSessionChecked(true);
     fetchProductData();
-  }, [id, router]);
+  }, [id]);
 
   const fetchProductData = async () => {
     setFetching(true);

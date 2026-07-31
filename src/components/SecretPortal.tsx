@@ -1,0 +1,244 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { useTranslation } from '@/context/LanguageContext';
+import { supabase } from '@/lib/supabase';
+
+export function SecretPortal() {
+  const { language, toggleLanguage, t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const [showFooterLinks, setShowFooterLinks] = useState(true);
+  const flyoutRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    // Fetch Tweaks dynamic settings from database config row
+    const fetchTweakConfig = async () => {
+      try {
+        const { data } = await supabase
+          .from('products')
+          .select('description')
+          .eq('name', '_SITE_CONFIG_')
+          .maybeSingle();
+
+        if (data?.description) {
+          const parsed = JSON.parse(data.description);
+          if (parsed.show_footer_links !== undefined) {
+            setShowFooterLinks(!!parsed.show_footer_links);
+          }
+        }
+      } catch (e) {
+        console.error('Error loading flyout settings:', e);
+      }
+    };
+
+    fetchTweakConfig();
+
+    // Event listener to reload if config changes in admin dashboard
+    const handleReload = () => fetchTweakConfig();
+    window.addEventListener('aasifa_config_updated', handleReload);
+    return () => {
+      window.removeEventListener('aasifa_config_updated', handleReload);
+    };
+  }, []);
+
+  // Click outside detection to close flyout
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (
+        isOpen &&
+        flyoutRef.current &&
+        !flyoutRef.current.contains(e.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [isOpen]);
+
+  return (
+    <>
+      {/* Floating fixed single lightning bolt portal button in the bottom-left */}
+      <button
+        ref={buttonRef}
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          left: '24px',
+          zIndex: 99999,
+          color: isOpen ? 'var(--accent-color)' : '#444444',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          width: '36px',
+          height: '36px',
+          borderRadius: '50%',
+          background: 'rgba(10, 10, 10, 0.4)',
+          border: '1px solid',
+          borderColor: isOpen ? 'var(--accent-color)' : '#222222',
+          boxShadow: isOpen 
+            ? '0 0 15px rgba(207, 224, 255, 0.45)' 
+            : '0 0 5px rgba(0,0,0,0.5)',
+          transition: 'var(--transition-smooth)',
+        }}
+        className="secret-portal-btn"
+        title={t('nav.home')}
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style={{
+          filter: isOpen ? 'drop-shadow(0 0 5px var(--accent-color))' : 'none'
+        }}>
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+      </button>
+
+      {/* Flyout Panel */}
+      {isOpen && (
+        <div
+          ref={flyoutRef}
+          className="glass-panel"
+          style={{
+            position: 'fixed',
+            bottom: '72px',
+            left: '24px',
+            zIndex: 99998,
+            width: '240px',
+            padding: '24px',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(207,224,255,0.02)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+            animation: 'flyout-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+          }}
+        >
+          {/* Conditional Footer Links */}
+          {showFooterLinks && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderBottom: '1px solid #1a1a1a', paddingBottom: '16px' }}>
+              <Link 
+                href="/" 
+                onClick={() => setIsOpen(false)}
+                style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.1em', color: '#888', textTransform: 'uppercase' }}
+                className="flyout-link-hover"
+              >
+                {t('nav.home')}
+              </Link>
+              <Link 
+                href="/#shop" 
+                onClick={() => setIsOpen(false)}
+                style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.1em', color: '#888', textTransform: 'uppercase' }}
+                className="flyout-link-hover"
+              >
+                {t('nav.shop')}
+              </Link>
+              <Link 
+                href="/about" 
+                onClick={() => setIsOpen(false)}
+                style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.1em', color: '#888', textTransform: 'uppercase' }}
+                className="flyout-link-hover"
+              >
+                {t('nav.about')}
+              </Link>
+              <a 
+                href="mailto:aasifa.storm.eg@gmail.com?subject=Aasifa%20Inquiry"
+                onClick={() => setIsOpen(false)}
+                style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.1em', color: '#888', textTransform: 'uppercase' }}
+                className="flyout-link-hover"
+              >
+                {t('nav.contact')}
+              </a>
+              <a 
+                href="https://www.instagram.com/aasifa.eg/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                onClick={() => setIsOpen(false)}
+                style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.1em', color: '#888', textTransform: 'uppercase' }}
+                className="flyout-link-hover"
+              >
+                {t('nav.instagram')}
+              </a>
+            </div>
+          )}
+
+          {/* Translation Control */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 500, letterSpacing: '0.05em', color: '#555', textTransform: 'uppercase' }}>
+              Translate
+            </span>
+            <button
+              onClick={() => {
+                toggleLanguage();
+              }}
+              style={{
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                color: 'var(--accent-color)',
+                border: '1px solid var(--accent-color)',
+                padding: '4px 10px',
+                background: 'rgba(207, 224, 255, 0.05)',
+                cursor: 'pointer',
+              }}
+              className="translate-toggle-btn"
+            >
+              {language === 'en' ? 'عربي' : 'EN'}
+            </button>
+          </div>
+
+          {/* Hidden Admin Portal Entry */}
+          <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', display: 'flex', justifyContent: 'flex-start' }}>
+            <Link
+              href="/stormy"
+              onClick={() => setIsOpen(false)}
+              style={{ fontSize: '0.65rem', color: '#333333', letterSpacing: '0.05em', textTransform: 'uppercase', textDecoration: 'none' }}
+              className="secret-console-link"
+            >
+              Console
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Flyout CSS Animation and hover styling */}
+      <style jsx global>{`
+        @keyframes flyout-in {
+          from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        
+        .flyout-link-hover:hover {
+          color: var(--accent-color) !important;
+        }
+        
+        .translate-toggle-btn:hover {
+          background: var(--accent-color) !important;
+          color: #030303 !important;
+          box-shadow: 0 0 10px rgba(207, 224, 255, 0.3);
+        }
+        
+        .secret-portal-btn:hover {
+          color: var(--accent-color) !important;
+          border-color: var(--accent-color) !important;
+          box-shadow: 0 0 15px rgba(207, 224, 255, 0.45) !important;
+        }
+
+        .secret-console-link:hover {
+          color: #555555 !important;
+        }
+      `}</style>
+    </>
+  );
+}

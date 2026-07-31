@@ -28,39 +28,17 @@ export default async function Home() {
   }
 
   return (
-    <div style={{ background: '#030303', minHeight: '100vh' }}>
+    <div style={{ background: '#0a0a0a', minHeight: '100vh' }}>
       {/* Cinematic Storm Hero */}
       <StormHero />
 
       {/* Shop Section Anchor */}
       <section id="shop" style={{
-        background: '#030303',
+        background: '#0a0a0a',
         padding: '100px 5%',
-        borderTop: '1px solid #111111',
+        borderTop: '1px solid #1a1a1a',
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          {/* Section Header */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginBottom: '60px',
-            textAlign: 'center',
-          }}>
-            <span style={{ fontSize: '0.8rem', color: '#666666', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '10px' }}>
-              Selected Pieces
-            </span>
-            <h2 style={{
-              fontSize: '2rem',
-              fontWeight: 800,
-              letterSpacing: '0.05em',
-              textTransform: 'uppercase',
-            }}>
-              The Storm Collection
-            </h2>
-            <div style={{ width: '40px', height: '1px', background: '#333333', marginTop: '20px' }}></div>
-          </div>
-
           {/* Error fallback */}
           {fetchError && (
             <div style={{
@@ -76,26 +54,8 @@ export default async function Home() {
             </div>
           )}
 
-          {/* Empty Grid State */}
-          {!fetchError && products.length === 0 ? (
-            <div style={{
-              padding: '80px 20px',
-              textAlign: 'center',
-              border: '1px dashed #222222',
-              background: '#050505',
-            }}>
-              <span style={{ fontSize: '1.5rem', color: '#444444', display: 'block', marginBottom: '15px' }}>
-                OUT OF STORM
-              </span>
-              <p style={{ color: '#888888', fontSize: '0.9rem', maxWidth: '400px', margin: '0 auto', marginBottom: '25px', lineHeight: '1.6' }}>
-                We are currently preparing the next drop. Access the administration portal to manage inventory and list new items.
-              </p>
-              <a href="/stormy" className="btn-secondary" style={{ display: 'inline-block' }}>
-                Manage Inventory
-              </a>
-            </div>
-          ) : (
-            /* Interactive Catalog Grid with Filters */
+          {/* Interactive Catalog Grid with Filters & Titles */}
+          {!fetchError && (
             <ProductCatalog products={products} />
           )}
         </div>
