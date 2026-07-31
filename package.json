@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.111.0",
+    "@upstash/redis": "^1.38.1",
+    "@vercel/kv": "^3.0.0",
     "bcryptjs": "^3.0.3",
     "lucide-react": "^1.28.0",
     "next": "16.2.12",

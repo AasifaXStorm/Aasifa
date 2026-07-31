@@ -228,14 +228,14 @@ export default function EditProductPage({ params }: EditProductPageProps) {
 
   if (!sessionChecked || fetching) {
     return (
-      <div style={{ background: '#030303', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ background: '#0a0a0a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <p style={{ color: '#888' }}>{fetching ? 'Fetching product info...' : 'Checking session...'}</p>
       </div>
     );
   }
 
   return (
-    <div style={{ background: '#030303', minHeight: '100vh', padding: '40px 5%' }}>
+    <div style={{ background: '#0a0a0a', minHeight: '100vh', padding: '40px 5%' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         
         {/* Back Link */}

@@ -1,12 +1,6 @@
 'use server';
 
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-// Create administrative client to securely handle stock and order mutations
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+import { supabaseServer as supabaseAdmin } from '@/lib/supabaseServer';
 
 export interface CheckoutItem {
   variantId: string;

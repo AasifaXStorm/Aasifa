@@ -22,12 +22,12 @@ export const metadata: Metadata = {
 };
 
 const BACKGROUND_BOLTS = [
-  { top: '12%', left: '4%', right: undefined, size: 100, opacity: 0.02, rotate: 15, flicker: false },
-  { top: '38%', left: undefined, right: '6%', size: 140, opacity: 0.03, rotate: -20, flicker: true },
-  { top: '65%', left: '8%', right: undefined, size: 90, opacity: 0.02, rotate: 10, flicker: false },
-  { top: '22%', left: undefined, right: '12%', size: 80, opacity: 0.03, rotate: 35, flicker: false },
-  { top: '55%', left: '3%', right: undefined, size: 120, opacity: 0.02, rotate: -15, flicker: false },
-  { top: '80%', left: undefined, right: '5%', size: 110, opacity: 0.03, rotate: 25, flicker: true },
+  { top: '12%', left: '4%', right: undefined, size: 100, opacity: 0.06, rotate: 15, flicker: false },
+  { top: '38%', left: undefined, right: '6%', size: 140, opacity: 0.09, rotate: -20, flicker: true },
+  { top: '65%', left: '8%', right: undefined, size: 90, opacity: 0.05, rotate: 10, flicker: false },
+  { top: '22%', left: undefined, right: '12%', size: 80, opacity: 0.08, rotate: 35, flicker: false },
+  { top: '55%', left: '3%', right: undefined, size: 120, opacity: 0.07, rotate: -15, flicker: false },
+  { top: '80%', left: undefined, right: '5%', size: 110, opacity: 0.11, rotate: 25, flicker: true },
 ];
 
 export default function RootLayout({

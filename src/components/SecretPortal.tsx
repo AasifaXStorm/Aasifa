@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTranslation } from '@/context/LanguageContext';
-import { supabase } from '@/lib/supabase';
+import { fetchTweak } from '@/app/actions/tweaks';
 
 export function SecretPortal() {
   const { language, toggleLanguage, t } = useTranslation();
@@ -13,21 +13,11 @@ export function SecretPortal() {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    // Fetch Tweaks dynamic settings from database config row
+    // Fetch Tweaks dynamic settings using Server Action (checks KV + database fallback)
     const fetchTweakConfig = async () => {
       try {
-        const { data } = await supabase
-          .from('products')
-          .select('description')
-          .eq('name', '_SITE_CONFIG_')
-          .maybeSingle();
-
-        if (data?.description) {
-          const parsed = JSON.parse(data.description);
-          if (parsed.show_footer_links !== undefined) {
-            setShowFooterLinks(!!parsed.show_footer_links);
-          }
-        }
+        const val = await fetchTweak('show_footer_links', true);
+        setShowFooterLinks(val);
       } catch (e) {
         console.error('Error loading flyout settings:', e);
       }

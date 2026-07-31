@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { logoutAdmin } from '@/app/actions/auth';
+import { fetchTweak, updateTweak } from '@/app/actions/tweaks';
 import { 
   LogOut, 
   DollarSign, 
@@ -137,10 +138,17 @@ export default function AdminDashboardPage() {
           if (parsed.interval) setTweaksInterval(parsed.interval);
           if (parsed.color) setTweaksColor(parsed.color);
           if (parsed.glow) setTweaksGlow(parsed.glow);
-          if (parsed.show_footer_links !== undefined) setTweaksShowFooter(!!parsed.show_footer_links);
         } catch (e) {
           console.error('Failed parsing site configuration:', e);
         }
+      }
+
+      // 4. Retrieve existing KV tweaks configuration
+      try {
+        const showLinksVal = await fetchTweak('show_footer_links', true);
+        setTweaksShowFooter(showLinksVal);
+      } catch (e) {
+        console.error('Failed to load show_footer_links tweak:', e);
       }
     } catch (err: any) {
       console.error(err);
@@ -191,6 +199,9 @@ export default function AdminDashboardPage() {
           .insert(configPayload);
         saveError = error;
       }
+
+      // Save boolean tweaks securely to Vercel KV / Upstash Redis
+      await updateTweak('show_footer_links', tweaksShowFooter);
 
       if (saveError) {
         alert(`Error saving tweaks: ${saveError.message}`);
@@ -262,7 +273,7 @@ export default function AdminDashboardPage() {
 
   if (!sessionChecked) {
     return (
-      <div style={{ background: '#030303', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ background: '#0a0a0a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <p style={{ color: '#888' }}>Checking auth session...</p>
       </div>
     );
@@ -273,7 +284,7 @@ export default function AdminDashboardPage() {
   const maxSalesValue = Math.max(...salesValues, 1000); // default minimum scale at 1000 EGP
 
   return (
-    <div style={{ background: '#030303', minHeight: '100vh', padding: '40px 5%' }}>
+    <div style={{ background: '#0a0a0a', minHeight: '100vh', padding: '40px 5%' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         
         {/* Header section */}

@@ -2,13 +2,7 @@
 
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-// Administrative database client
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+import { supabaseServer as supabaseAdmin } from '@/lib/supabaseServer';
 
 export interface AuthResponse {
   success: boolean;

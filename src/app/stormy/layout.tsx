@@ -15,7 +15,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div style={{ background: '#030303', minHeight: '100vh' }}>
+    <div style={{ background: '#0a0a0a', minHeight: '100vh' }}>
       {children}
     </div>
   );

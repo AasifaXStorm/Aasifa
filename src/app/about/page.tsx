@@ -8,10 +8,10 @@ export default function AboutPage() {
   const { language } = useTranslation();
 
   const englishParagraphs = [
-    `In 2026 a 18 Year Boy Dreamed of creating an Egyptian clothing brand that With premium oversized T-shirts with world-class quality and eye-catching designs under the names "Aasifa X Storm" His vision is to see young people across the Arab world and around the globe wearing T-shirts that meet international standards while being proudly 100% Made in Egypt.`,
+    `In 2026, an 18-year-old boy dreamed of creating an Egyptian clothing brand with premium oversized T-shirts of world-class quality and eye-catching designs under the name "Aasifa X Storm." His vision is to see young people across the Arab world and around the globe wearing T-shirts that meet international standards while being proudly 100% Made in Egypt.`,
     `He chose the name "Aasifa" because it is unique, memorable, and powerful. Every product is designed with exceptional attention to detail, ensuring that each T-shirt is perfectly crafted from start to finish. From the fabric and stitching to the fit and overall design, nothing is overlooked.`,
     `Aasifa Brand is committed to using only the highest-quality printing technology, ensuring that every print remains durable and vibrant without peeling, cracking, or fading after washing or regular use. Every Aasifa T-shirt is made to deliver outstanding quality, comfort, and long-lasting performance.`,
-    `With Aasifa you can wear your T-shirt with complete confidence because a Quality is guaranteed, "You're always in safe hands with Aasifa ⚡︎"`
+    `With Aasifa, you can wear your T-shirt with complete confidence because quality is guaranteed. "You're always in safe hands with Aasifa ⚡"`
   ];
 
   const arabicParagraphs = [
