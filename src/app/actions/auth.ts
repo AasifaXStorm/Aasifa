@@ -2,7 +2,7 @@
 
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
-import { supabaseServer as supabaseAdmin } from '@/lib/supabaseServer';
+import { supabaseAdmin } from '@/lib/supabaseServer';
 
 export interface AuthResponse {
   success: boolean;

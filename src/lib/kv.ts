@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis';
-import { supabaseServer } from './supabaseServer';
+import { supabaseAdmin } from './supabaseServer';
 
 const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -35,7 +35,7 @@ export async function getTweak(key: string, defaultValue: boolean = true): Promi
 
   // Database fallback if KV is not yet provisioned
   try {
-    const { data } = await supabaseServer
+    const { data } = await supabaseAdmin
       .from('products')
       .select('description')
       .eq('name', '_SITE_CONFIG_')
@@ -69,7 +69,7 @@ export async function setTweak(key: string, value: boolean): Promise<boolean> {
 
   // Always sync to Supabase Site Config so they stay aligned
   try {
-    const { data: existing } = await supabaseServer
+    const { data: existing } = await supabaseAdmin
       .from('products')
       .select('id, description')
       .eq('name', '_SITE_CONFIG_')
@@ -93,12 +93,12 @@ export async function setTweak(key: string, value: boolean): Promise<boolean> {
     };
 
     if (existing?.id) {
-      await supabaseServer
+      await supabaseAdmin
         .from('products')
         .update(configPayload)
         .eq('id', existing.id);
     } else {
-      await supabaseServer
+      await supabaseAdmin
         .from('products')
         .insert(configPayload);
     }

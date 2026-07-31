@@ -1,6 +1,6 @@
 'use server';
 
-import { supabaseServer as supabaseAdmin } from '@/lib/supabaseServer';
+import { supabaseAdmin } from '@/lib/supabaseServer';
 
 export interface CheckoutItem {
   variantId: string;

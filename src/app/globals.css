@@ -19,6 +19,11 @@
   margin: 0;
 }
 
+/* 45% font size increase via root scaling */
+html {
+  font-size: 145%;
+}
+
 html, body {
   background-color: var(--background);
   color: var(--foreground);
@@ -27,6 +32,7 @@ html, body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   scroll-behavior: smooth;
+  line-height: 1.6;
 }
 
 body {
@@ -39,6 +45,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--primary);
+  line-height: 1.3;
 }
 
 .brand-title {
@@ -229,8 +236,43 @@ button {
   animation: distant-flicker 16s infinite ease-in-out;
 }
 
-/* Mobile-specific overrides for ultimate compatibility (320px+) */
+/* Admin sidebar layout */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+.admin-main {
+  padding: 40px 5%;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* Admin delete button hover */
+.delete-btn-hover:hover {
+  color: #ef4444 !important;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Tablets (768px - 1024px) */
+@media (max-width: 1024px) {
+  html {
+    font-size: 130%;
+  }
+
+  .admin-layout {
+    grid-template-columns: 200px 1fr;
+  }
+}
+
+/* Mobile (max 768px) — counteract 145% root scaling */
 @media (max-width: 768px) {
+  html {
+    font-size: 115%;
+  }
+
   body {
     font-size: 14px;
   }
@@ -262,5 +304,45 @@ button {
   select, input {
     font-size: 0.8rem !important;
   }
+
+  /* Admin sidebar collapses on mobile */
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-main {
+    padding: 20px 4%;
+  }
 }
 
+/* Very small phones (max 400px) */
+@media (max-width: 400px) {
+  html {
+    font-size: 105%;
+  }
+
+  .brand-title {
+    font-size: clamp(1.5rem, 10vw, 2.5rem) !important;
+    letter-spacing: 0.2em !important;
+  }
+
+  section {
+    padding: 30px 10px !important;
+  }
+
+  .glass-panel {
+    padding: 15px 10px !important;
+  }
+}
+
+/* Ultra-small phones (max 320px) */
+@media (max-width: 320px) {
+  html {
+    font-size: 100%;
+  }
+
+  .brand-title {
+    font-size: clamp(1.2rem, 8vw, 2rem) !important;
+    letter-spacing: 0.15em !important;
+  }
+}
