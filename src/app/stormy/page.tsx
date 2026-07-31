@@ -36,6 +36,12 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Lightning tweaks state
+  const [tweaksInterval, setTweaksInterval] = useState(5000);
+  const [tweaksColor, setTweaksColor] = useState('#ffffff');
+  const [tweaksGlow, setTweaksGlow] = useState('#e8f4fd');
+  const [savingTweaks, setSavingTweaks] = useState(false);
+
   useEffect(() => {
     // Hardcoded authentication check
     const session = localStorage.getItem('aasifa_admin_session');
@@ -120,10 +126,25 @@ export default function AdminDashboardPage() {
         }
       }
 
-      setProducts(productsData || []);
+      // Filter out the configuration record from standard catalog view
+      const filteredProds = (productsData || []).filter(p => !p.name.startsWith('_'));
+      setProducts(filteredProds);
       setOrders(ordersData || []);
       setStats({ revenue, ordersCount, unitsSold });
       setCategorySales(salesMap);
+
+      // Retrieve existing lightning tweaks configuration
+      const configRecord = (productsData || []).find(p => p.name === '_SITE_CONFIG_');
+      if (configRecord && configRecord.description) {
+        try {
+          const parsed = JSON.parse(configRecord.description);
+          if (parsed.interval) setTweaksInterval(parsed.interval);
+          if (parsed.color) setTweaksColor(parsed.color);
+          if (parsed.glow) setTweaksGlow(parsed.glow);
+        } catch (e) {
+          console.error('Failed parsing site configuration:', e);
+        }
+      }
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || 'Failed to load dashboard data.');
@@ -135,6 +156,54 @@ export default function AdminDashboardPage() {
   const handleLogout = () => {
     localStorage.removeItem('aasifa_admin_session');
     router.push('/stormy/login');
+  };
+
+  const handleSaveTweaks = async () => {
+    setSavingTweaks(true);
+    try {
+      const { data: existing } = await supabase
+        .from('products')
+        .select('id')
+        .eq('name', '_SITE_CONFIG_')
+        .maybeSingle();
+
+      const configPayload = {
+        name: '_SITE_CONFIG_',
+        description: JSON.stringify({
+          interval: Number(tweaksInterval),
+          color: tweaksColor,
+          glow: tweaksGlow
+        }),
+        price: 0,
+        category: 'System',
+        images: []
+      };
+
+      let saveError = null;
+      if (existing?.id) {
+        const { error } = await supabase
+          .from('products')
+          .update(configPayload)
+          .eq('id', existing.id);
+        saveError = error;
+      } else {
+        const { error } = await supabase
+          .from('products')
+          .insert(configPayload);
+        saveError = error;
+      }
+
+      if (saveError) {
+        alert(`Error saving tweaks: ${saveError.message}`);
+      } else {
+        alert('Site tweaks updated successfully!');
+      }
+    } catch (e: any) {
+      console.error(e);
+      alert('Failed to save tweaks.');
+    } finally {
+      setSavingTweaks(false);
+    }
   };
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
@@ -217,7 +286,7 @@ export default function AdminDashboardPage() {
         }}>
           <div>
             <span style={{ fontSize: '0.8rem', color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Storm Console</span>
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, marginTop: '5px' }}>y.storm1 Dashboard</h1>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, marginTop: '5px', letterSpacing: '0.05em' }}>STORM CONSOLE</h1>
           </div>
           <div style={{ display: 'flex', gap: '15px' }}>
             <Link href="/" target="_blank" className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 15px', fontSize: '0.8rem' }}>
@@ -336,6 +405,81 @@ export default function AdminDashboardPage() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '50px' }}>
             
+            {/* Section Tweaks */}
+            <div>
+              <h2 style={{ fontSize: '1.3rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '20px' }}>Section Tweaks</h2>
+              <div className="glass-panel" style={{ padding: '30px', border: '1px solid #1a1a1a', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+                  
+                  {/* Lightning Interval */}
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Lightning Interval (milliseconds)</label>
+                    <input
+                      type="number"
+                      min="1000"
+                      max="30000"
+                      className="form-input"
+                      value={tweaksInterval}
+                      onChange={(e) => setTweaksInterval(Number(e.target.value))}
+                    />
+                    <span style={{ fontSize: '0.75rem', color: '#555', marginTop: '5px', display: 'block' }}>
+                      How often the lightning strikes. e.g. 5000 = 5 seconds.
+                    </span>
+                  </div>
+
+                  {/* Core Strike Color */}
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Lightning Bolt Color</label>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <input
+                        type="color"
+                        style={{ width: '40px', height: '40px', padding: 0, border: '1px solid #222', background: 'transparent', cursor: 'pointer' }}
+                        value={tweaksColor}
+                        onChange={(e) => setTweaksColor(e.target.value)}
+                      />
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={tweaksColor}
+                        onChange={(e) => setTweaksColor(e.target.value)}
+                        style={{ flex: 1 }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Glow Color */}
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Lightning Glow Color</label>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <input
+                        type="color"
+                        style={{ width: '40px', height: '40px', padding: 0, border: '1px solid #222', background: 'transparent', cursor: 'pointer' }}
+                        value={tweaksGlow}
+                        onChange={(e) => setTweaksGlow(e.target.value)}
+                      />
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={tweaksGlow}
+                        onChange={(e) => setTweaksGlow(e.target.value)}
+                        style={{ flex: 1 }}
+                      />
+                    </div>
+                  </div>
+
+                </div>
+
+                <button
+                  onClick={handleSaveTweaks}
+                  disabled={savingTweaks}
+                  className="btn-primary"
+                  style={{ alignSelf: 'flex-start', padding: '10px 25px', fontSize: '0.8rem' }}
+                >
+                  {savingTweaks ? 'Saving...' : 'Save Tweak Config'}
+                </button>
+              </div>
+            </div>
+
             {/* Products management section */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>

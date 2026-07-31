@@ -91,7 +91,7 @@ export default function AdminLoginPage() {
                 type="text"
                 required
                 className="form-input"
-                placeholder="y.storm1"
+                placeholder="Enter username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}

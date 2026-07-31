@@ -20,7 +20,7 @@ export default async function Home() {
       console.error('Error fetching products:', error);
       fetchError = error;
     } else {
-      products = (data as any[]) || [];
+      products = ((data as any[]) || []).filter(p => !p.name.startsWith('_'));
     }
   } catch (err: any) {
     console.error('Catch fetching products:', err);

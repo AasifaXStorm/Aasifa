@@ -208,3 +208,45 @@ button {
   transform: scale(1.15) rotate(-5deg) !important;
 }
 
+/* Secret Admin Entrance Portal styling */
+.secret-entrance:hover {
+  color: #ffffff !important;
+  filter: drop-shadow(0 0 10px #ffffff) !important;
+  transform: scale(1.2) rotate(-5deg) !important;
+}
+
+/* Mobile-specific overrides for ultimate compatibility (320px+) */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+  
+  section {
+    padding: 50px 15px !important;
+  }
+  
+  .glass-panel {
+    padding: 20px 15px !important;
+  }
+  
+  /* Scale down massive headers for small viewports */
+  .brand-title {
+    font-size: clamp(2rem, 12vw, 3.2rem) !important;
+  }
+  
+  /* Admin dashboard tweaks grid spacing */
+  .form-group {
+    margin-bottom: 15px !important;
+  }
+  
+  /* Tables sizing adjustments for horizontal touch swipe */
+  th, td {
+    padding: 10px 8px !important;
+    font-size: 0.8rem !important;
+  }
+  
+  select, input {
+    font-size: 0.8rem !important;
+  }
+}
+

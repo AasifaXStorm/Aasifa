@@ -151,9 +151,6 @@ export function Navigation() {
             <Link href="/contact" onClick={() => setIsOpen(false)} style={{ fontSize: '1.8rem', fontWeight: 300, letterSpacing: '0.05em' }}>
               CONTACT US
             </Link>
-            <Link href="/stormy" onClick={() => setIsOpen(false)} style={{ fontSize: '1rem', fontWeight: 500, letterSpacing: '0.1em', marginTop: '20px', color: '#888' }}>
-              STORMY PORTAL
-            </Link>
           </nav>
         </div>
 

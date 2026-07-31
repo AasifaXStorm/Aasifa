@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { supabase } from '@/lib/supabase';
 
 interface Point {
   x: number;
@@ -24,6 +25,33 @@ interface Cloud {
 
 export function StormHero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Dynamic configuration refs
+  const intervalRef = useRef(5000);
+  const colorRef = useRef('#ffffff');
+  const glowRef = useRef('#e8f4fd');
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const { data } = await supabase
+          .from('products')
+          .select('description')
+          .eq('name', '_SITE_CONFIG_')
+          .maybeSingle();
+
+        if (data?.description) {
+          const parsed = JSON.parse(data.description);
+          if (parsed.interval) intervalRef.current = Number(parsed.interval);
+          if (parsed.color) colorRef.current = parsed.color;
+          if (parsed.glow) glowRef.current = parsed.glow;
+        }
+      } catch (e) {
+        console.error('Error fetching lightning configs:', e);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -195,7 +223,7 @@ export function StormHero() {
           isStriking = false;
           activeBolts = [];
           flashOpacity = 0;
-          nextStrikeTime = now + 5000; // strike exactly every 5 seconds
+          nextStrikeTime = now + intervalRef.current; // dynamic interval strike
         } else {
           // Complex flicker pattern to simulate real lightning behavior
           let visibilityFactor = 0;
@@ -232,8 +260,8 @@ export function StormHero() {
             }
 
             // Glow styling
-            ctx.strokeStyle = '#ffffff';
-            ctx.shadowColor = '#e8f4fd';
+            ctx.strokeStyle = colorRef.current;
+            ctx.shadowColor = glowRef.current;
             ctx.shadowBlur = bolt.isBranch ? 10 : 25;
             ctx.lineWidth = bolt.width;
             ctx.globalAlpha = bolt.alpha * visibilityFactor;
@@ -272,9 +300,7 @@ export function StormHero() {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundImage: 'linear-gradient(rgba(3, 3, 3, 0.45), rgba(3, 3, 3, 0.85)), url("https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=1920&q=80")',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
+      background: '#000000',
     }}>
       {/* Background Canvas */}
       <canvas
