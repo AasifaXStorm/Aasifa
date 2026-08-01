@@ -15,7 +15,7 @@ export function Navigation() {
   const pathname = usePathname();
 
   const [marquee, setMarquee] = useState<{ text: string; speed: number; visible: boolean }>({
-    text: 'DROP 01 OUT NOW · FAST HOME DELIVERY ALL OVER EGYPT',
+    text: 'ꜱᴛᴏʀᴍ ɪɴ ʏᴏᴜʀ ꜱᴛʏʟᴇ',
     speed: 120,
     visible: true
   });
@@ -104,8 +104,12 @@ export function Navigation() {
         zIndex: 100,
       }}>
       {/* Brand Logo */}
-      <Link href="/" className="brand-title" style={{ fontSize: '1.2rem', textDecoration: 'none', letterSpacing: '0.4em' }}>
-        {t('brand.title')}
+      <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+        <img
+          src="/images/WhiteStorm.png"
+          alt="WhiteStorm"
+          style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
+        />
       </Link>
 
       {/* Right Nav Icons */}

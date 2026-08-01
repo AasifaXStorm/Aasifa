@@ -15,7 +15,7 @@ export default function AdminTweaksPage() {
   const [tweaksShowFooter, setTweaksShowFooter] = useState(true);
 
   // Promotion Marquee State
-  const [marqueeText, setMarqueeText] = useState('DROP 01 OUT NOW · FAST HOME DELIVERY ALL OVER EGYPT');
+  const [marqueeText, setMarqueeText] = useState('ꜱᴛᴏʀᴍ ɪɴ ʏᴏᴜʀ ꜱᴛʏʟᴇ');
   const [marqueeSpeed, setMarqueeSpeed] = useState(120);
   const [marqueeRepetition, setMarqueeRepetition] = useState(1);
   const [marqueeVisibility, setMarqueeVisibility] = useState('Active');
@@ -23,6 +23,8 @@ export default function AdminTweaksPage() {
   useEffect(() => {
     loadTweaks();
   }, []);
+
+  const isValidHex = (val: string) => /^#[0-9A-F]{6}$/i.test(val);
 
   const loadTweaks = async () => {
     setLoading(true);
@@ -34,8 +36,8 @@ export default function AdminTweaksPage() {
         try {
           const parsed = JSON.parse(productsData.description);
           if (parsed.interval) setTweaksInterval(parsed.interval);
-          if (parsed.color) setTweaksColor(parsed.color);
-          if (parsed.glow) setTweaksGlow(parsed.glow);
+          if (parsed.color && isValidHex(parsed.color)) setTweaksColor(parsed.color);
+          if (parsed.glow && isValidHex(parsed.glow)) setTweaksGlow(parsed.glow);
           if (parsed.marquee_text !== undefined) setMarqueeText(parsed.marquee_text);
           if (parsed.marquee_speed !== undefined) setMarqueeSpeed(parsed.marquee_speed);
           if (parsed.marquee_repetition !== undefined) setMarqueeRepetition(parsed.marquee_repetition);

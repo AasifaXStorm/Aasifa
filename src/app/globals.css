@@ -5,8 +5,8 @@
   --bg-elevated-2: #1a1a1a;  /* nested/hover elevation */
 
   /* Brand Accent */
-  --accent: #E8342E;         /* blood-red primary accent — use for CTAs, active states, key numbers */
-  --accent-glow: #E8342E33;  /* same color at low opacity, for glows/shadows */
+  --accent: #ffffff;         /* pure white accent */
+  --accent-glow: rgba(255, 255, 255, 0.15);  /* white glow */
 
   /* Typography */
   --text-primary: #F5F5F5;   /* near-white, not pure #FFF — softer on dark bg */
@@ -16,7 +16,7 @@
   --status-pending: #F5A623;   /* amber */
   --status-confirmed: #3DDC84; /* green */
   --status-shipped: #4A9EFF;   /* blue */
-  --status-cancelled: #E8342E; /* red — reuse accent */
+  --status-cancelled: #8A8A8A; /* grey */
   
   --border-color: var(--bg-elevated-2);
   --border-highlight: #333333;
