@@ -12,13 +12,15 @@ export function BottomLeftLightningBolt() {
   const [showCalc, setShowCalc] = useState(false);
 
   // Calculator state
+  const [calcTab, setCalcTab] = useState<'kg' | 'cm'>('kg');
   const [weight, setWeight] = useState('');
+  const [chest, setChest] = useState('');
   const [recommendedSize, setRecommendedSize] = useState<string | null>(null);
   const [calcError, setCalcError] = useState('');
 
   if (pathname.startsWith('/stormy')) return null;
 
-  const handleCalculate = (e: React.FormEvent) => {
+  const handleCalculateWeight = (e: React.FormEvent) => {
     e.preventDefault();
     setCalcError('');
     const w = parseFloat(weight);
@@ -36,8 +38,29 @@ export function BottomLeftLightningBolt() {
       setRecommendedSize('M');
     } else if (w >= 76 && w <= 85) {
       setRecommendedSize('L');
-    } else if (w >= 86 && w <= 100) {
+    } else {
       setRecommendedSize('XL');
+    }
+  };
+
+  const handleCalculateChest = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCalcError('');
+    const c = parseFloat(chest);
+    if (isNaN(c) || c <= 0) {
+      setCalcError('Please enter a valid chest measurement.');
+      setRecommendedSize(null);
+      return;
+    }
+
+    if (c < 55) {
+      setRecommendedSize('S');
+    } else if (c >= 55 && c <= 56) {
+      setRecommendedSize('S');
+    } else if (c >= 57 && c <= 60) {
+      setRecommendedSize('M');
+    } else if (c >= 61 && c <= 63) {
+      setRecommendedSize('L');
     } else {
       setRecommendedSize('XL');
     }
@@ -56,47 +79,47 @@ export function BottomLeftLightningBolt() {
       {open && (
         <div style={{
           marginBottom: '15px',
-          background: 'rgba(15, 15, 15, 0.95)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid var(--border-color)',
+          background: 'rgba(10, 10, 10, 0.98)',
+          backdropFilter: 'blur(15px)',
+          border: '1px solid #222222',
           borderRadius: '8px',
           padding: '15px',
           display: 'flex',
           flexDirection: 'column',
           gap: '12px',
           minWidth: '200px',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.8)',
+          boxShadow: '0 15px 35px rgba(0,0,0,0.95)',
           animation: 'fadeInUp 0.2s ease-out'
         }}>
-          <span style={{ fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.15em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.15em', color: '#666', textTransform: 'uppercase', fontFamily: 'monospace' }}>
             Quick Access
           </span>
 
-          <Link href="/#shop" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.85rem' }}>
-            <ShoppingBag size={16} color="var(--accent)" /> Shop Drops
+          <Link href="/#shop" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#f5f5f5', textDecoration: 'none', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+            <ShoppingBag size={14} color="#ffffff" /> Shop Drops
           </Link>
 
-          <Link href="/about" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.85rem' }}>
-            <Info size={16} color="var(--accent)" /> About AASIFA
+          <Link href="/about" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#f5f5f5', textDecoration: 'none', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+            <Info size={14} color="#ffffff" /> About AASIFA
           </Link>
 
-          <Link href="/contact" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.85rem' }}>
-            <Mail size={16} color="var(--accent)" /> Contact Support
+          <Link href="/contact" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#f5f5f5', textDecoration: 'none', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+            <Mail size={14} color="#ffffff" /> Contact Support
           </Link>
 
-          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ borderTop: '1px solid #222222', paddingTop: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <button
               onClick={() => { setShowChart(true); setOpen(false); }}
-              style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', background: 'transparent', border: 'none', fontSize: '0.85rem', cursor: 'pointer', padding: 0, textAlign: 'left' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#f5f5f5', background: 'transparent', border: 'none', fontSize: '0.8rem', cursor: 'pointer', padding: 0, textAlign: 'left', fontFamily: 'monospace' }}
             >
-              <Ruler size={16} color="var(--accent)" /> Size Chart
+              <Ruler size={14} color="#ffffff" /> Size Chart
             </button>
 
             <button
               onClick={() => { setShowCalc(true); setOpen(false); }}
-              style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', background: 'transparent', border: 'none', fontSize: '0.85rem', cursor: 'pointer', padding: 0, textAlign: 'left' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#f5f5f5', background: 'transparent', border: 'none', fontSize: '0.8rem', cursor: 'pointer', padding: 0, textAlign: 'left', fontFamily: 'monospace' }}
             >
-              <Calculator size={16} color="var(--accent)" /> Size Calculator
+              <Calculator size={14} color="#ffffff" /> Size Calculator
             </button>
           </div>
         </div>
@@ -110,7 +133,7 @@ export function BottomLeftLightningBolt() {
           left: 0,
           width: '100vw',
           height: '100vh',
-          background: 'rgba(0,0,0,0.85)',
+          background: 'rgba(0,0,0,0.9)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -118,14 +141,14 @@ export function BottomLeftLightningBolt() {
           padding: '20px'
         }}>
           <div style={{
-            background: '#000000',
+            background: '#0a0a0a',
             border: '1px solid #222222',
-            borderRadius: '8px',
+            borderRadius: '6px',
             padding: '30px',
             width: '100%',
             maxWidth: '480px',
             position: 'relative',
-            boxShadow: '0 20px 50px rgba(0,0,0,0.9)'
+            boxShadow: '0 25px 60px rgba(0,0,0,0.95)'
           }}>
             <button
               onClick={() => setShowChart(false)}
@@ -134,32 +157,32 @@ export function BottomLeftLightningBolt() {
               <X size={20} />
             </button>
 
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '0.05em', color: '#fff', textTransform: 'uppercase', marginBottom: '25px', fontFamily: 'monospace', fontStyle: 'italic' }}>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 900, letterSpacing: '0.05em', color: '#fff', textTransform: 'uppercase', marginBottom: '25px', fontFamily: 'monospace', fontStyle: 'italic' }}>
               SIZE CHART
             </h3>
 
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'center', color: '#fff', border: '1px solid #333', fontFamily: 'monospace' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'center', color: '#fff', border: '1px solid #222', fontFamily: 'monospace' }}>
               <thead>
-                <tr style={{ background: '#0d0d0d', borderBottom: '1px solid #333' }}>
-                  <th style={{ padding: '12px', borderRight: '1px solid #333' }}>SIZE</th>
-                  <th style={{ padding: '12px', borderRight: '1px solid #333' }}>CHEST</th>
-                  <th style={{ padding: '12px', borderRight: '1px solid #333' }}>LENGTH</th>
+                <tr style={{ background: '#121212', borderBottom: '1px solid #222' }}>
+                  <th style={{ padding: '12px', borderRight: '1px solid #222' }}>SIZE</th>
+                  <th style={{ padding: '12px', borderRight: '1px solid #222' }}>CHEST</th>
+                  <th style={{ padding: '12px', borderRight: '1px solid #222' }}>LENGTH</th>
                   <th style={{ padding: '12px' }}>WEIGHT</th>
                 </tr>
               </thead>
               <tbody>
                 {chartData.map((row, idx) => (
-                  <tr key={idx} style={{ borderBottom: idx !== chartData.length - 1 ? '1px solid #333' : 'none' }}>
-                    <td style={{ padding: '12px', borderRight: '1px solid #333', fontWeight: 'bold' }}>{row.size}</td>
-                    <td style={{ padding: '12px', borderRight: '1px solid #333' }}>{row.chest}</td>
-                    <td style={{ padding: '12px', borderRight: '1px solid #333' }}>{row.length}</td>
+                  <tr key={idx} style={{ borderBottom: idx !== chartData.length - 1 ? '1px solid #222' : 'none' }}>
+                    <td style={{ padding: '12px', borderRight: '1px solid #222', fontWeight: 'bold' }}>{row.size}</td>
+                    <td style={{ padding: '12px', borderRight: '1px solid #222' }}>{row.chest}</td>
+                    <td style={{ padding: '12px', borderRight: '1px solid #222' }}>{row.length}</td>
                     <td style={{ padding: '12px' }}>{row.weight}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ marginTop: '25px', display: 'flex', justifyContent: 'flex-end' }}>
               <img src="/images/WhiteStorm.png" alt="storm" style={{ height: '14px', width: 'auto', opacity: 0.8 }} />
             </div>
           </div>
@@ -174,7 +197,7 @@ export function BottomLeftLightningBolt() {
           left: 0,
           width: '100vw',
           height: '100vh',
-          background: 'rgba(0,0,0,0.85)',
+          background: 'rgba(0,0,0,0.9)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -182,86 +205,173 @@ export function BottomLeftLightningBolt() {
           padding: '20px'
         }}>
           <div style={{
-            background: '#000000',
+            background: '#0a0a0a',
             border: '1px solid #222222',
-            borderRadius: '8px',
+            borderRadius: '6px',
             padding: '30px',
             width: '100%',
             maxWidth: '400px',
             position: 'relative',
-            boxShadow: '0 20px 50px rgba(0,0,0,0.9)'
+            boxShadow: '0 25px 60px rgba(0,0,0,0.95)',
+            fontFamily: 'monospace'
           }}>
             <button
-              onClick={() => { setShowCalc(false); setWeight(''); setRecommendedSize(null); setCalcError(''); }}
+              onClick={() => { setShowCalc(false); setWeight(''); setChest(''); setRecommendedSize(null); setCalcError(''); }}
               style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: '#888', cursor: 'pointer' }}
             >
               <X size={20} />
             </button>
 
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 900, letterSpacing: '0.05em', color: '#fff', textTransform: 'uppercase', marginBottom: '25px', fontFamily: 'monospace' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 900, letterSpacing: '0.05em', color: '#fff', textTransform: 'uppercase', marginBottom: '20px' }}>
               SIZE CALCULATOR
             </h3>
 
-            <form onSubmit={handleCalculate} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', fontFamily: 'monospace' }}>
-                  YOUR WEIGHT (KG)
-                </label>
-                <input
-                  type="number"
-                  required
-                  placeholder="e.g. 70"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  style={{
-                    background: '#0d0d0d',
-                    border: '1px solid #333',
-                    color: '#fff',
-                    padding: '12px',
-                    borderRadius: '4px',
-                    fontFamily: 'monospace',
-                    fontSize: '0.9rem',
-                    outline: 'none'
-                  }}
-                />
-              </div>
-
-              {calcError && (
-                <p style={{ color: '#ff6666', fontSize: '0.75rem', margin: 0 }}>{calcError}</p>
-              )}
-
+            {/* Slider/Tab Controls */}
+            <div style={{ display: 'flex', borderBottom: '1px solid #222', marginBottom: '20px' }}>
               <button
-                type="submit"
+                onClick={() => { setCalcTab('kg'); setRecommendedSize(null); setCalcError(''); }}
                 style={{
-                  background: '#fff',
-                  color: '#000',
+                  flex: 1,
+                  padding: '10px 0',
+                  background: 'transparent',
                   border: 'none',
-                  padding: '12px',
-                  fontWeight: 'bold',
-                  fontSize: '0.8rem',
-                  borderRadius: '4px',
+                  color: calcTab === 'kg' ? '#ffffff' : '#666666',
+                  borderBottom: calcTab === 'kg' ? '2px solid #ffffff' : '2px solid transparent',
                   cursor: 'pointer',
-                  letterSpacing: '0.05em',
+                  fontWeight: 'bold',
+                  fontSize: '0.75rem',
                   fontFamily: 'monospace'
                 }}
               >
-                FIND MY SIZE
+                BY WEIGHT (KG)
               </button>
-            </form>
+              <button
+                onClick={() => { setCalcTab('cm'); setRecommendedSize(null); setCalcError(''); }}
+                style={{
+                  flex: 1,
+                  padding: '10px 0',
+                  background: 'transparent',
+                  border: 'none',
+                  color: calcTab === 'cm' ? '#ffffff' : '#666666',
+                  borderBottom: calcTab === 'cm' ? '2px solid #ffffff' : '2px solid transparent',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.75rem',
+                  fontFamily: 'monospace'
+                }}
+              >
+                BY CHEST (CM)
+              </button>
+            </div>
+
+            {calcTab === 'kg' ? (
+              <form onSubmit={handleCalculateWeight} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label style={{ fontSize: '0.7rem', color: '#888', textTransform: 'uppercase' }}>
+                    YOUR WEIGHT (KG)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="e.g. 70"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    style={{
+                      background: '#000',
+                      border: '1px solid #222',
+                      color: '#fff',
+                      padding: '12px',
+                      borderRadius: '4px',
+                      fontFamily: 'monospace',
+                      fontSize: '0.85rem',
+                      outline: 'none'
+                    }}
+                  />
+                </div>
+
+                {calcError && (
+                  <p style={{ color: '#ff6666', fontSize: '0.75rem', margin: 0 }}>{calcError}</p>
+                )}
+
+                <button
+                  type="submit"
+                  style={{
+                    background: '#fff',
+                    color: '#000',
+                    border: 'none',
+                    padding: '12px',
+                    fontWeight: 'bold',
+                    fontSize: '0.75rem',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    letterSpacing: '0.05em',
+                    fontFamily: 'monospace'
+                  }}
+                >
+                  CALCULATE SIZE
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleCalculateChest} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label style={{ fontSize: '0.7rem', color: '#888', textTransform: 'uppercase' }}>
+                    YOUR CHEST WIDTH (CM)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="e.g. 57"
+                    value={chest}
+                    onChange={(e) => setChest(e.target.value)}
+                    style={{
+                      background: '#000',
+                      border: '1px solid #222',
+                      color: '#fff',
+                      padding: '12px',
+                      borderRadius: '4px',
+                      fontFamily: 'monospace',
+                      fontSize: '0.85rem',
+                      outline: 'none'
+                    }}
+                  />
+                </div>
+
+                {calcError && (
+                  <p style={{ color: '#ff6666', fontSize: '0.75rem', margin: 0 }}>{calcError}</p>
+                )}
+
+                <button
+                  type="submit"
+                  style={{
+                    background: '#fff',
+                    color: '#000',
+                    border: 'none',
+                    padding: '12px',
+                    fontWeight: 'bold',
+                    fontSize: '0.75rem',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    letterSpacing: '0.05em',
+                    fontFamily: 'monospace'
+                  }}
+                >
+                  CALCULATE SIZE
+                </button>
+              </form>
+            )}
 
             {recommendedSize && (
               <div style={{
                 marginTop: '25px',
                 padding: '20px',
-                background: '#0d0d0d',
+                background: '#121212',
                 border: '1px solid #222',
                 borderRadius: '4px',
-                textAlign: 'center',
-                fontFamily: 'monospace'
+                textAlign: 'center'
               }}>
-                <span style={{ fontSize: '0.75rem', color: '#888', display: 'block', marginBottom: '5px' }}>RECOMMENDED SIZE</span>
-                <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', display: 'block' }}>{recommendedSize}</span>
-                <span style={{ fontSize: '0.7rem', color: '#666', marginTop: '10px', display: 'block' }}>
+                <span style={{ fontSize: '0.7rem', color: '#666', display: 'block', marginBottom: '5px' }}>RECOMMENDED SIZE</span>
+                <span style={{ fontSize: '2.2rem', fontWeight: 'bold', color: '#fff', display: 'block' }}>{recommendedSize}</span>
+                <span style={{ fontSize: '0.7rem', color: '#888', marginTop: '10px', display: 'block' }}>
                   Fits chest: {recommendedSize === 'S' ? '55' : recommendedSize === 'M' ? '57' : recommendedSize === 'L' ? '61' : '64'}cm · Length: {recommendedSize === 'S' ? '69' : recommendedSize === 'M' ? '70' : recommendedSize === 'L' ? '73' : '77'}cm
                 </span>
               </div>
@@ -278,23 +388,23 @@ export function BottomLeftLightningBolt() {
           width: '48px',
           height: '48px',
           borderRadius: '50%',
-          background: 'var(--bg-elevated)',
-          border: '1px solid var(--accent)',
-          color: 'var(--accent)',
+          background: 'rgba(10, 10, 10, 0.95)',
+          border: '1px solid #ffffff',
+          color: '#ffffff',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          boxShadow: '0 0 20px var(--accent-glow)',
+          boxShadow: '0 0 15px rgba(255,255,255,0.1)',
           transition: 'all 0.3s ease'
         }}
         onMouseOver={(e) => {
           e.currentTarget.style.transform = 'scale(1.1)';
-          e.currentTarget.style.boxShadow = '0 0 25px var(--accent)';
+          e.currentTarget.style.boxShadow = '0 0 20px rgba(255,255,255,0.3)';
         }}
         onMouseOut={(e) => {
           e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.boxShadow = '0 0 20px var(--accent-glow)';
+          e.currentTarget.style.boxShadow = '0 0 15px rgba(255,255,255,0.1)';
         }}
       >
         {open ? <X size={22} /> : <Zap size={22} fill="currentColor" />}
