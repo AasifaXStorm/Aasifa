@@ -1,14 +1,17 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { AdminLayoutWrapper } from '@/components/AdminLayoutWrapper';
 
 export default function StormyLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
+    if (pathname === '/stormy/login') return;
+
     const checkAuth = () => {
       const cookies = document.cookie.split(';');
       const sessionCookie = cookies.find(c => c.trim().startsWith('admin_session='));
@@ -19,7 +22,11 @@ export default function StormyLayout({ children }: { children: React.ReactNode }
       }
     };
     checkAuth();
-  }, [router]);
+  }, [router, pathname]);
+
+  if (pathname === '/stormy/login') {
+    return <>{children}</>;
+  }
 
   if (!authorized) {
     return (

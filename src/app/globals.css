@@ -104,8 +104,8 @@ button {
 }
 
 .btn-primary {
-  background: var(--text-primary);
-  color: #000000;
+  background: transparent;
+  color: var(--text-primary);
   padding: 0.8rem 1.6rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -116,10 +116,11 @@ button {
 }
 
 .btn-primary:hover {
-  background: transparent;
-  color: var(--text-primary);
+  background: var(--text-primary);
+  color: #000000;
   border-color: var(--text-primary);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
 }
 
 .btn-primary:disabled {
