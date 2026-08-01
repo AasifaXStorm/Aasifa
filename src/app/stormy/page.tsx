@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getDashboardStats } from '@/app/actions/supabaseActions';
 import { DollarSign, ShoppingBag, Package, BarChart3 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -27,26 +27,7 @@ export default function AdminDashboardPage() {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const { data: ordersData, error: ordError } = await supabase
-        .from('orders')
-        .select('*');
-
-      if (ordError) throw ordError;
-
-      const { data: itemsData, error: itemsError } = await supabase
-        .from('order_items')
-        .select(`
-          quantity,
-          unit_price,
-          product_variants (
-            size,
-            products (
-              category
-            )
-          )
-        `);
-
-      if (itemsError) throw itemsError;
+      const { ordersData, itemsData } = await getDashboardStats();
 
       const revenue = (ordersData || []).reduce((sum, o) => {
         if (o.status !== 'cancelled') {

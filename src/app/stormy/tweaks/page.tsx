@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSiteConfig, updateSiteConfig } from '@/app/actions/supabaseActions';
 import { fetchTweak, updateTweak } from '@/app/actions/tweaks';
 
 export default function AdminTweaksPage() {
@@ -22,13 +22,7 @@ export default function AdminTweaksPage() {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const { data: productsData, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('name', '_SITE_CONFIG_')
-        .maybeSingle();
-
-      if (error && error.code !== 'PGRST116') throw error;
+      const productsData = await getSiteConfig();
 
       if (productsData && productsData.description) {
         try {
@@ -54,47 +48,18 @@ export default function AdminTweaksPage() {
   const handleSaveTweaks = async () => {
     setSavingTweaks(true);
     try {
-      const { data: existing } = await supabase
-        .from('products')
-        .select('id')
-        .eq('name', '_SITE_CONFIG_')
-        .maybeSingle();
+      const configJson = JSON.stringify({
+        interval: Number(tweaksInterval),
+        color: tweaksColor,
+        glow: tweaksGlow,
+        show_footer_links: tweaksShowFooter
+      });
 
-      const configPayload = {
-        name: '_SITE_CONFIG_',
-        description: JSON.stringify({
-          interval: Number(tweaksInterval),
-          color: tweaksColor,
-          glow: tweaksGlow,
-          show_footer_links: tweaksShowFooter
-        }),
-        price: 0,
-        category: 'System',
-        images: []
-      };
-
-      let saveError = null;
-      if (existing?.id) {
-        const { error } = await supabase
-          .from('products')
-          .update(configPayload)
-          .eq('id', existing.id);
-        saveError = error;
-      } else {
-        const { error } = await supabase
-          .from('products')
-          .insert(configPayload);
-        saveError = error;
-      }
-
+      await updateSiteConfig(configJson);
       await updateTweak('show_footer_links', tweaksShowFooter);
 
-      if (saveError) {
-        alert(`Error saving tweaks: ${saveError.message}`);
-      } else {
-        alert('Site tweaks updated successfully!');
-        window.dispatchEvent(new Event('aasifa_config_updated'));
-      }
+      alert('Tweaks saved successfully!');
+      window.dispatchEvent(new Event('aasifa_config_updated'));
     } catch (e: any) {
       console.error(e);
       alert('Failed to save tweaks.');

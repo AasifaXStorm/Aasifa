@@ -3,7 +3,7 @@
 import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
+import { getProduct, saveProduct, deleteProduct, uploadImageAction } from '@/app/actions/supabaseActions';
 import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { Product } from '@/components/ProductCard';
 
@@ -50,14 +50,10 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     setFetching(true);
     setErrorMsg(null);
     try {
-      const { data: product, error } = await supabase
-        .from('products')
-        .select('*, product_variants(*)')
-        .eq('id', id)
-        .single();
-
-      if (error || !product) {
-        throw error || new Error('Product not found.');
+      const product = await getProduct(id);
+      
+      if (!product) {
+        throw new Error('Product not found.');
       }
 
       setName(product.name);
@@ -120,19 +116,11 @@ export default function EditProductPage({ params }: EditProductPageProps) {
           const fileExt = file.name.split('.').pop();
           const fileName = `products/${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
 
-          const { error: uploadError } = await supabase.storage
-            .from('product-images')
-            .upload(fileName, file);
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('filePath', fileName);
 
-          if (uploadError) {
-            console.error('File upload error:', uploadError);
-            throw new Error(`Failed to upload file "${file.name}": ${uploadError.message}. Make sure your bucket is set up.`);
-          }
-
-          const { data: { publicUrl } } = supabase.storage
-            .from('product-images')
-            .getPublicUrl(fileName);
-
+          const publicUrl = await uploadImageAction(formData);
           finalImagesList.push(publicUrl);
         }
       }
@@ -153,40 +141,25 @@ export default function EditProductPage({ params }: EditProductPageProps) {
 
       setUploadProgress('Updating product details...');
 
-      // 2. Update product
-      const { error: prodError } = await supabase
-        .from('products')
-        .update({
-          name,
-          description,
-          price: parseFloat(price),
-          category,
-          images: finalImagesList
-        })
-        .eq('id', id);
+      const productData = {
+        id,
+        name,
+        description,
+        price: parseFloat(price),
+        category,
+        images: finalImagesList,
+        is_active: true
+      };
 
-      if (prodError) throw prodError;
-
-      setUploadProgress('Updating size variants stock...');
-
-      // 3. Upsert variants
       const variantsToUpsert = [
-        { size: 'S', stock: parseInt(stockS) || 0 },
-        { size: 'M', stock: parseInt(stockM) || 0 },
-        { size: 'L', stock: parseInt(stockL) || 0 },
-        { size: 'XL', stock: parseInt(stockXL) || 0 },
-        { size: 'XXL', stock: parseInt(stockXXL) || 0 },
-      ].map(v => ({
-        product_id: id,
-        size: v.size,
-        stock_quantity: v.stock
-      }));
+        { size: 'S', stock_quantity: parseInt(stockS) || 0 },
+        { size: 'M', stock_quantity: parseInt(stockM) || 0 },
+        { size: 'L', stock_quantity: parseInt(stockL) || 0 },
+        { size: 'XL', stock_quantity: parseInt(stockXL) || 0 },
+        { size: 'XXL', stock_quantity: parseInt(stockXXL) || 0 },
+      ];
 
-      const { error: variantError } = await supabase
-        .from('product_variants')
-        .upsert(variantsToUpsert, { onConflict: 'product_id, size' });
-
-      if (variantError) throw variantError;
+      await saveProduct(productData, variantsToUpsert, false);
 
       setUploadProgress('Success!');
       router.push('/stormy');
@@ -203,25 +176,16 @@ export default function EditProductPage({ params }: EditProductPageProps) {
 
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        if (error.message.includes('violates foreign key constraint')) {
-          alert('Cannot delete this product because it is referenced in past orders. Please set all size variant stock quantities to 0 instead to deactivate.');
-          setLoading(false);
-        } else {
-          throw error;
-        }
+      await deleteProduct(id);
+      router.push('/stormy');
+      router.refresh();
+    } catch (error: any) {
+      console.error(error);
+      if (error.message?.includes('violates foreign key constraint')) {
+        alert('Cannot delete this product because it is referenced in past orders. Please set all size variant stock quantities to 0 instead to deactivate.');
       } else {
-        router.push('/stormy');
-        router.refresh();
+        alert(error.message || 'Failed to delete product.');
       }
-    } catch (err: any) {
-      console.error(err);
-      alert(err.message || 'Failed to delete product.');
       setLoading(false);
     }
   };

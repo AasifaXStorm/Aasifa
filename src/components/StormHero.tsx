@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getSiteConfig } from '@/app/actions/supabaseActions';
 import { useTranslation } from '@/context/LanguageContext';
 
 interface Point {
@@ -36,11 +36,7 @@ export function StormHero() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const { data } = await supabase
-          .from('products')
-          .select('description')
-          .eq('name', '_SITE_CONFIG_')
-          .maybeSingle();
+        const data = await getSiteConfig();
 
         if (data?.description) {
           const parsed = JSON.parse(data.description);

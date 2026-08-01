@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
+import { getProducts, deleteProduct } from '@/app/actions/supabaseActions';
 import { Product } from '@/components/ProductCard';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
@@ -19,12 +19,7 @@ export default function AdminProductsPage() {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const { data: productsData, error: prodError } = await supabase
-        .from('products')
-        .select('*, product_variants(*)')
-        .order('created_at', { ascending: false });
-
-      if (prodError) throw prodError;
+      const productsData = await getProducts();
 
       const filteredProds = (productsData || []).filter(p => !p.name.startsWith('_'));
       setProducts(filteredProds);
@@ -40,20 +35,8 @@ export default function AdminProductsPage() {
     if (!confirm(`Are you sure you want to delete product "${name}"?`)) return;
 
     try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        if (error.message.includes('violates foreign key constraint')) {
-          alert('Cannot delete this product because it is referenced in past orders. Please set all size variant stock quantities to 0 in the editor to deactivate it instead.');
-        } else {
-          alert(`Error deleting product: ${error.message}`);
-        }
-      } else {
-        setProducts(products.filter(p => p.id !== id));
-      }
+      await deleteProduct(id);
+      setProducts(products.filter(p => p.id !== id));
     } catch (err: any) {
       console.error(err);
       alert('An error occurred while attempting to delete the product.');

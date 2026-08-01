@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
+import { uploadImageAction, saveProduct } from '@/app/actions/supabaseActions';
 import { ArrowLeft, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
 
 export default function NewProductPage() {
@@ -61,23 +61,13 @@ export default function NewProductPage() {
         for (let i = 0; i < imageFiles.length; i++) {
           const file = imageFiles[i];
           const fileExt = file.name.split('.').pop();
-          // Create unique filename: products/timestamp-rand.ext
           const fileName = `products/${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
 
-          const { error: uploadError } = await supabase.storage
-            .from('product-images')
-            .upload(fileName, file);
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('filePath', fileName);
 
-          if (uploadError) {
-            console.error('File upload error:', uploadError);
-            throw new Error(`Failed to upload file "${file.name}": ${uploadError.message}. Make sure you created a public bucket named "product-images" in Supabase.`);
-          }
-
-          // Get public URL
-          const { data: { publicUrl } } = supabase.storage
-            .from('product-images')
-            .getPublicUrl(fileName);
-
+          const publicUrl = await uploadImageAction(formData);
           uploadedUrls.push(publicUrl);
         }
       }
@@ -98,47 +88,24 @@ export default function NewProductPage() {
 
       setUploadProgress('Saving product details...');
 
-      // 2. Insert product in database
-      const { data: product, error: prodError } = await supabase
-        .from('products')
-        .insert({
-          name,
-          description,
-          price: parseFloat(price),
-          category,
-          images: uploadedUrls
-        })
-        .select()
-        .single();
+      const productData = {
+        name,
+        description,
+        price: parseFloat(price),
+        category,
+        images: uploadedUrls,
+        is_active: true
+      };
 
-      if (prodError || !product) {
-        throw prodError || new Error('Product insert failed.');
-      }
-
-      setUploadProgress('Setting up size variants stock...');
-
-      // 3. Create size variants
       const variantsToInsert = [
-        { size: 'S', stock: parseInt(stockS) || 0 },
-        { size: 'M', stock: parseInt(stockM) || 0 },
-        { size: 'L', stock: parseInt(stockL) || 0 },
-        { size: 'XL', stock: parseInt(stockXL) || 0 },
-        { size: 'XXL', stock: parseInt(stockXXL) || 0 },
-      ].map(v => ({
-        product_id: product.id,
-        size: v.size,
-        stock_quantity: v.stock
-      }));
+        { size: 'S', stock_quantity: parseInt(stockS) || 0 },
+        { size: 'M', stock_quantity: parseInt(stockM) || 0 },
+        { size: 'L', stock_quantity: parseInt(stockL) || 0 },
+        { size: 'XL', stock_quantity: parseInt(stockXL) || 0 },
+        { size: 'XXL', stock_quantity: parseInt(stockXXL) || 0 },
+      ];
 
-      const { error: variantError } = await supabase
-        .from('product_variants')
-        .insert(variantsToInsert);
-
-      if (variantError) {
-        console.error('Variant creation error:', variantError);
-        // We created the product but failed variants, alert owner
-        throw new Error(`Product was created but setting size variants failed: ${variantError.message}`);
-      }
+      await saveProduct(productData, variantsToInsert, true);
 
       setUploadProgress('Success!');
       router.push('/stormy');

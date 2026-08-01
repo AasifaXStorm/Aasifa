@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { getOrders, updateOrderStatus } from '@/app/actions/supabaseActions';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -16,13 +16,7 @@ export default function AdminOrdersPage() {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const { data: ordersData, error: ordError } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (ordError) throw ordError;
-
+      const ordersData = await getOrders();
       setOrders(ordersData || []);
     } catch (err: any) {
       console.error(err);
@@ -34,17 +28,9 @@ export default function AdminOrdersPage() {
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     try {
-      const { error } = await supabase
-        .from('orders')
-        .update({ status: newStatus })
-        .eq('id', orderId);
-
-      if (error) {
-        alert(`Error updating order status: ${error.message}`);
-      } else {
-        const updatedOrders = orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o);
-        setOrders(updatedOrders);
-      }
+      await updateOrderStatus(orderId, newStatus);
+      const updatedOrders = orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o);
+      setOrders(updatedOrders);
     } catch (err: any) {
       console.error(err);
       alert('An error occurred while updating the order status.');
