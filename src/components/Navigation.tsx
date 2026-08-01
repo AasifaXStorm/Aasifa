@@ -43,12 +43,8 @@ export function Navigation() {
       zIndex: 100,
     }}>
       {/* Brand Logo */}
-      <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-        <img
-          src="/images/WhiteStorm.png"
-          alt="AASIFA"
-          style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
-        />
+      <Link href="/" className="brand-title" style={{ fontSize: '1.2rem', textDecoration: 'none', letterSpacing: '0.4em' }}>
+        {t('brand.title')}
       </Link>
 
       {/* Right Nav Icons */}
