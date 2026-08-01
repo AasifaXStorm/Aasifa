@@ -31,9 +31,8 @@
   margin: 0;
 }
 
-/* 45% font size increase via root scaling */
 html {
-  font-size: 145%;
+  font-size: 100%;
 }
 
 html, body {

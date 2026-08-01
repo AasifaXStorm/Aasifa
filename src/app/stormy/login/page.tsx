@@ -13,7 +13,7 @@ export default function LoginPage() {
     if (password === 'aasifabaskotaaaaatt1_Stotm') {
       // Set session cookie
       document.cookie = 'admin_session=authenticated; Path=/; Max-Age=86400;';
-      router.push('/stormy');
+      window.location.href = '/stormy';
     } else {
       setError('Invalid system key.');
     }
