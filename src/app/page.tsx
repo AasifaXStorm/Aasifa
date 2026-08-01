@@ -50,7 +50,14 @@ export default async function Home() {
               fontSize: '0.9rem',
               marginBottom: '40px',
             }}>
-              <p>Failed to connect to the store database. Please check your Supabase credentials.</p>
+              <p style={{ fontWeight: 'bold', marginBottom: '8px' }}>
+                Failed to connect to the store database. Please check your Supabase credentials.
+              </p>
+              {fetchError && (
+                <p style={{ fontSize: '0.8rem', opacity: 0.8, fontFamily: 'monospace' }}>
+                  Detail: {fetchError.message || fetchError.error_description || JSON.stringify(fetchError)}
+                </p>
+              )}
             </div>
           )}
 
