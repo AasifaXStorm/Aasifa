@@ -169,6 +169,42 @@ export async function saveProduct(productData: any, variantsData: any[], isNew: 
 
 // Since Storage requires a FormData payload or similar for server actions
 export async function uploadImageAction(formData: FormData) {
+  // Accept either a single file (legacy) or multiple files (new "Instagram" style)
+  const files = (formData.getAll('file') as File[]);
+  const urls: string[] = [];
+
+  for (const file of files) {
+    const filePath = `${crypto.randomUUID()}_${file.name}`;
+    const singleForm = new FormData();
+    singleForm.append('file', file);
+    singleForm.append('filePath', filePath);
+    const url = await uploadImageActionSingle(singleForm);
+    urls.push(url);
+  }
+
+  // Return JSON string of URLs (client will parse)
+  return JSON.stringify(urls);
+}
+
+// Helper for a single file upload – kept separate for recursion safety
+async function uploadImageActionSingle(formData: FormData): Promise<string> {
+  const file = formData.get('file') as File;
+  const filePath = formData.get('filePath') as string;
+
+  if (!file || !filePath) throw new Error('Missing file or filePath');
+
+  const { error } = await supabaseAdmin.storage
+    .from('product-images')
+    .upload(filePath, file);
+
+  if (error) throw error;
+
+  const { data } = supabaseAdmin.storage
+    .from('product-images')
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
+}
   const file = formData.get('file') as File;
   const filePath = formData.get('filePath') as string;
   

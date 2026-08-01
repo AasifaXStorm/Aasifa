@@ -14,11 +14,11 @@ export default function StormyLayout({ children }: { children: React.ReactNode }
 
     const checkAuth = () => {
       const isAuthLocal = typeof window !== 'undefined' && localStorage.getItem('admin_session') === 'authenticated';
-      const isAuthCookie = typeof document !== 'undefined' && (() => {
-        const cookies = document.cookie.split(';');
-        const sessionCookie = cookies.find(c => c.trim().startsWith('admin_session='));
-        return sessionCookie && sessionCookie.split('=')[1] === 'authenticated';
-      })();
+    const isAuthCookie = typeof document !== 'undefined' && (() => {
+      const cookies = document.cookie.split(';');
+      const sessionCookie = cookies.find(c => c.trim().startsWith('admin_session='));
+      return sessionCookie && sessionCookie.split('=')[1] === 'authenticated';
+    })();
 
       if (isAuthLocal || isAuthCookie) {
         setAuthorized(true);

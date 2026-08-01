@@ -25,9 +25,14 @@ export default function NewProductPage() {
   // Front & Back image inputs & files
   const [frontImageUrl, setFrontImageUrl] = useState('');
   const [backImageUrl, setBackImageUrl] = useState('');
-  const [frontFile, setFrontFile] = useState<File | null>(null);
-  const [backFile, setBackFile] = useState<File | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const [extraFiles, setExtraFiles] = useState<File[]>([]);
+
+  const handleExtraFilesSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      setExtraFiles(prev => [...prev, ...filesArray]);
+    }
+  };
 
   useEffect(() => {
     setSessionChecked(true);
@@ -71,22 +76,36 @@ export default function NewProductPage() {
         const formData = new FormData();
         formData.append('file', frontFile);
         formData.append('filePath', fileName);
-        const url = await uploadImageAction(formData);
-        uploadedUrls.push(url);
+        const urls = JSON.parse(await uploadImageAction(formData));
+        uploadedUrls.push(...urls);
       } else if (frontImageUrl.trim()) {
         uploadedUrls.push(frontImageUrl.trim());
       }
 
+      // Upload extra files (Instagram‑style unlimited photos)
+      if (extraFiles.length > 0) {
+        setUploadProgress('Uploading extra images...');
+        // upload each file individually via the same action
+        for (const file of extraFiles) {
+          const filePath = `products/extra-${Date.now()}-${crypto.randomUUID()}.${file.name.split('.').pop()}`;
+          const singleForm = new FormData();
+          singleForm.append('file', file);
+          singleForm.append('filePath', filePath);
+          const urls = JSON.parse(await uploadImageAction(singleForm));
+          uploadedUrls.push(...urls);
+        }
+      }
+
       // Upload Back File
+      setUploadProgress('Uploading back image...');
       if (backFile) {
-        setUploadProgress('Uploading back image...');
         const fileExt = backFile.name.split('.').pop();
         const fileName = `products/back-${Date.now()}.${fileExt}`;
         const formData = new FormData();
         formData.append('file', backFile);
         formData.append('filePath', fileName);
-        const url = await uploadImageAction(formData);
-        uploadedUrls.push(url);
+        const urls = JSON.parse(await uploadImageAction(formData));
+        uploadedUrls.push(...urls);
       } else if (backImageUrl.trim()) {
         uploadedUrls.push(backImageUrl.trim());
       }
