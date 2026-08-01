@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "WhiteStorm | Premium Streetwear",
+  title: "Aasifa | Premium Streetwear",
   description: "Exclusive oversized streetwear drops from Egypt.",
   metadataBase: new URL("https://aasifa.vercel.app"),
   robots: {

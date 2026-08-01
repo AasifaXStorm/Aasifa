@@ -74,14 +74,23 @@ export function StormHero() {
         alignItems: 'center',
         padding: '0 20px',
       }}>
-        {/* Brand Title */}
-        <h1 className="brand-title" style={{
-          fontSize: 'clamp(2.5rem, 8vw, 5.5rem)',
-          lineHeight: '1.1',
-          marginBottom: '30px',
-        }}>
-          {t('brand.title')}
-        </h1>
+        {/* Brand Title Image */}
+        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+          <Image
+            src="/images/WhiteStorm.png"
+            alt="AASIFA"
+            width={480}
+            height={160}
+            priority
+            style={{
+              maxWidth: '85vw',
+              height: 'auto',
+              maxHeight: '140px',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.2))'
+            }}
+          />
+        </div>
 
         {/* Moody subtitle */}
         <p style={{

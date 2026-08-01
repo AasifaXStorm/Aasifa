@@ -14,7 +14,7 @@ const LanguageContext = createContext<LanguageContextProps | undefined>(undefine
 
 const translations: Record<string, Record<Language, string>> = {
   // Brand/Slogans
-  'brand.title': { en: 'WHITESTORM', ar: 'عاصفة بيضاء' },
+  'brand.title': { en: 'AASIFA', ar: 'عاصفة' },
   'brand.slogan': { en: 'STORM IN YOUR STYLE.', ar: 'العاصفة في أسلوبك.' },
   'explore.collection': { en: 'Explore Collection', ar: 'اكتشف المجموعة' },
   'about.blurb': {

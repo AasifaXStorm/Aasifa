@@ -100,7 +100,7 @@ export function Footer() {
         fontSize: '0.8rem',
         color: 'var(--text-muted)',
       }}>
-        <p>© 2026 WhiteStorm. All rights reserved.</p>
+        <p>© 2026 Aasifa. All rights reserved.</p>
       </div>
 
       <style jsx>{`

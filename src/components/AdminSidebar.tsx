@@ -92,11 +92,18 @@ export function AdminSidebar() {
       >
         <div style={{ padding: '30px 20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-            <h2 style={{ fontSize: '0.95rem', fontWeight: 800, letterSpacing: '0.15em', color: 'var(--text-primary)', margin: 0 }}>
-              WHITESTORM<br/>CONSOLE
-            </h2>
-            <div style={{ color: 'var(--accent)', opacity: 0.8 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <img
+                src="/images/WhiteStorm.png"
+                alt="AASIFA"
+                style={{ height: '24px', width: 'auto', objectFit: 'contain' }}
+              />
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.15em', color: 'var(--text-muted)' }}>
+                CONSOLE
+              </span>
+            </div>
+            <div style={{ color: 'var(--accent)', opacity: 0.9 }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
               </svg>
             </div>

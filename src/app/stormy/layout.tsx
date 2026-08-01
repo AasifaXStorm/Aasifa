@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { AdminLayoutWrapper } from '@/components/AdminLayoutWrapper';
 
 export const metadata: Metadata = {
-  title: 'WhiteStorm | Portal Access',
+  title: 'Aasifa | Portal Access',
   description: 'Internal administration panel.',
   robots: {
     index: false,
