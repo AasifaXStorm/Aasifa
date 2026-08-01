@@ -45,20 +45,32 @@ export function ProductCatalog({ products }: ProductCatalogProps) {
       </div>
 
       {products.length === 0 ? (
-        /* Empty Drop State */
-        <div style={{
-          padding: '80px 20px',
-          textAlign: 'center',
-          border: '1px dashed var(--border-color)',
-          background: 'var(--bg-elevated)',
-          maxWidth: '600px',
-          margin: '0 auto',
-          width: '100%',
-        }}>
-          <span style={{ fontSize: '1.5rem', color: 'var(--text-primary)', display: 'block', marginBottom: '15px', fontWeight: 'bold', letterSpacing: '0.1em' }}>
+        <div 
+          className="out-of-storm-box"
+          style={{
+            maxWidth: '380px',
+            aspectRatio: '1/1',
+            margin: '40px auto',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '40px',
+            background: 'var(--bg-elevated)',
+            border: '2px solid transparent',
+            backgroundImage: 'linear-gradient(var(--bg-elevated), var(--bg-elevated)), linear-gradient(135deg, #111111, #ffffff, #555555, #111111)',
+            backgroundOrigin: 'border-box',
+            backgroundClip: 'padding-box, border-box',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.6)',
+            borderRadius: '4px',
+            animation: 'colorCycle 8s linear infinite'
+          }}
+        >
+          <span style={{ fontSize: '1.4rem', color: 'var(--text-primary)', display: 'block', marginBottom: '15px', fontWeight: 'bold', letterSpacing: '0.15em' }}>
             OUT OF STORM
           </span>
-          <p style={{ color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '30px' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.6', margin: 0, textAlign: 'center' }}>
             New drops are coming soon. Stay tuned.
           </p>
         </div>
@@ -130,6 +142,10 @@ export function ProductCatalog({ products }: ProductCatalogProps) {
         .category-tab-btn:hover {
           border-color: var(--accent) !important;
           color: var(--accent);
+        }
+        @keyframes colorCycle {
+          0% { filter: hue-rotate(0deg); }
+          100% { filter: hue-rotate(360deg); }
         }
       `}</style>
     </div>
