@@ -78,8 +78,8 @@ export function AdminSidebar() {
         className={`admin-sidebar ${mobileOpen ? 'open' : ''}`}
         style={{
           width: '240px',
-          background: '#121212',
-          borderRight: '1px solid #1a1a1a',
+          background: 'var(--bg-elevated)',
+          borderRight: '1px solid var(--border-color)',
           display: 'flex',
           flexDirection: 'column',
           height: '100vh',
@@ -124,17 +124,17 @@ export function AdminSidebar() {
                       alignItems: 'center',
                       gap: '12px',
                       padding: '12px 20px',
-                      color: isActive ? '#fff' : '#888',
+                      color: isActive ? 'var(--primary)' : 'var(--gray-light)',
                       textDecoration: 'none',
                       fontSize: '0.85rem',
                       fontWeight: isActive ? 600 : 400,
                       letterSpacing: '0.05em',
-                      borderLeft: `3px solid ${isActive ? '#cfe0ff' : 'transparent'}`,
-                      background: isActive ? 'rgba(207, 224, 255, 0.05)' : 'transparent',
-                      transition: 'all 0.2s ease',
+                      borderLeft: `3px solid ${isActive ? 'var(--accent-color)' : 'transparent'}`,
+                      background: isActive ? 'var(--accent-glow)' : 'transparent',
+                      transition: 'var(--transition-smooth)',
                     }}
                   >
-                    <Icon size={18} color={isActive ? '#cfe0ff' : '#888'} />
+                    <Icon size={18} color={isActive ? 'var(--accent-color)' : 'var(--gray-light)'} />
                     {link.label}
                   </Link>
                 </li>

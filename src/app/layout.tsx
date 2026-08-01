@@ -37,7 +37,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
-      <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative", background: '#0a0a0a' }}>
+      <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative", background: 'var(--bg-base)' }}>
+        <div className="cinematic-noise" />
         <LanguageProvider>
           <Navigation />
           <main style={{ flex: 1, display: "flex", flexDirection: "column", position: 'relative', zIndex: 1 }}>

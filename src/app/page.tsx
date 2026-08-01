@@ -28,15 +28,15 @@ export default async function Home() {
   }
 
   return (
-    <div style={{ background: '#0a0a0a', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: 'var(--bg-void)', minHeight: '100vh' }}>
       {/* Cinematic Storm Hero */}
       <StormHero />
 
       {/* Shop Section Anchor */}
       <section id="shop" style={{
-        background: '#0a0a0a',
+        backgroundColor: 'var(--bg-base)',
         padding: '100px 5%',
-        borderTop: '1px solid #1a1a1a',
+        borderTop: '1px solid var(--border-color)',
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           {/* Error fallback */}

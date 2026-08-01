@@ -50,16 +50,16 @@ export default function AdminOrdersPage() {
       )}
 
       {loading ? (
-        <p style={{ color: '#888', textAlign: 'center', marginTop: '50px' }}>Loading orders...</p>
+        <p style={{ color: 'var(--gray-light)', textAlign: 'center', marginTop: '50px' }}>Loading orders...</p>
       ) : orders.length === 0 ? (
-        <div style={{ padding: '40px', background: '#121212', border: '1px solid #1a1a1a', textAlign: 'center', color: '#666', borderRadius: '4px' }}>
+        <div style={{ padding: '40px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', textAlign: 'center', color: 'var(--gray-light)', borderRadius: '4px' }}>
           No orders placed yet.
         </div>
       ) : (
-        <div className="glass-panel" style={{ overflowX: 'auto', border: '1px solid #1a1a1a', background: '#121212', borderRadius: '4px' }}>
+        <div className="glass-panel" style={{ overflowX: 'auto', border: '1px solid var(--border-color)', background: 'var(--bg-card)', borderRadius: '4px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px', fontSize: '0.9rem' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid #222', background: '#0a0a0a', color: '#888' }}>
+              <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-elevated)', color: 'var(--gray-light)' }}>
                 <th style={{ padding: '15px' }}>Order ID</th>
                 <th style={{ padding: '15px' }}>Date</th>
                 <th style={{ padding: '15px' }}>Customer</th>
@@ -68,52 +68,52 @@ export default function AdminOrdersPage() {
               </tr>
             </thead>
             <tbody>
-              {orders.map(o => (
-                <tr key={o.id} style={{ borderBottom: '1px solid #1a1a1a' }}>
-                  <td style={{ padding: '15px', fontFamily: 'monospace', color: '#888', fontSize: '0.8rem' }}>{o.id}</td>
-                  <td style={{ padding: '15px', color: '#bbb' }}>{new Date(o.created_at).toLocaleDateString()}</td>
-                  <td style={{ padding: '15px' }}>
-                    <span style={{ display: 'block', fontWeight: 600, color: '#fff' }}>{o.customer_name}</span>
-                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#555' }}>{o.customer_email}</span>
-                  </td>
-                  <td style={{ padding: '15px', fontWeight: 600, color: '#fff' }}>{o.total_amount} EGP</td>
-                  <td style={{ padding: '15px' }}>
-                    <select
-                      value={o.status}
-                      onChange={(e) => handleStatusChange(o.id, e.target.value)}
-                      style={{
-                        padding: '4px 8px',
-                        background: o.status === 'completed' 
-                          ? 'rgba(34,197,94,0.1)' 
-                          : o.status === 'cancelled'
-                            ? 'rgba(239,68,68,0.1)'
-                            : 'rgba(234,179,8,0.1)',
-                        border: '1px solid',
-                        borderColor: o.status === 'completed' 
-                          ? '#22c55e' 
-                          : o.status === 'cancelled'
-                            ? '#ef4444'
-                            : '#eab308',
-                        color: o.status === 'completed' 
-                          ? '#22c55e' 
-                          : o.status === 'cancelled'
-                            ? '#ef4444'
-                            : '#eab308',
-                        fontSize: '0.75rem',
-                        fontWeight: 'bold',
-                        textTransform: 'uppercase',
-                        outline: 'none',
-                        cursor: 'pointer',
-                        borderRadius: '4px'
-                      }}
-                    >
-                      <option value="pending" style={{ background: '#0a0a0a', color: '#eab308' }}>Pending</option>
-                      <option value="completed" style={{ background: '#0a0a0a', color: '#22c55e' }}>Completed</option>
-                      <option value="cancelled" style={{ background: '#0a0a0a', color: '#ef4444' }}>Cancelled</option>
-                    </select>
-                  </td>
-                </tr>
-              ))}
+              {orders.map(o => {
+                const getStatusColor = (s: string) => {
+                  if (s === 'completed' || s === 'confirmed') return 'var(--status-confirmed)';
+                  if (s === 'shipped') return 'var(--status-shipped)';
+                  if (s === 'cancelled') return 'var(--status-cancelled)';
+                  return 'var(--status-pending)';
+                };
+                const statusColor = getStatusColor(o.status);
+
+                return (
+                  <tr key={o.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                    <td style={{ padding: '15px', fontFamily: 'monospace', color: 'var(--gray-light)', fontSize: '0.8rem' }}>{o.id}</td>
+                    <td style={{ padding: '15px', color: 'var(--gray-light)' }}>{new Date(o.created_at).toLocaleDateString()}</td>
+                    <td style={{ padding: '15px' }}>
+                      <span style={{ display: 'block', fontWeight: 600, color: 'var(--primary)' }}>{o.customer_name}</span>
+                      <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--gray-light)' }}>{o.customer_email}</span>
+                    </td>
+                    <td style={{ padding: '15px', fontWeight: 600, color: 'var(--primary)' }}>{o.total_amount} EGP</td>
+                    <td style={{ padding: '15px' }}>
+                      <select
+                        value={o.status}
+                        onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                        style={{
+                          padding: '6px 10px',
+                          background: 'transparent',
+                          border: `1px solid ${statusColor}`,
+                          color: statusColor,
+                          fontSize: '0.75rem',
+                          fontWeight: 'bold',
+                          textTransform: 'uppercase',
+                          outline: 'none',
+                          cursor: 'pointer',
+                          borderRadius: '4px',
+                          boxShadow: `0 0 10px ${statusColor}40`
+                        }}
+                      >
+                        <option value="pending" style={{ background: 'var(--bg-card)', color: 'var(--status-pending)' }}>Pending</option>
+                        <option value="confirmed" style={{ background: 'var(--bg-card)', color: 'var(--status-confirmed)' }}>Confirmed</option>
+                        <option value="shipped" style={{ background: 'var(--bg-card)', color: 'var(--status-shipped)' }}>Shipped</option>
+                        <option value="completed" style={{ background: 'var(--bg-card)', color: 'var(--status-confirmed)' }}>Completed</option>
+                        <option value="cancelled" style={{ background: 'var(--bg-card)', color: 'var(--status-cancelled)' }}>Cancelled</option>
+                      </select>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

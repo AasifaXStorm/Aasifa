@@ -288,30 +288,53 @@ export function StormHero() {
     };
   }, []);
 
+  const [scrollY, setScrollY] = React.useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div style={{
       position: 'relative',
-      width: '100%',
       height: '100vh',
+      minHeight: '600px',
+      width: '100%',
       overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      background: '#000000',
+      backgroundColor: 'var(--bg-base)',
     }}>
-      {/* Background Canvas */}
-      <canvas
-        ref={canvasRef}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 1,
-        }}
-      />
+      {/* Parallax Background Image */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '120%', // Extra height for parallax
+        backgroundImage: 'url(/images/hero.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        transform: `translateY(${scrollY * 0.3}px)`,
+        zIndex: 0,
+      }} />
+
+      {/* Cinematic Gradient Overlay */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(to top, var(--bg-base) 10%, rgba(10, 10, 10, 0.4) 100%)',
+        zIndex: 1,
+      }} />
 
       {/* Hero Content Overlay */}
       <div style={{
@@ -350,18 +373,6 @@ export function StormHero() {
           {t('explore.collection')}
         </a>
       </div>
-
-      {/* Bottom fade out to seamlessly transition to product list */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        width: '100%',
-        height: '150px',
-        background: 'linear-gradient(to top, #0a0a0a 0%, rgba(10, 10, 10, 0) 100%)',
-        zIndex: 2,
-        pointerEvents: 'none',
-      }} />
     </div>
   );
 }

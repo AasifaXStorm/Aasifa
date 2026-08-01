@@ -99,43 +99,43 @@ export default function AdminDashboardPage() {
             marginBottom: '40px',
           }}>
             {/* Revenue card */}
-            <div className="glass-panel" style={{ padding: '25px', display: 'flex', alignItems: 'center', gap: '20px', background: '#121212', border: '1px solid #1a1a1a', borderRadius: '4px' }}>
-              <div style={{ padding: '15px', background: 'rgba(255,255,255,0.03)', border: '1px solid #222', borderRadius: '4px' }}>
-                <DollarSign size={24} style={{ color: '#22c55e' }} />
+            <div className="glass-panel" style={{ padding: '25px', display: 'flex', alignItems: 'center', gap: '20px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '4px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+              <div style={{ padding: '15px', background: 'var(--accent-glow)', border: `1px solid var(--accent-color)`, borderRadius: '4px' }}>
+                <DollarSign size={24} style={{ color: 'var(--accent-color)' }} />
               </div>
               <div>
-                <span style={{ display: 'block', fontSize: '0.8rem', color: '#555', textTransform: 'uppercase' }}>Total Revenue</span>
-                <span style={{ fontSize: '1.6rem', fontWeight: 'bold', color: '#fff' }}>{stats.revenue.toLocaleString()} EGP</span>
+                <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--gray-light)', textTransform: 'uppercase' }}>Total Revenue</span>
+                <span style={{ fontSize: '1.6rem', fontWeight: 'bold', color: 'var(--primary)', textShadow: '0 0 10px var(--accent-glow)' }}>{stats.revenue.toLocaleString()} EGP</span>
               </div>
             </div>
 
             {/* Orders card */}
-            <div className="glass-panel" style={{ padding: '25px', display: 'flex', alignItems: 'center', gap: '20px', background: '#121212', border: '1px solid #1a1a1a', borderRadius: '4px' }}>
-              <div style={{ padding: '15px', background: 'rgba(255,255,255,0.03)', border: '1px solid #222', borderRadius: '4px' }}>
-                <ShoppingBag size={24} style={{ color: '#3b82f6' }} />
+            <div className="glass-panel" style={{ padding: '25px', display: 'flex', alignItems: 'center', gap: '20px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '4px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+              <div style={{ padding: '15px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-highlight)', borderRadius: '4px' }}>
+                <ShoppingBag size={24} style={{ color: 'var(--status-pending)' }} />
               </div>
               <div>
-                <span style={{ display: 'block', fontSize: '0.8rem', color: '#555', textTransform: 'uppercase' }}>Total Orders</span>
-                <span style={{ fontSize: '1.6rem', fontWeight: 'bold', color: '#fff' }}>{stats.ordersCount}</span>
+                <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--gray-light)', textTransform: 'uppercase' }}>Total Orders</span>
+                <span style={{ fontSize: '1.6rem', fontWeight: 'bold', color: 'var(--primary)' }}>{stats.ordersCount}</span>
               </div>
             </div>
 
             {/* Units sold card */}
-            <div className="glass-panel" style={{ padding: '25px', display: 'flex', alignItems: 'center', gap: '20px', background: '#121212', border: '1px solid #1a1a1a', borderRadius: '4px' }}>
-              <div style={{ padding: '15px', background: 'rgba(255,255,255,0.03)', border: '1px solid #222', borderRadius: '4px' }}>
-                <Package size={24} style={{ color: '#a855f7' }} />
+            <div className="glass-panel" style={{ padding: '25px', display: 'flex', alignItems: 'center', gap: '20px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '4px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+              <div style={{ padding: '15px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-highlight)', borderRadius: '4px' }}>
+                <Package size={24} style={{ color: 'var(--status-shipped)' }} />
               </div>
               <div>
-                <span style={{ display: 'block', fontSize: '0.8rem', color: '#555', textTransform: 'uppercase' }}>Units Sold</span>
-                <span style={{ fontSize: '1.6rem', fontWeight: 'bold', color: '#fff' }}>{stats.unitsSold}</span>
+                <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--gray-light)', textTransform: 'uppercase' }}>Units Sold</span>
+                <span style={{ fontSize: '1.6rem', fontWeight: 'bold', color: 'var(--primary)' }}>{stats.unitsSold}</span>
               </div>
             </div>
           </div>
 
           {/* Analytics bar chart section */}
-          <div className="glass-panel" style={{ padding: '30px', marginBottom: '50px', background: '#121212', border: '1px solid #1a1a1a', borderRadius: '4px' }}>
-            <h3 style={{ fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '10px', color: '#fff' }}>
-              <BarChart3 size={18} style={{ color: '#a855f7' }} /> Category Revenue Distribution
+          <div className="glass-panel" style={{ padding: '30px', marginBottom: '50px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '4px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+            <h3 style={{ fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--primary)' }}>
+              <BarChart3 size={18} style={{ color: 'var(--accent-color)' }} /> Category Revenue Distribution
             </h3>
 
             {/* Custom SVG/HTML Bar Chart */}
@@ -145,7 +145,7 @@ export default function AdminDashboardPage() {
               alignItems: 'flex-end',
               height: '200px',
               paddingBottom: '20px',
-              borderBottom: '1px solid #222',
+              borderBottom: '1px solid var(--border-color)',
             }}>
               {Object.entries(categorySales).map(([category, value]) => {
                 const heightPercentage = (value / maxSalesValue) * 100;
@@ -159,16 +159,16 @@ export default function AdminDashboardPage() {
                     justifyContent: 'flex-end',
                   }}>
                     {/* Value indicator */}
-                    <span style={{ fontSize: '0.75rem', color: '#fff', marginBottom: '8px', fontWeight: 600 }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--primary)', marginBottom: '8px', fontWeight: 600 }}>
                       {value > 0 ? `${value} EGP` : '—'}
                     </span>
                     {/* Bar */}
                     <div style={{
                       width: '32px',
                       height: `${Math.max(heightPercentage, 2)}%`,
-                      background: 'linear-gradient(to top, #1a1a1a 0%, #ffffff 100%)',
-                      border: '1px solid #333',
-                      boxShadow: '0 0 10px rgba(255,255,255,0.05)',
+                      background: 'linear-gradient(to top, var(--bg-card) 0%, var(--accent-color) 100%)',
+                      border: '1px solid var(--accent-color)',
+                      boxShadow: '0 0 15px var(--accent-glow)',
                       transition: 'height 1s ease',
                     }} />
                     {/* Category Label */}

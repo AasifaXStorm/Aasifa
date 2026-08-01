@@ -35,8 +35,8 @@ export function ProductCard({ product }: ProductCardProps) {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      background: '#0a0a0a',
-      border: '1px solid #1a1a1a',
+      background: 'var(--bg-card)',
+      border: '1px solid var(--border-color)',
       borderRadius: '0px', // minimal sharp corners
       overflow: 'hidden',
       transition: 'var(--transition-smooth)',
