@@ -61,32 +61,28 @@ export function SecretPortal() {
         onClick={() => setIsOpen(!isOpen)}
         style={{
           position: 'fixed',
-          bottom: '24px',
-          left: '24px',
-          zIndex: 99999,
-          color: isOpen ? 'var(--accent-color)' : '#444444',
+          bottom: '20px',
+          left: '20px',
+          width: '48px',
+          height: '48px',
+          borderRadius: '50%',
+          background: 'rgba(25,25,25,0.85)',
+          border: '1px solid rgba(255,255,255,0.2)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          color: isOpen ? 'var(--accent-color)' : '#888',
           cursor: 'pointer',
-          width: '36px',
-          height: '36px',
-          borderRadius: '50%',
-          background: 'rgba(10, 10, 10, 0.4)',
-          border: '1px solid',
-          borderColor: isOpen ? 'var(--accent-color)' : '#222222',
-          boxShadow: isOpen 
-            ? '0 0 15px rgba(207, 224, 255, 0.45)' 
-            : '0 0 5px rgba(0,0,0,0.5)',
-          transition: 'var(--transition-smooth)',
+          zIndex: 9999,
+          backdropFilter: 'blur(5px)',
+          transition: 'all 0.3s ease',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
         }}
         className="secret-portal-btn"
-        title={t('nav.home')}
+        aria-label="Access Tweak Settings"
       >
-        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style={{
-          filter: isOpen ? 'drop-shadow(0 0 5px var(--accent-color))' : 'none'
-        }}>
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px' }}>
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
         </svg>
       </button>
 

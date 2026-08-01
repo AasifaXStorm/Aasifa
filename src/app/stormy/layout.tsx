@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { AdminSidebar } from '@/components/AdminSidebar';
+import { AdminLayoutWrapper } from '@/components/AdminLayoutWrapper';
 
 export const metadata: Metadata = {
   title: 'Aasifa | Portal Access',
@@ -15,12 +15,5 @@ export default function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <div className="admin-layout" style={{ background: '#0a0a0a', minHeight: '100vh' }}>
-      <AdminSidebar />
-      <main className="admin-main">
-        {children}
-      </main>
-    </div>
-  );
+  return <AdminLayoutWrapper>{children}</AdminLayoutWrapper>;
 }
