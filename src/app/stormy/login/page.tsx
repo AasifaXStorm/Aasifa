@@ -12,6 +12,7 @@ export default function LoginPage() {
     e.preventDefault();
     if (password === 'aasifabaskotaaaaatt1_Stotm') {
       // Set session cookie
+      localStorage.setItem('admin_session', 'authenticated');
       document.cookie = 'admin_session=authenticated; Path=/; Max-Age=86400;';
       window.location.href = '/stormy';
     } else {

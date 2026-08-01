@@ -296,21 +296,13 @@ button {
 
 /* Tablets (768px - 1024px) */
 @media (max-width: 1024px) {
-  html {
-    font-size: 130%;
-  }
-
   .admin-layout {
     grid-template-columns: 200px 1fr;
   }
 }
 
-/* Mobile (max 768px) — counteract 145% root scaling */
+/* Mobile (max 768px) */
 @media (max-width: 768px) {
-  html {
-    font-size: 115%;
-  }
-
   body {
     font-size: 14px;
   }
@@ -355,10 +347,6 @@ button {
 
 /* Very small phones (max 400px) */
 @media (max-width: 400px) {
-  html {
-    font-size: 105%;
-  }
-
   .brand-title {
     font-size: clamp(1.5rem, 10vw, 2.5rem) !important;
     letter-spacing: 0.2em !important;
@@ -375,10 +363,6 @@ button {
 
 /* Ultra-small phones (max 320px) */
 @media (max-width: 320px) {
-  html {
-    font-size: 100%;
-  }
-
   .brand-title {
     font-size: clamp(1.2rem, 8vw, 2rem) !important;
     letter-spacing: 0.15em !important;

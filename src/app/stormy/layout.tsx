@@ -13,9 +13,12 @@ export default function StormyLayout({ children }: { children: React.ReactNode }
     if (pathname === '/stormy/login') return;
 
     const checkAuth = () => {
+      const isAuthLocal = typeof window !== 'undefined' && localStorage.getItem('admin_session') === 'authenticated';
       const cookies = document.cookie.split(';');
       const sessionCookie = cookies.find(c => c.trim().startsWith('admin_session='));
-      if (sessionCookie && sessionCookie.split('=')[1] === 'authenticated') {
+      const isAuthCookie = sessionCookie && sessionCookie.split('=')[1] === 'authenticated';
+
+      if (isAuthLocal || isAuthCookie) {
         setAuthorized(true);
       } else {
         router.push('/stormy/login');
