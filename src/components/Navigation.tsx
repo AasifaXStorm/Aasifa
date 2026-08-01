@@ -7,14 +7,40 @@ import { ShoppingCart } from 'lucide-react';
 import { getCartTotalItems } from '@/lib/cart';
 import { useTranslation } from '@/context/LanguageContext';
 
+import { getSiteConfig } from '@/app/actions/supabaseActions';
+
 export function Navigation() {
   const [cartCount, setCartCount] = useState(0);
   const { t } = useTranslation();
   const pathname = usePathname();
 
+  const [marquee, setMarquee] = useState<{ text: string; speed: number; visible: boolean }>({
+    text: 'DROP 01 OUT NOW · FAST HOME DELIVERY ALL OVER EGYPT',
+    speed: 120,
+    visible: true
+  });
+
   useEffect(() => {
     // Set initial cart count
     setCartCount(getCartTotalItems());
+
+    // Fetch site config for marquee
+    const fetchConfig = async () => {
+      try {
+        const config = await getSiteConfig();
+        if (config && config.description) {
+          const parsed = JSON.parse(config.description);
+          setMarquee({
+            text: parsed.marquee_text || 'DROP 01 OUT NOW · FAST HOME DELIVERY ALL OVER EGYPT',
+            speed: parsed.marquee_speed || 120,
+            visible: parsed.marquee_visibility !== 'Hidden'
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchConfig();
 
     // Listen for cart update events
     const handleCartUpdate = () => {
@@ -30,18 +56,53 @@ export function Navigation() {
   if (pathname.startsWith('/stormy')) return null;
 
   return (
-    <header className="glass-nav" style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '70px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '0 5%',
-      zIndex: 100,
-    }}>
+    <>
+      {marquee.visible && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '32px',
+          background: '#0d0d0d',
+          borderBottom: '1px solid #222',
+          overflow: 'hidden',
+          zIndex: 101,
+          display: 'flex',
+          alignItems: 'center'
+        }}>
+          <div style={{
+            whiteSpace: 'nowrap',
+            display: 'inline-block',
+            animation: `marqueeAnim ${marquee.speed}s linear infinite`,
+            fontSize: '0.75rem',
+            letterSpacing: '0.15em',
+            fontWeight: 700,
+            color: 'var(--text-primary)',
+            textTransform: 'uppercase'
+          }}>
+            {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text}
+          </div>
+          <style jsx>{`
+            @keyframes marqueeAnim {
+              0% { transform: translateX(100%); }
+              100% { transform: translateX(-100%); }
+            }
+          `}</style>
+        </div>
+      )}
+      <header className="glass-nav" style={{
+        position: 'fixed',
+        top: marquee.visible ? '32px' : 0,
+        left: 0,
+        width: '100%',
+        height: '70px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 5%',
+        zIndex: 100,
+      }}>
       {/* Brand Logo */}
       <Link href="/" className="brand-title" style={{ fontSize: '1.2rem', textDecoration: 'none', letterSpacing: '0.4em' }}>
         {t('brand.title')}
@@ -81,5 +142,6 @@ export function Navigation() {
         }
       `}</style>
     </header>
+    </>
   );
 }

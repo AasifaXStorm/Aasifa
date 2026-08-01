@@ -10,9 +10,15 @@ export default function AdminTweaksPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const [tweaksInterval, setTweaksInterval] = useState(5000);
-  const [tweaksColor, setTweaksColor] = useState('var(--text-primary)fff');
+  const [tweaksColor, setTweaksColor] = useState('#ffffff');
   const [tweaksGlow, setTweaksGlow] = useState('#e8f4fd');
   const [tweaksShowFooter, setTweaksShowFooter] = useState(true);
+
+  // Promotion Marquee State
+  const [marqueeText, setMarqueeText] = useState('DROP 01 OUT NOW · FAST HOME DELIVERY ALL OVER EGYPT');
+  const [marqueeSpeed, setMarqueeSpeed] = useState(120);
+  const [marqueeRepetition, setMarqueeRepetition] = useState(1);
+  const [marqueeVisibility, setMarqueeVisibility] = useState('Active');
 
   useEffect(() => {
     loadTweaks();
@@ -30,6 +36,10 @@ export default function AdminTweaksPage() {
           if (parsed.interval) setTweaksInterval(parsed.interval);
           if (parsed.color) setTweaksColor(parsed.color);
           if (parsed.glow) setTweaksGlow(parsed.glow);
+          if (parsed.marquee_text !== undefined) setMarqueeText(parsed.marquee_text);
+          if (parsed.marquee_speed !== undefined) setMarqueeSpeed(parsed.marquee_speed);
+          if (parsed.marquee_repetition !== undefined) setMarqueeRepetition(parsed.marquee_repetition);
+          if (parsed.marquee_visibility !== undefined) setMarqueeVisibility(parsed.marquee_visibility);
         } catch (e) {
           console.error('Failed parsing site configuration:', e);
         }
@@ -52,7 +62,11 @@ export default function AdminTweaksPage() {
         interval: Number(tweaksInterval),
         color: tweaksColor,
         glow: tweaksGlow,
-        show_footer_links: tweaksShowFooter
+        show_footer_links: tweaksShowFooter,
+        marquee_text: marqueeText,
+        marquee_speed: Number(marqueeSpeed),
+        marquee_repetition: Number(marqueeRepetition),
+        marquee_visibility: marqueeVisibility
       });
 
       await updateSiteConfig(configJson);
@@ -158,6 +172,123 @@ export default function AdminTweaksPage() {
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '8px', display: 'block', paddingLeft: '30px' }}>
                 Display quick navigation links (About, Contact, Shop, etc.) in the bottom-left fixed lightning bolt flyout menu.
               </span>
+            </div>
+          </div>
+
+          {/* Promotion Marquee & Announcement Card (Matching Screenshot 1) */}
+          <div style={{
+            background: '#121212',
+            border: '1px solid #1a1a1a',
+            borderRadius: '6px',
+            padding: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px'
+          }}>
+            <h3 style={{
+              fontSize: '0.9rem',
+              fontWeight: 700,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              margin: 0
+            }}>
+              <span>📢</span> PROMOTION MARQUEE & ANNOUNCEMENT
+            </h3>
+
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '8px' }}>
+                MARQUEE PROMOTION TEXT
+              </label>
+              <input
+                type="text"
+                className="form-input"
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: '#0a0a0a',
+                  border: '1px solid #222',
+                  color: '#fff',
+                  borderRadius: '6px',
+                  fontFamily: 'monospace',
+                  fontSize: '0.9rem'
+                }}
+                value={marqueeText}
+                onChange={(e) => setMarqueeText(e.target.value)}
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '8px' }}>
+                  SCROLLING SPEED (SECONDS)
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: '#0a0a0a',
+                    border: '1px solid #222',
+                    color: '#fff',
+                    borderRadius: '6px',
+                    fontFamily: 'monospace',
+                    fontSize: '0.9rem'
+                  }}
+                  value={marqueeSpeed}
+                  onChange={(e) => setMarqueeSpeed(Number(e.target.value))}
+                />
+              </div>
+
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '8px' }}>
+                  TEXT REPETITION COUNT
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: '#0a0a0a',
+                    border: '1px solid #222',
+                    color: '#fff',
+                    borderRadius: '6px',
+                    fontFamily: 'monospace',
+                    fontSize: '0.9rem'
+                  }}
+                  value={marqueeRepetition}
+                  onChange={(e) => setMarqueeRepetition(Number(e.target.value))}
+                />
+              </div>
+            </div>
+
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '8px' }}>
+                STOREFRONT MARQUEE VISIBILITY
+              </label>
+              <select
+                className="form-input"
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: '#0a0a0a',
+                  border: '1px solid #222',
+                  color: '#fff',
+                  borderRadius: '6px',
+                  fontFamily: 'monospace',
+                  fontSize: '0.9rem'
+                }}
+                value={marqueeVisibility}
+                onChange={(e) => setMarqueeVisibility(e.target.value)}
+              >
+                <option value="Active">Active (Visible)</option>
+                <option value="Hidden">Hidden</option>
+              </select>
             </div>
           </div>
 

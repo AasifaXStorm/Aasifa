@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { uploadImageAction, saveProduct } from '@/app/actions/supabaseActions';
-import { ArrowLeft, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Upload, Loader2 } from 'lucide-react';
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -12,32 +12,40 @@ export default function NewProductPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Form fields
+  // Form fields matching Screenshot 2
   const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [color, setColor] = useState('');
   const [price, setPrice] = useState('');
-  const [category, setCategory] = useState('Shirts');
-  
-  // Sizing stock state
-  const [stockS, setStockS] = useState('0');
-  const [stockM, setStockM] = useState('0');
-  const [stockL, setStockL] = useState('0');
-  const [stockXL, setStockXL] = useState('0');
-  const [stockXXL, setStockXXL] = useState('0');
+  const [badge, setBadge] = useState('');
+  const [fabric, setFabric] = useState('');
+  const [fit, setFit] = useState('');
+  const [description, setDescription] = useState('');
+  const [status, setStatus] = useState('Active');
 
-  // Image handling
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [imageUrlInput, setImageUrlInput] = useState(''); // Text fallback URLs
+  // Front & Back image inputs & files
+  const [frontImageUrl, setFrontImageUrl] = useState('');
+  const [backImageUrl, setBackImageUrl] = useState('');
+  const [frontFile, setFrontFile] = useState<File | null>(null);
+  const [backFile, setBackFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
 
   useEffect(() => {
-    // Session is validated server-side by Next.js middleware
     setSessionChecked(true);
   }, []);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setImageFiles(Array.from(e.target.files));
+  const handleFrontFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setFrontFile(file);
+      setFrontImageUrl(file.name);
+    }
+  };
+
+  const handleBackFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setBackFile(file);
+      setBackImageUrl(file.name);
     }
   };
 
@@ -55,304 +63,465 @@ export default function NewProductPage() {
     try {
       const uploadedUrls: string[] = [];
 
-      // 1. Upload files to Supabase Storage if files selected
-      if (imageFiles.length > 0) {
-        setUploadProgress(`Uploading ${imageFiles.length} file(s)...`);
-        for (let i = 0; i < imageFiles.length; i++) {
-          const file = imageFiles[i];
-          const fileExt = file.name.split('.').pop();
-          const fileName = `products/${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
-
-          const formData = new FormData();
-          formData.append('file', file);
-          formData.append('filePath', fileName);
-
-          const publicUrl = await uploadImageAction(formData);
-          uploadedUrls.push(publicUrl);
-        }
+      // Upload Front File
+      if (frontFile) {
+        setUploadProgress('Uploading front image...');
+        const fileExt = frontFile.name.split('.').pop();
+        const fileName = `products/front-${Date.now()}.${fileExt}`;
+        const formData = new FormData();
+        formData.append('file', frontFile);
+        formData.append('filePath', fileName);
+        const url = await uploadImageAction(formData);
+        uploadedUrls.push(url);
+      } else if (frontImageUrl.trim()) {
+        uploadedUrls.push(frontImageUrl.trim());
       }
 
-      // Add text fallback URLs if provided
-      if (imageUrlInput.trim()) {
-        const urls = imageUrlInput
-          .split(',')
-          .map(u => u.trim())
-          .filter(u => u.length > 0);
-        uploadedUrls.push(...urls);
+      // Upload Back File
+      if (backFile) {
+        setUploadProgress('Uploading back image...');
+        const fileExt = backFile.name.split('.').pop();
+        const fileName = `products/back-${Date.now()}.${fileExt}`;
+        const formData = new FormData();
+        formData.append('file', backFile);
+        formData.append('filePath', fileName);
+        const url = await uploadImageAction(formData);
+        uploadedUrls.push(url);
+      } else if (backImageUrl.trim()) {
+        uploadedUrls.push(backImageUrl.trim());
       }
 
-      // If no images uploaded or provided, add a default unsplash fallback
       if (uploadedUrls.length === 0) {
         uploadedUrls.push('https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80');
       }
 
       setUploadProgress('Saving product details...');
 
+      // Combine extra details into description / category
+      const fullDescription = `${description}\n\nFabric: ${fabric}\nFit: ${fit}\nColor: ${color}\nBadge: ${badge}`;
+
       const productData = {
         name,
-        description,
+        description: fullDescription,
         price: parseFloat(price),
-        category,
+        category: 'Shirts',
         images: uploadedUrls,
-        is_active: true
+        is_active: status === 'Active'
       };
 
-      const variantsToInsert = [
-        { size: 'S', stock_quantity: parseInt(stockS) || 0 },
-        { size: 'M', stock_quantity: parseInt(stockM) || 0 },
-        { size: 'L', stock_quantity: parseInt(stockL) || 0 },
-        { size: 'XL', stock_quantity: parseInt(stockXL) || 0 },
-        { size: 'XXL', stock_quantity: parseInt(stockXXL) || 0 },
+      const defaultVariants = [
+        { size: 'S', stock_quantity: 10 },
+        { size: 'M', stock_quantity: 10 },
+        { size: 'L', stock_quantity: 10 },
+        { size: 'XL', stock_quantity: 10 },
+        { size: 'XXL', stock_quantity: 10 },
       ];
 
-      await saveProduct(productData, variantsToInsert, true);
+      await saveProduct(productData, defaultVariants, true);
 
       setUploadProgress('Success!');
-      router.push('/stormy');
+      router.push('/stormy/products');
       router.refresh();
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message || 'An unexpected error occurred during creation.');
+      setErrorMsg(err.message || 'An error occurred during product creation.');
       setLoading(false);
     }
   };
 
   if (!sessionChecked) {
     return (
-      <div style={{ background: '#0a0a0a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: '#888' }}>Verifying authorization...</p>
+      <div style={{ background: '#080808', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: '#888' }}>Loading...</p>
       </div>
     );
   }
 
   return (
-    <div style={{ background: '#0a0a0a', minHeight: '100vh', padding: '40px 5%' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ background: '#080808', minHeight: '100vh', padding: '40px 5%' }}>
+      <div style={{ maxWidth: '650px', margin: '0 auto' }}>
         
-        {/* Back Link */}
-        <Link href="/stormy" style={{
+        <Link href="/stormy/products" style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px',
-          color: '#888888',
+          color: '#888',
           fontSize: '0.85rem',
-          marginBottom: '35px',
-          letterSpacing: '0.05em',
+          marginBottom: '25px',
           textTransform: 'uppercase',
+          letterSpacing: '0.05em'
         }}>
-          <ArrowLeft size={16} /> Back to Dashboard
+          <ArrowLeft size={16} /> Back to Products
         </Link>
 
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '35px' }}>
-          Add New Product
-        </h1>
-
         {errorMsg && (
-          <div style={{ padding: '15px', background: 'rgba(255,0,0,0.05)', border: '1px solid #ff3333', color: '#ffaaaa', marginBottom: '30px', fontSize: '0.9rem' }}>
+          <div style={{ padding: '15px', background: 'rgba(255,0,0,0.05)', border: '1px solid #ff3333', color: '#ffaaaa', marginBottom: '25px', fontSize: '0.85rem', borderRadius: '4px' }}>
             {errorMsg}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="glass-panel" style={{ padding: '40px 30px', border: '1px solid #1a1a1a', display: 'flex', flexDirection: 'column', gap: '30px' }}>
-          
-          {/* Main Info */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <h3 style={{ fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#888', borderBottom: '1px solid #121212', paddingBottom: '10px' }}>
-              General Information
-            </h3>
+        {/* Modal / Card matching Screenshot 2 */}
+        <div style={{
+          background: '#111111',
+          border: '1px solid #1c1c1c',
+          borderRadius: '8px',
+          padding: '30px',
+          color: '#fff',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.5)'
+        }}>
+          <div style={{ marginBottom: '25px' }}>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>
+              ADD PRODUCT
+            </h2>
+            <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#666', marginTop: '4px', display: 'block' }}>
+              PRODUCT DETAILS AND DESCRIPTION
+            </span>
+          </div>
 
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            
+            {/* PRODUCT NAME */}
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Product Name *</label>
+              <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', display: 'block', marginBottom: '8px' }}>
+                PRODUCT NAME
+              </label>
               <input
                 type="text"
                 required
-                className="form-input"
-                placeholder="e.g. Storm Drop-Shoulder Tee"
+                placeholder="Onyx Graphic Tee"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                disabled={loading}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: '#0a0a0a',
+                  border: '1px solid #222',
+                  color: '#fff',
+                  borderRadius: '6px',
+                  fontFamily: 'monospace',
+                  fontSize: '0.9rem'
+                }}
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            {/* COLOR & PRICE */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
               <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">Price (EGP) *</label>
+                <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', display: 'block', marginBottom: '8px' }}>
+                  COLOR
+                </label>
+                <input
+                  type="text"
+                  placeholder="Onyx Black"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: '#0a0a0a',
+                    border: '1px solid #222',
+                    color: '#fff',
+                    borderRadius: '6px',
+                    fontFamily: 'monospace',
+                    fontSize: '0.9rem'
+                  }}
+                />
+              </div>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', display: 'block', marginBottom: '8px' }}>
+                  PRICE (EGP)
+                </label>
                 <input
                   type="number"
                   required
-                  step="0.01"
-                  min="0"
-                  className="form-input"
-                  placeholder="950"
+                  placeholder="520"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">Category</label>
-                <select
-                  className="form-select"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  disabled={loading}
-                >
-                  <option value="Shirts">Shirts</option>
-                  <option value="Hoodies">Hoodies</option>
-                  <option value="Pants">Pants</option>
-                  <option value="Accessories">Accessories</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Description</label>
-              <textarea
-                rows={5}
-                className="form-textarea"
-                placeholder="Describe this piece (cuts, sizing, washing instructions)..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                disabled={loading}
-                style={{ resize: 'none' }}
-              />
-            </div>
-          </div>
-
-          {/* Size Inventory */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <h3 style={{ fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#888', borderBottom: '1px solid #121212', paddingBottom: '10px' }}>
-              Stock Inventory per Size
-            </h3>
-
-            <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-              {[
-                { label: 'S', state: stockS, setter: setStockS },
-                { label: 'M', state: stockM, setter: setStockM },
-                { label: 'L', state: stockL, setter: setStockL },
-                { label: 'XL', state: stockXL, setter: setStockXL },
-                { label: 'XXL', state: stockXXL, setter: setStockXXL },
-              ].map(s => (
-                <div key={s.label} style={{ display: 'flex', flexDirection: 'column', width: '90px', gap: '8px' }}>
-                  <label style={{ fontSize: '0.8rem', color: '#555', textAlign: 'center', fontWeight: 'bold' }}>{s.label}</label>
-                  <input
-                    type="number"
-                    min="0"
-                    className="form-input"
-                    value={s.state}
-                    onChange={(e) => s.setter(e.target.value)}
-                    disabled={loading}
-                    style={{ textAlign: 'center' }}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Image Handling */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <h3 style={{ fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#888', borderBottom: '1px solid #121212', paddingBottom: '10px' }}>
-              Images
-            </h3>
-
-            {/* Option A: Upload files */}
-            <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Upload Product Images (To Supabase Storage)</label>
-              <div style={{
-                border: '1px dashed #222',
-                background: 'rgba(15,15,15,0.4)',
-                padding: '30px 20px',
-                textAlign: 'center',
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '10px',
-              }}>
-                <Upload size={24} style={{ color: '#555' }} />
-                <span style={{ fontSize: '0.85rem', color: '#888' }}>
-                  {imageFiles.length > 0 
-                    ? `${imageFiles.length} file(s) selected: ${imageFiles.map(f => f.name).join(', ')}`
-                    : 'Select image files (JPG, PNG, WEBP)'
-                  }
-                </span>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  disabled={loading}
                   style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
                     width: '100%',
-                    height: '100%',
-                    opacity: 0,
-                    cursor: 'pointer',
+                    padding: '12px 16px',
+                    background: '#0a0a0a',
+                    border: '1px solid #222',
+                    color: '#fff',
+                    borderRadius: '6px',
+                    fontFamily: 'monospace',
+                    fontSize: '0.9rem',
+                    fontWeight: 700
                   }}
                 />
               </div>
             </div>
 
-            {/* Option B: Fallback URL text */}
+            {/* PRODUCT BADGE / LABEL */}
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">
-                Or Provide Image URLs (Comma separated links fallback)
+              <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', display: 'block', marginBottom: '8px' }}>
+                PRODUCT BADGE / LABEL
               </label>
-              <div style={{ position: 'relative' }}>
-                <ImageIcon size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#555' }} />
+              <input
+                type="text"
+                placeholder="e.g. Limited Drop, Collab, 1 of 1"
+                value={badge}
+                onChange={(e) => setBadge(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: '#0a0a0a',
+                  border: '1px solid #222',
+                  color: '#fff',
+                  borderRadius: '6px',
+                  fontFamily: 'monospace',
+                  fontSize: '0.9rem'
+                }}
+              />
+            </div>
+
+            {/* FABRIC & FIT */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', display: 'block', marginBottom: '8px' }}>
+                  FABRIC
+                </label>
                 <input
                   type="text"
-                  className="form-input"
-                  placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg"
-                  value={imageUrlInput}
-                  onChange={(e) => setImageUrlInput(e.target.value)}
-                  disabled={loading}
-                  style={{ paddingLeft: '42px' }}
+                  placeholder="Heavyweight Cotton"
+                  value={fabric}
+                  onChange={(e) => setFabric(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: '#0a0a0a',
+                    border: '1px solid #222',
+                    color: '#fff',
+                    borderRadius: '6px',
+                    fontFamily: 'monospace',
+                    fontSize: '0.9rem'
+                  }}
                 />
               </div>
-              <span style={{ fontSize: '0.75rem', color: '#444', display: 'block', marginTop: '6px' }}>
-                Use this if you haven&rsquo;t configured the storage bucket yet. Leave empty to fallback to a placeholder shirt.
-              </span>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', display: 'block', marginBottom: '8px' }}>
+                  FIT
+                </label>
+                <input
+                  type="text"
+                  placeholder="Premium Oversized"
+                  value={fit}
+                  onChange={(e) => setFit(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: '#0a0a0a',
+                    border: '1px solid #222',
+                    color: '#fff',
+                    borderRadius: '6px',
+                    fontFamily: 'monospace',
+                    fontSize: '0.9rem'
+                  }}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Submit */}
-          <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '30px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#888', fontSize: '0.85rem' }}>
-              {loading && (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  <span>{uploadProgress}</span>
-                </>
-              )}
+            {/* DESCRIPTION */}
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', display: 'block', marginBottom: '8px' }}>
+                DESCRIPTION
+              </label>
+              <textarea
+                rows={4}
+                placeholder="Describe the product in detail..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: '#0a0a0a',
+                  border: '1px solid #222',
+                  color: '#fff',
+                  borderRadius: '6px',
+                  fontFamily: 'monospace',
+                  fontSize: '0.9rem',
+                  resize: 'none'
+                }}
+              />
             </div>
-            <button
-              type="submit"
-              className="btn-primary"
-              style={{ minWidth: '180px', padding: '14px' }}
-              disabled={loading}
-            >
-              {loading ? 'Creating...' : 'Create Product'}
-            </button>
-          </div>
 
-        </form>
+            {/* FRONT & BACK IMAGE URL + UPLOAD BUTTONS */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              
+              {/* Front Image */}
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', display: 'block', marginBottom: '8px' }}>
+                  FRONT IMAGE URL
+                </label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    placeholder="blackinfront.jpg"
+                    value={frontImageUrl}
+                    onChange={(e) => setFrontImageUrl(e.target.value)}
+                    style={{
+                      flex: 1,
+                      padding: '10px 12px',
+                      background: '#0a0a0a',
+                      border: '1px solid #222',
+                      color: '#fff',
+                      borderRadius: '6px',
+                      fontFamily: 'monospace',
+                      fontSize: '0.85rem'
+                    }}
+                  />
+                  <label style={{
+                    padding: '10px 14px',
+                    background: '#1a1a1a',
+                    border: '1px solid #333',
+                    color: '#ccc',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    UPLOAD
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFrontFileSelect}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Back Image */}
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', display: 'block', marginBottom: '8px' }}>
+                  BACK IMAGE URL
+                </label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    placeholder="Blackback.jpg"
+                    value={backImageUrl}
+                    onChange={(e) => setBackImageUrl(e.target.value)}
+                    style={{
+                      flex: 1,
+                      padding: '10px 12px',
+                      background: '#0a0a0a',
+                      border: '1px solid #222',
+                      color: '#fff',
+                      borderRadius: '6px',
+                      fontFamily: 'monospace',
+                      fontSize: '0.85rem'
+                    }}
+                  />
+                  <label style={{
+                    padding: '10px 14px',
+                    background: '#1a1a1a',
+                    border: '1px solid #333',
+                    color: '#ccc',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    UPLOAD
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBackFileSelect}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            {/* STATUS */}
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', display: 'block', marginBottom: '8px' }}>
+                STATUS
+              </label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: '#0a0a0a',
+                  border: '1px solid #222',
+                  color: '#fff',
+                  borderRadius: '6px',
+                  fontFamily: 'monospace',
+                  fontSize: '0.9rem'
+                }}
+              >
+                <option value="Active">Active</option>
+                <option value="Hidden">Hidden</option>
+              </select>
+            </div>
+
+            {uploadProgress && (
+              <p style={{ color: '#b8ff00', fontSize: '0.8rem', margin: 0 }}>{uploadProgress}</p>
+            )}
+
+            {/* BUTTONS MATCHING SCREENSHOT 2 */}
+            <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  padding: '14px 28px',
+                  background: '#b8ff00',
+                  color: '#000',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 900,
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  boxShadow: '0 0 15px rgba(184, 255, 0, 0.4)'
+                }}
+              >
+                {loading ? 'SAVING...' : 'SAVE PRODUCT'}
+              </button>
+
+              <Link
+                href="/stormy/products"
+                style={{
+                  padding: '14px 28px',
+                  background: 'transparent',
+                  border: '1px solid #333',
+                  color: '#888',
+                  borderRadius: '6px',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                CANCEL
+              </Link>
+            </div>
+
+          </form>
+        </div>
+
       </div>
-
-      {/* Spinner animation keyframe style */}
-      <style jsx global>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .animate-spin {
-          animation: spin 1s linear infinite;
-        }
-      `}</style>
     </div>
   );
 }

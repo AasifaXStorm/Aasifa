@@ -5,6 +5,8 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { LanguageProvider } from "@/context/LanguageContext";
 
+import { BottomLeftLightningBolt } from "@/components/BottomLeftLightningBolt";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -44,6 +46,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <BottomLeftLightningBolt />
 
           {/* Scattered Background Lightning Bolts (Subtle Background Texture) */}
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
