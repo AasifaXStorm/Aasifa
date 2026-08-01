@@ -105,7 +105,7 @@ button {
 
 .btn-primary {
   background: var(--text-primary);
-  color: var(--background);
+  color: #000000;
   padding: 0.8rem 1.6rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -117,9 +117,9 @@ button {
 
 .btn-primary:hover {
   background: transparent;
-  color: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 15px rgba(207, 224, 255, 0.3);
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
 }
 
 .btn-primary:disabled {

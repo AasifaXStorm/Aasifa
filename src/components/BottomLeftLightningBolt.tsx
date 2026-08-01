@@ -45,11 +45,6 @@ export function BottomLeftLightningBolt() {
             <Mail size={16} color="var(--accent)" /> Contact Support
           </Link>
 
-          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
-            <Link href="/stormy" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.75rem' }}>
-              <ShieldAlert size={14} color="var(--accent)" /> Admin Console
-            </Link>
-          </div>
         </div>
       )}
 
