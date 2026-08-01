@@ -49,21 +49,18 @@ export function ProductCatalog({ products }: ProductCatalogProps) {
         <div style={{
           padding: '80px 20px',
           textAlign: 'center',
-          border: '1px dashed #2a2a2a',
-          background: '#121212',
+          border: '1px dashed var(--border-color)',
+          background: 'var(--bg-elevated)',
           maxWidth: '600px',
           margin: '0 auto',
           width: '100%',
         }}>
-          <span style={{ fontSize: '1.5rem', color: '#444444', display: 'block', marginBottom: '15px', fontWeight: 'bold', letterSpacing: '0.1em' }}>
-            {t('home.out_of_stock')}
+          <span style={{ fontSize: '1.5rem', color: 'var(--text-primary)', display: 'block', marginBottom: '15px', fontWeight: 'bold', letterSpacing: '0.1em' }}>
+            OUT OF STORM
           </span>
-          <p style={{ color: '#888888', fontSize: '0.9rem', marginBottom: '25px', lineHeight: '1.6' }}>
-            {t('home.preparing')}
+          <p style={{ color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '30px' }}>
+            New drops are coming soon. Stay tuned.
           </p>
-          <a href="/stormy" className="btn-secondary" style={{ display: 'inline-block' }}>
-            {t('home.manage')}
-          </a>
         </div>
       ) : (
         <>
@@ -90,8 +87,8 @@ export function ProductCatalog({ products }: ProductCatalogProps) {
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
                     border: '1px solid',
-                    borderColor: isActive ? 'var(--accent-color)' : '#222222',
-                    background: isActive ? 'var(--accent-color)' : 'transparent',
+                    borderColor: isActive ? 'var(--accent)' : '#222222',
+                    background: isActive ? 'var(--accent)' : 'transparent',
                     color: isActive ? '#030303' : '#888888',
                     transition: 'var(--transition-smooth)',
                   }}
@@ -131,8 +128,8 @@ export function ProductCatalog({ products }: ProductCatalogProps) {
 
       <style jsx global>{`
         .category-tab-btn:hover {
-          border-color: var(--accent-color) !important;
-          color: var(--accent-color);
+          border-color: var(--accent) !important;
+          color: var(--accent);
         }
       `}</style>
     </div>

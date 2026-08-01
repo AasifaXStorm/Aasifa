@@ -75,7 +75,7 @@ export default function AdminLoginPage() {
           <span style={{ fontSize: '0.75rem', color: '#555', letterSpacing: '0.2em', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
             Portal Access
           </span>
-          <h1 className="brand-title" style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--accent-color)', textShadow: '0 0 10px rgba(207,224,255,0.1)' }}>
+          <h1 className="brand-title" style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--accent)', textShadow: '0 0 10px rgba(207,224,255,0.1)' }}>
             STORMY LOGIN
           </h1>
         </div>
@@ -98,7 +98,7 @@ export default function AdminLoginPage() {
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Username</label>
             <div style={{ position: 'relative' }}>
-              <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-color)' }} />
+              <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent)' }} />
               <input
                 type="text"
                 required
@@ -116,7 +116,7 @@ export default function AdminLoginPage() {
           <div className="form-group" style={{ margin: 0 }}>
             <label className="form-label">Password</label>
             <div style={{ position: 'relative' }}>
-              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-color)' }} />
+              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent)' }} />
               <input
                 type={showPassword ? 'text' : 'password'}
                 required

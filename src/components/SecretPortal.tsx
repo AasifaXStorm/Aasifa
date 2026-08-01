@@ -71,7 +71,7 @@ export function SecretPortal() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: isOpen ? 'var(--accent-color)' : '#888',
+          color: isOpen ? 'var(--accent)' : '#888',
           cursor: 'pointer',
           zIndex: 9999,
           backdropFilter: 'blur(5px)',
@@ -166,8 +166,8 @@ export function SecretPortal() {
                 fontSize: '0.8rem',
                 fontWeight: 700,
                 letterSpacing: '0.1em',
-                color: 'var(--accent-color)',
-                border: '1px solid var(--accent-color)',
+                color: 'var(--accent)',
+                border: '1px solid var(--accent)',
                 padding: '4px 10px',
                 background: 'rgba(207, 224, 255, 0.05)',
                 cursor: 'pointer',
@@ -206,18 +206,18 @@ export function SecretPortal() {
         }
         
         .flyout-link-hover:hover {
-          color: var(--accent-color) !important;
+          color: var(--accent) !important;
         }
         
         .translate-toggle-btn:hover {
-          background: var(--accent-color) !important;
+          background: var(--accent) !important;
           color: #030303 !important;
           box-shadow: 0 0 10px rgba(207, 224, 255, 0.3);
         }
         
         .secret-portal-btn:hover {
-          color: var(--accent-color) !important;
-          border-color: var(--accent-color) !important;
+          color: var(--accent) !important;
+          border-color: var(--accent) !important;
           box-shadow: 0 0 15px rgba(207, 224, 255, 0.45) !important;
         }
 

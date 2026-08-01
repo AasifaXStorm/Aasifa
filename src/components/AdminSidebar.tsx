@@ -90,11 +90,16 @@ export function AdminSidebar() {
           transition: 'transform 0.3s ease',
         }}
       >
-        <div style={{ padding: '30px 20px', borderBottom: '1px solid #1a1a1a', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h2 style={{ fontSize: '1rem', fontWeight: 700, letterSpacing: '0.1em', color: '#fff', margin: 0 }}>
-              STORM CONSOLE
+        <div style={{ padding: '30px 20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <h2 style={{ fontSize: '0.95rem', fontWeight: 800, letterSpacing: '0.15em', color: 'var(--text-primary)', margin: 0 }}>
+              WHITESTORM<br/>CONSOLE
             </h2>
+            <div style={{ color: 'var(--accent)', opacity: 0.8 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+            </div>
           </div>
           <button 
             className="mobile-close"
@@ -124,17 +129,17 @@ export function AdminSidebar() {
                       alignItems: 'center',
                       gap: '12px',
                       padding: '12px 20px',
-                      color: isActive ? 'var(--primary)' : 'var(--gray-light)',
+                      color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
                       textDecoration: 'none',
                       fontSize: '0.85rem',
                       fontWeight: isActive ? 600 : 400,
                       letterSpacing: '0.05em',
-                      borderLeft: `3px solid ${isActive ? 'var(--accent-color)' : 'transparent'}`,
+                      borderLeft: `3px solid ${isActive ? 'var(--accent)' : 'transparent'}`,
                       background: isActive ? 'var(--accent-glow)' : 'transparent',
                       transition: 'var(--transition-smooth)',
                     }}
                   >
-                    <Icon size={18} color={isActive ? 'var(--accent-color)' : 'var(--gray-light)'} />
+                    <Icon size={18} color={isActive ? 'var(--accent)' : 'var(--text-muted)'} />
                     {link.label}
                   </Link>
                 </li>

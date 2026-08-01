@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
 import { getCartTotalItems } from '@/lib/cart';
 import { useTranslation } from '@/context/LanguageContext';
@@ -9,6 +10,7 @@ import { useTranslation } from '@/context/LanguageContext';
 export function Navigation() {
   const [cartCount, setCartCount] = useState(0);
   const { t } = useTranslation();
+  const pathname = usePathname();
 
   useEffect(() => {
     // Set initial cart count
@@ -24,6 +26,8 @@ export function Navigation() {
       window.removeEventListener('aasifa_cart_updated', handleCartUpdate);
     };
   }, []);
+
+  if (pathname.startsWith('/stormy')) return null;
 
   return (
     <header className="glass-nav" style={{
@@ -53,7 +57,7 @@ export function Navigation() {
               position: 'absolute',
               top: '-8px',
               right: '-8px',
-              background: 'var(--accent-color)',
+              background: 'var(--accent)',
               color: '#030303',
               fontSize: '0.65rem',
               fontWeight: 'bold',
@@ -72,8 +76,8 @@ export function Navigation() {
 
       <style jsx>{`
         .cart-nav-hover:hover {
-          color: var(--accent-color) !important;
-          filter: drop-shadow(0 0 5px var(--accent-color));
+          color: var(--accent) !important;
+          filter: drop-shadow(0 0 5px var(--accent));
         }
       `}</style>
     </header>

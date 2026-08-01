@@ -165,7 +165,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   style={{
                     width: '70px',
                     height: '90px',
-                    border: activeImgIdx === idx ? '1px solid var(--accent-color)' : '1px solid #222222',
+                    border: activeImgIdx === idx ? '1px solid var(--accent)' : '1px solid #222222',
                     padding: 0,
                     overflow: 'hidden',
                     background: '#0a0a0a',
@@ -244,12 +244,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                         fontSize: '0.9rem',
                         fontWeight: 600,
                         border: isSelected 
-                          ? '1px solid var(--accent-color)' 
+                          ? '1px solid var(--accent)' 
                           : isAvailable 
                             ? '1px solid #222222' 
                             : '1px dashed #222222',
                         background: isSelected 
-                          ? 'var(--accent-color)' 
+                          ? 'var(--accent)' 
                           : 'transparent',
                         color: isSelected 
                           ? '#030303' 

@@ -113,7 +113,7 @@ export default function CartPage() {
           gap: '20px',
         }}>
           <CheckCircle size={60} color="#cfe0ff" />
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--accent-color)' }}>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--accent)' }}>
             {t('cart.success').toUpperCase()}
           </h1>
           <p style={{ color: '#888', fontSize: '0.9rem', lineHeight: '1.6' }}>
@@ -272,14 +272,14 @@ export default function CartPage() {
                     <span>-{(subtotal * 0.10)} EGP</span>
                   </div>
                   {promoApplied && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-color)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent)' }}>
                       <span>Discount (STORM10 - 10%)</span>
                       <span>-{(subtotal * 0.10)} EGP</span>
                     </div>
                   )}
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Shipping</span>
-                    <span style={{ color: 'var(--accent-color)', fontWeight: 600 }}>{t('cart.free')}</span>
+                    <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{t('cart.free')}</span>
                   </div>
                   <div style={{
                     display: 'flex', 
@@ -327,7 +327,7 @@ export default function CartPage() {
                   </button>
                 </div>
                 {promoError && <span style={{ color: '#ff4444', fontSize: '0.75rem', marginTop: '5px', display: 'block' }}>{promoError}</span>}
-                {promoApplied && <span style={{ color: 'var(--accent-color)', fontSize: '0.75rem', marginTop: '5px', display: 'block', fontWeight: 600 }}>Code STORM10 applied successfully (10% off)!</span>}
+                {promoApplied && <span style={{ color: 'var(--accent)', fontSize: '0.75rem', marginTop: '5px', display: 'block', fontWeight: 600 }}>Code STORM10 applied successfully (10% off)!</span>}
               </div>
 
               {/* Checkout Form */}

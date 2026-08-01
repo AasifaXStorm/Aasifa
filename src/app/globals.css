@@ -1,31 +1,25 @@
 :root {
-  /* Cinematic Background Tiers (Crimson Storm) */
-  --bg-void: #050505;
-  --bg-base: #0a0a0a;
-  --bg-elevated: #121212;
-  --bg-card: #1a1a1a;
-  --bg-hover: #222222;
+  /* Cinematic Background Tiers */
+  --bg-base: #050505;        /* true near-black base */
+  --bg-elevated: #121212;    /* cards, panels — must visibly differ from base */
+  --bg-elevated-2: #1a1a1a;  /* nested/hover elevation */
 
-  /* Typography Colors */
-  --foreground: #e5e5e5;
-  --primary: #ffffff;
-  --gray-light: #a0a0a0;
-  --gray-dark: #1a1a1a;
-  
-  /* Borders & UI */
-  --border-color: #2a2a2a;
-  --border-highlight: #333333;
-  
-  /* Brand Accent: Crimson Storm (Deep Blood Red) */
-  --accent-color: #8b0000;
-  --accent-hover: #a50000;
-  --accent-glow: rgba(139, 0, 0, 0.4);
+  /* Brand Accent */
+  --accent: #E8342E;         /* blood-red primary accent — use for CTAs, active states, key numbers */
+  --accent-glow: #E8342E33;  /* same color at low opacity, for glows/shadows */
 
+  /* Typography */
+  --text-primary: #F5F5F5;   /* near-white, not pure #FFF — softer on dark bg */
+  --text-muted: #8A8A8A;     /* secondary text — must have real contrast from bg, not blend in */
+  
   /* Status Colors */
-  --status-pending: #b8860b; /* Amber */
-  --status-confirmed: #2e8b57; /* Sea Green */
-  --status-shipped: #4682b4; /* Steel Blue */
-  --status-cancelled: #8b0000; /* Red */
+  --status-pending: #F5A623;   /* amber */
+  --status-confirmed: #3DDC84; /* green */
+  --status-shipped: #4A9EFF;   /* blue */
+  --status-cancelled: #E8342E; /* red — reuse accent */
+  
+  --border-color: var(--bg-elevated-2);
+  --border-highlight: #333333;
   
   --font-inter: 'Inter', sans-serif;
   --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -44,7 +38,7 @@ html {
 
 html, body {
   background-color: var(--bg-base);
-  color: var(--foreground);
+  color: var(--text-primary);
   font-family: var(--font-inter);
   min-height: 100vh;
   overflow-x: hidden;
@@ -62,7 +56,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: var(--primary);
+  color: var(--text-primary);
   line-height: 1.2;
 }
 
@@ -71,7 +65,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.4em;
-  color: var(--primary);
+  color: var(--text-primary);
   text-shadow: 0 0 10px rgba(255,255,255,0.1);
 }
 
@@ -82,7 +76,7 @@ a {
 }
 
 a:hover {
-  color: var(--primary);
+  color: var(--text-primary);
 }
 
 button {
@@ -110,35 +104,35 @@ button {
 }
 
 .btn-primary {
-  background: var(--primary);
+  background: var(--text-primary);
   color: var(--background);
   padding: 0.8rem 1.6rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 0.85rem;
-  border: 1px solid var(--primary);
+  border: 1px solid var(--text-primary);
   transition: var(--transition-smooth);
 }
 
 .btn-primary:hover {
   background: transparent;
-  color: var(--accent-color);
-  border-color: var(--accent-color);
+  color: var(--accent);
+  border-color: var(--accent);
   box-shadow: 0 0 15px rgba(207, 224, 255, 0.3);
 }
 
 .btn-primary:disabled {
   background: var(--secondary);
   border-color: var(--border-color);
-  color: var(--gray-light);
+  color: var(--text-muted);
   cursor: not-allowed;
   box-shadow: none;
 }
 
 .btn-secondary {
   background: transparent;
-  color: var(--primary);
+  color: var(--text-primary);
   padding: 0.8rem 1.6rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -150,8 +144,8 @@ button {
 
 .btn-secondary:hover {
   background: var(--secondary);
-  border-color: var(--accent-color);
-  color: var(--accent-color);
+  border-color: var(--accent);
+  color: var(--accent);
   box-shadow: 0 0 15px rgba(207, 224, 255, 0.15);
 }
 
@@ -178,7 +172,7 @@ button {
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--gray-light);
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
 
@@ -187,7 +181,7 @@ button {
   padding: 12px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  color: var(--foreground);
+  color: var(--text-primary);
   border-radius: 2px;
   font-family: var(--font-inter);
   transition: var(--transition-smooth);
@@ -195,7 +189,7 @@ button {
 
 .form-input:focus {
   outline: none;
-  border-color: var(--accent-color);
+  border-color: var(--accent);
   box-shadow: 0 0 10px var(--accent-glow);
 }
 
@@ -215,7 +209,7 @@ button {
 }
 
 .product-card-hover:hover {
-  border-color: var(--accent-color) !important;
+  border-color: var(--accent) !important;
   box-shadow: 0 8px 30px rgba(0,0,0,0.8), 0 0 15px var(--accent-glow);
   transform: translateY(-2px);
 }
@@ -237,7 +231,7 @@ button {
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-color);
+  background: var(--accent);
 }
 
 /* ProductCard Hover Animations */
@@ -245,7 +239,7 @@ button {
   transition: var(--transition-smooth);
 }
 .product-card-hover:hover {
-  border-color: var(--accent-color) !important;
+  border-color: var(--accent) !important;
   box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(207, 224, 255, 0.05);
   transform: translateY(-2px);
 }
@@ -264,8 +258,8 @@ button {
 
 /* Secret Admin Entrance Portal styling */
 .secret-entrance:hover {
-  color: var(--accent-color) !important;
-  filter: drop-shadow(0 0 10px var(--accent-color)) !important;
+  color: var(--accent) !important;
+  filter: drop-shadow(0 0 10px var(--accent)) !important;
   transform: scale(1.2) rotate(-5deg) !important;
 }
 

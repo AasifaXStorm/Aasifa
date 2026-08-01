@@ -4,7 +4,6 @@ import "./globals.css";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { LanguageProvider } from "@/context/LanguageContext";
-import { SecretPortal } from "@/components/SecretPortal";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -12,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Aasifa | Premium Streetwear",
-  description: "Minimalist streetwear inspired by the force of nature. Crafted to survive the storm.",
+  title: "WhiteStorm | Premium Streetwear",
+  description: "Exclusive oversized streetwear drops from Egypt.",
   metadataBase: new URL("https://aasifa.vercel.app"),
   robots: {
     index: true,
@@ -46,9 +45,6 @@ export default function RootLayout({
           </main>
           <Footer />
 
-          {/* Floating Secret Entrance & Tweak controller */}
-          <SecretPortal />
-
           {/* Scattered Background Lightning Bolts (Subtle Background Texture) */}
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
             {BACKGROUND_BOLTS.map((bolt, idx) => (
@@ -64,7 +60,7 @@ export default function RootLayout({
                   height: `${bolt.size}px`,
                   opacity: bolt.opacity,
                   transform: `rotate(${bolt.rotate}deg)`,
-                  color: 'var(--accent-color)',
+                  color: 'var(--accent)',
                 }}
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" width="100%" height="100%">

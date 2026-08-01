@@ -50,16 +50,16 @@ export default function AdminOrdersPage() {
       )}
 
       {loading ? (
-        <p style={{ color: 'var(--gray-light)', textAlign: 'center', marginTop: '50px' }}>Loading orders...</p>
+        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '50px' }}>Loading orders...</p>
       ) : orders.length === 0 ? (
-        <div style={{ padding: '40px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', textAlign: 'center', color: 'var(--gray-light)', borderRadius: '4px' }}>
+        <div style={{ padding: '40px', background: 'var(--bg-elevated)', border: '1px solid var(--border-color)', textAlign: 'center', color: 'var(--text-muted)', borderRadius: '4px' }}>
           No orders placed yet.
         </div>
       ) : (
-        <div className="glass-panel" style={{ overflowX: 'auto', border: '1px solid var(--border-color)', background: 'var(--bg-card)', borderRadius: '4px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+        <div className="glass-panel" style={{ overflowX: 'auto', border: '1px solid var(--border-color)', background: 'var(--bg-elevated)', borderRadius: '4px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px', fontSize: '0.9rem' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-elevated)', color: 'var(--gray-light)' }}>
+              <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>
                 <th style={{ padding: '15px' }}>Order ID</th>
                 <th style={{ padding: '15px' }}>Date</th>
                 <th style={{ padding: '15px' }}>Customer</th>
@@ -79,13 +79,13 @@ export default function AdminOrdersPage() {
 
                 return (
                   <tr key={o.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '15px', fontFamily: 'monospace', color: 'var(--gray-light)', fontSize: '0.8rem' }}>{o.id}</td>
-                    <td style={{ padding: '15px', color: 'var(--gray-light)' }}>{new Date(o.created_at).toLocaleDateString()}</td>
+                    <td style={{ padding: '15px', fontFamily: 'monospace', color: 'var(--text-muted)', fontSize: '0.8rem' }}>{o.id}</td>
+                    <td style={{ padding: '15px', color: 'var(--text-muted)' }}>{new Date(o.created_at).toLocaleDateString()}</td>
                     <td style={{ padding: '15px' }}>
-                      <span style={{ display: 'block', fontWeight: 600, color: 'var(--primary)' }}>{o.customer_name}</span>
-                      <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--gray-light)' }}>{o.customer_email}</span>
+                      <span style={{ display: 'block', fontWeight: 600, color: 'var(--text-primary)' }}>{o.customer_name}</span>
+                      <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{o.customer_email}</span>
                     </td>
-                    <td style={{ padding: '15px', fontWeight: 600, color: 'var(--primary)' }}>{o.total_amount} EGP</td>
+                    <td style={{ padding: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>{o.total_amount} EGP</td>
                     <td style={{ padding: '15px' }}>
                       <select
                         value={o.status}
@@ -104,11 +104,11 @@ export default function AdminOrdersPage() {
                           boxShadow: `0 0 10px ${statusColor}40`
                         }}
                       >
-                        <option value="pending" style={{ background: 'var(--bg-card)', color: 'var(--status-pending)' }}>Pending</option>
-                        <option value="confirmed" style={{ background: 'var(--bg-card)', color: 'var(--status-confirmed)' }}>Confirmed</option>
-                        <option value="shipped" style={{ background: 'var(--bg-card)', color: 'var(--status-shipped)' }}>Shipped</option>
-                        <option value="completed" style={{ background: 'var(--bg-card)', color: 'var(--status-confirmed)' }}>Completed</option>
-                        <option value="cancelled" style={{ background: 'var(--bg-card)', color: 'var(--status-cancelled)' }}>Cancelled</option>
+                        <option value="pending" style={{ background: 'var(--bg-elevated)', color: 'var(--status-pending)' }}>Pending</option>
+                        <option value="confirmed" style={{ background: 'var(--bg-elevated)', color: 'var(--status-confirmed)' }}>Confirmed</option>
+                        <option value="shipped" style={{ background: 'var(--bg-elevated)', color: 'var(--status-shipped)' }}>Shipped</option>
+                        <option value="completed" style={{ background: 'var(--bg-elevated)', color: 'var(--status-confirmed)' }}>Completed</option>
+                        <option value="cancelled" style={{ background: 'var(--bg-elevated)', color: 'var(--status-cancelled)' }}>Cancelled</option>
                       </select>
                     </td>
                   </tr>

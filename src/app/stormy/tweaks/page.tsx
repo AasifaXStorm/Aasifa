@@ -10,7 +10,7 @@ export default function AdminTweaksPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const [tweaksInterval, setTweaksInterval] = useState(5000);
-  const [tweaksColor, setTweaksColor] = useState('#ffffff');
+  const [tweaksColor, setTweaksColor] = useState('var(--text-primary)fff');
   const [tweaksGlow, setTweaksGlow] = useState('#e8f4fd');
   const [tweaksShowFooter, setTweaksShowFooter] = useState(true);
 
@@ -70,7 +70,7 @@ export default function AdminTweaksPage() {
 
   return (
     <div style={{ padding: '40px 5%', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '30px', letterSpacing: '0.05em', color: '#fff' }}>
+      <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '30px', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
         SITE TWEAKS
       </h1>
 
@@ -81,33 +81,33 @@ export default function AdminTweaksPage() {
       )}
 
       {loading ? (
-        <p style={{ color: '#888', textAlign: 'center', marginTop: '50px' }}>Loading tweaks...</p>
+        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '50px' }}>Loading tweaks...</p>
       ) : (
-        <div className="glass-panel" style={{ padding: '30px', border: '1px solid #1a1a1a', background: '#121212', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '30px' }}>
+        <div className="glass-panel" style={{ padding: '30px', border: '1px solid var(--border-color)', background: 'var(--bg-elevated)', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '30px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
             
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label" style={{ color: '#fff', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Lightning Interval (ms)</label>
+              <label className="form-label" style={{ color: 'var(--text-primary)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Lightning Interval (ms)</label>
               <input
                 type="number"
                 min="1000"
                 max="30000"
                 className="form-input"
-                style={{ width: '100%', padding: '10px', background: '#0a0a0a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }}
+                style={{ width: '100%', padding: '10px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px' }}
                 value={tweaksInterval}
                 onChange={(e) => setTweaksInterval(Number(e.target.value))}
               />
-              <span style={{ fontSize: '0.75rem', color: '#666', marginTop: '8px', display: 'block' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px', display: 'block' }}>
                 How often the lightning strikes. e.g. 5000 = 5 seconds.
               </span>
             </div>
 
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label" style={{ color: '#fff', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Lightning Bolt Color</label>
+              <label className="form-label" style={{ color: 'var(--text-primary)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Lightning Bolt Color</label>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <input
                   type="color"
-                  style={{ width: '42px', height: '42px', padding: 0, border: '1px solid #222', background: 'transparent', cursor: 'pointer', borderRadius: '4px' }}
+                  style={{ width: '42px', height: '42px', padding: 0, border: '1px solid var(--border-color)', background: 'transparent', cursor: 'pointer', borderRadius: '4px' }}
                   value={tweaksColor}
                   onChange={(e) => setTweaksColor(e.target.value)}
                 />
@@ -116,17 +116,17 @@ export default function AdminTweaksPage() {
                   className="form-input"
                   value={tweaksColor}
                   onChange={(e) => setTweaksColor(e.target.value)}
-                  style={{ flex: 1, padding: '10px', background: '#0a0a0a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }}
+                  style={{ flex: 1, padding: '10px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px' }}
                 />
               </div>
             </div>
 
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label" style={{ color: '#fff', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Lightning Glow Color</label>
+              <label className="form-label" style={{ color: 'var(--text-primary)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Lightning Glow Color</label>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <input
                   type="color"
-                  style={{ width: '42px', height: '42px', padding: 0, border: '1px solid #222', background: 'transparent', cursor: 'pointer', borderRadius: '4px' }}
+                  style={{ width: '42px', height: '42px', padding: 0, border: '1px solid var(--border-color)', background: 'transparent', cursor: 'pointer', borderRadius: '4px' }}
                   value={tweaksGlow}
                   onChange={(e) => setTweaksGlow(e.target.value)}
                 />
@@ -135,7 +135,7 @@ export default function AdminTweaksPage() {
                   className="form-input"
                   value={tweaksGlow}
                   onChange={(e) => setTweaksGlow(e.target.value)}
-                  style={{ flex: 1, padding: '10px', background: '#0a0a0a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }}
+                  style={{ flex: 1, padding: '10px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px' }}
                 />
               </div>
             </div>
@@ -153,9 +153,9 @@ export default function AdminTweaksPage() {
                     accentColor: '#cfe0ff',
                   }}
                 />
-                <span style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>Show footer links in bolt menu</span>
+                <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)' }}>Show footer links in bolt menu</span>
               </label>
-              <span style={{ fontSize: '0.8rem', color: '#666', marginTop: '8px', display: 'block', paddingLeft: '30px' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '8px', display: 'block', paddingLeft: '30px' }}>
                 Display quick navigation links (About, Contact, Shop, etc.) in the bottom-left fixed lightning bolt flyout menu.
               </span>
             </div>
@@ -169,7 +169,7 @@ export default function AdminTweaksPage() {
               alignSelf: 'flex-start', 
               padding: '12px 25px', 
               fontSize: '0.9rem', 
-              background: '#fff', 
+              background: 'var(--text-primary)', 
               color: '#000', 
               border: 'none', 
               fontWeight: 600, 
