@@ -205,20 +205,3 @@ async function uploadImageActionSingle(formData: FormData): Promise<string> {
 
   return data.publicUrl;
 }
-  const file = formData.get('file') as File;
-  const filePath = formData.get('filePath') as string;
-  
-  if (!file || !filePath) throw new Error('Missing file or filePath');
-
-  const { error } = await supabaseAdmin.storage
-    .from('product-images')
-    .upload(filePath, file);
-
-  if (error) throw error;
-
-  const { data } = supabaseAdmin.storage
-    .from('product-images')
-    .getPublicUrl(filePath);
-
-  return data.publicUrl;
-}
