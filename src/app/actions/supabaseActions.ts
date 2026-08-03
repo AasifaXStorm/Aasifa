@@ -318,10 +318,38 @@ export async function updateInventory(productId: string, variants: { size: strin
 export async function sendTestEmailAction(testEmail: string) {
   if (!(await verifyAdminSession())) return { success: false, error: 'Unauthorized' };
   
+  const testHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"></head>
+    <body style="margin: 0; padding: 40px 10px; background-color: #030305; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      <div style="max-width: 560px; margin: 0 auto; background: #0a0a0e; border: 1px solid #1c1c28; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.9);">
+        <div style="background: linear-gradient(180deg, #14141f 0%, #0a0a0e 100%); padding: 32px 20px; text-align: center; border-bottom: 1px solid #1c1c28;">
+          <div style="display: inline-flex; align-items: center; justify-content: center; gap: 12px;">
+            <span style="font-size: 20px; color: #e5b842;">⚡</span>
+            <span style="font-size: 26px; color: #ffffff; font-weight: 900; letter-spacing: 0.35em; text-transform: uppercase;">AASIFA</span>
+            <span style="font-size: 20px; color: #e5b842;">⚡</span>
+          </div>
+          <div style="margin-top: 10px; font-size: 11px; letter-spacing: 0.25em; color: #e5b842; text-transform: uppercase; font-weight: 700;">SYSTEM TEST EMAIL</div>
+        </div>
+        <div style="padding: 32px 28px; text-align: center;">
+          <p style="font-size: 16px; color: #ffffff; font-weight: 600; margin-top: 0;">Test Email Successful!</p>
+          <p style="font-size: 14px; color: #a0a0b0; line-height: 1.6;">
+            If you are reading this, your Brevo email integration for <strong style="color: #ffffff;">AASIFA</strong> is fully active and working smoothly.
+          </p>
+        </div>
+        <div style="background: #07070a; border-top: 1px solid #14141f; padding: 20px; text-align: center;">
+          <p style="margin: 0; font-size: 11px; color: #555566; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">⚡ AASIFA STREETWEAR ⚡</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
   const result = await sendEmailViaBrevo(
     testEmail,
-    'Test Email from AasifaXStorm',
-    '<h1>Test Email</h1><p>If you are reading this, Brevo is working perfectly!</p>',
+    'AASIFA - System Test Email',
+    testHtml,
     'order_confirmation'
   );
   

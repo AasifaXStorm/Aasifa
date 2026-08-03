@@ -160,34 +160,113 @@ export async function processCheckout(
     }
 
     // Trigger transactional order confirmation email via Brevo
+    const shortOrderId = `#${order.id.split('-')[0].toUpperCase()}`;
+
     const orderItemsHtml = validatedItems.map(item => `
-      <li style="margin-bottom: 8px;"><strong>${item.name}</strong> (Size: ${item.size}) &times; ${item.quantity} — ${item.unitPrice * item.quantity} EGP</li>
+      <tr style="border-bottom: 1px solid #1a1a22;">
+        <td style="padding: 12px 0; color: #ffffff; font-weight: 600; font-size: 14px;">
+          ${item.name}
+          <span style="display: inline-block; margin-left: 6px; padding: 2px 6px; background: #1a1a24; border: 1px solid #2a2a38; border-radius: 4px; font-size: 11px; color: #aaa;">${item.size}</span>
+        </td>
+        <td style="padding: 12px 0; color: #888899; text-align: center; font-size: 14px;">&times; ${item.quantity}</td>
+        <td style="padding: 12px 0; color: #ffffff; text-align: right; font-weight: 700; font-size: 14px;">${item.unitPrice * item.quantity} EGP</td>
+      </tr>
     `).join('');
 
     const emailHtmlContent = `
-      <div style="font-family: Arial, sans-serif; background: #050505; color: #f5f5f5; padding: 40px 20px; border-radius: 8px; max-width: 600px; margin: 0 auto; border: 1px solid #222;">
-        <h2 style="text-align: center; border-bottom: 1px solid #222; padding-bottom: 20px; text-transform: uppercase; letter-spacing: 0.1em; color: #ffffff;">⚡ ORDER RECEIVED</h2>
-        <p>Hi ${customerName},</p>
-        <p>Thank you for ordering with <strong>STORM AASIFA</strong>. We have received your order and our customer care team will call you within 2 business days to confirm your phone order.</p>
-        
-        <div style="background: #111; padding: 20px; border: 1px solid #222; border-radius: 4px; margin: 20px 0;">
-          <h4 style="margin-top: 0; text-transform: uppercase; color: #888; letter-spacing: 0.05em;">Order Summary</h4>
-          <p><strong>Order ID:</strong> ${order.id}</p>
-          <p><strong>Delivery Address:</strong> ${fullAddress}</p>
-          <p><strong>Payment Method:</strong> Cash on Delivery (COD)</p>
-          <ul style="padding-left: 20px; color: #ccc;">
-            ${orderItemsHtml}
-          </ul>
-          <p style="border-top: 1px solid #222; padding-top: 10px; font-size: 1.1rem; color: #fff;"><strong>Total:</strong> ${totalAmount} EGP</p>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { margin: 0; padding: 0; background-color: #030305; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+        </style>
+      </head>
+      <body style="margin: 0; padding: 40px 10px; background-color: #030305;">
+        <div style="max-width: 560px; margin: 0 auto; background: #0a0a0e; border: 1px solid #1c1c28; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.9);">
+          
+          <!-- Header Banner with Flanking Lightning Bolts -->
+          <div style="background: linear-gradient(180deg, #14141f 0%, #0a0a0e 100%); padding: 32px 20px; text-align: center; border-bottom: 1px solid #1c1c28;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 12px;">
+              <span style="font-size: 20px; color: #e5b842; text-shadow: 0 0 10px rgba(229,184,66,0.6);">⚡</span>
+              <span style="font-size: 26px; color: #ffffff; font-weight: 900; letter-spacing: 0.35em; text-transform: uppercase;">AASIFA</span>
+              <span style="font-size: 20px; color: #e5b842; text-shadow: 0 0 10px rgba(229,184,66,0.6);">⚡</span>
+            </div>
+            <div style="margin-top: 10px; font-size: 11px; letter-spacing: 0.25em; color: #e5b842; text-transform: uppercase; font-weight: 700;">ORDER CONFIRMATION</div>
+          </div>
+
+          <!-- Body Content -->
+          <div style="padding: 32px 28px;">
+            <p style="font-size: 16px; color: #ffffff; margin-top: 0; font-weight: 600;">Hi ${customerName},</p>
+            <p style="font-size: 14px; color: #a0a0b0; line-height: 1.6; margin-bottom: 28px;">
+              Thank you for ordering with <strong style="color: #ffffff;">AASIFA</strong>. Your order has been placed successfully. Our customer care team will call you within 2 business days to confirm your delivery details.
+            </p>
+
+            <!-- Order Details Box -->
+            <div style="background: #101016; border: 1px solid #1a1a26; border-radius: 12px; padding: 22px; margin-bottom: 28px;">
+              
+              <!-- Order Header Meta -->
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #1a1a24; padding-bottom: 14px; margin-bottom: 16px;">
+                <div>
+                  <span style="font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; display: block;">ORDER NUMBER</span>
+                  <span style="font-size: 16px; color: #e5b842; font-weight: 800; font-family: monospace;">${shortOrderId}</span>
+                </div>
+                <div style="text-align: right;">
+                  <span style="font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; display: block;">PAYMENT</span>
+                  <span style="font-size: 13px; color: #ffffff; font-weight: 600;">Cash on Delivery (COD)</span>
+                </div>
+              </div>
+
+              <!-- Shipping Address -->
+              <div style="margin-bottom: 20px;">
+                <span style="font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 4px;">DELIVERY ADDRESS</span>
+                <span style="font-size: 13px; color: #cccccc; line-height: 1.5; display: block;">${fullAddress}</span>
+              </div>
+
+              <!-- Purchased Items Table -->
+              <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
+                <thead>
+                  <tr style="border-bottom: 1px solid #222230;">
+                    <th style="text-align: left; font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; padding-bottom: 8px;">ITEM</th>
+                    <th style="text-align: center; font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; padding-bottom: 8px;">QTY</th>
+                    <th style="text-align: right; font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; padding-bottom: 8px;">PRICE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${orderItemsHtml}
+                </tbody>
+              </table>
+
+              <!-- Total Row -->
+              <div style="border-top: 1px solid #222230; margin-top: 16px; padding-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 14px; color: #ffffff; font-weight: 700;">TOTAL AMOUNT</span>
+                <span style="font-size: 20px; color: #e5b842; font-weight: 900;">${totalAmount} EGP</span>
+              </div>
+
+            </div>
+
+            <!-- Action / Support Note -->
+            <div style="text-align: center; background: rgba(229,184,66,0.05); border: 1px solid rgba(229,184,66,0.15); border-radius: 8px; padding: 14px; margin-bottom: 10px;">
+              <span style="font-size: 12px; color: #d4af37;">Need to modify your order? Contact us anytime with <strong>${shortOrderId}</strong></span>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="background: #07070a; border-top: 1px solid #14141f; padding: 20px; text-align: center;">
+            <p style="margin: 0; font-size: 11px; color: #555566; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">
+              ⚡ AASIFA STREETWEAR ⚡
+            </p>
+          </div>
+
         </div>
-        <p style="color: #666; font-size: 0.8rem; text-align: center; margin-top: 30px;">STORM AASIFA STREETWEAR</p>
-      </div>
+      </body>
+      </html>
     `;
 
-    sendEmailViaBrevo(customerEmail, `STORM Order #${order.id} Confirmation`, emailHtmlContent, 'order_confirmation')
+    sendEmailViaBrevo(customerEmail, `AASIFA Order ${shortOrderId} Confirmation`, emailHtmlContent, 'order_confirmation')
       .catch(err => console.error('Async Brevo order confirmation error:', err));
 
-    return { success: true, orderId: order.id };
+    return { success: true, orderId: order.id, shortId: shortOrderId };
   } catch (err: any) {
     console.error('Checkout processing exception:', err);
     return { success: false, error: err.message || 'An unexpected error occurred.' };
