@@ -151,6 +151,29 @@ export async function updateSiteConfig(configJson: string) {
   }
 }
 
+export async function validatePromoCodeAction(code: string): Promise<{ valid: boolean; discountPercentage: number; message?: string }> {
+  try {
+    const { data } = await supabaseAdmin
+      .from('products')
+      .select('description')
+      .eq('name', '_SITE_CONFIG_')
+      .maybeSingle();
+
+    if (data?.description) {
+      const parsed = JSON.parse(data.description);
+      const promos = parsed.promo_codes || [];
+      const match = promos.find((p: any) => p.code.toUpperCase() === code.toUpperCase() && p.is_active);
+      
+      if (match) {
+        return { valid: true, discountPercentage: Number(match.discount_percentage) || 0 };
+      }
+    }
+    return { valid: false, discountPercentage: 0, message: 'Invalid or expired promo code' };
+  } catch (e) {
+    return { valid: false, discountPercentage: 0, message: 'Server error validating code' };
+  }
+}
+
 export async function getDashboardStats() {
   if (!(await verifyAdminSession())) throw new Error('Unauthorized');
 

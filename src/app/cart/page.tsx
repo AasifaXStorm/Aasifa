@@ -13,6 +13,7 @@ import {
   CartItem 
 } from '@/lib/cart';
 import { processCheckout, saveAbandonedCartAction, ShippingDetails } from '../actions/checkout';
+import { validatePromoCodeAction } from '../actions/supabaseActions';
 import { useTranslation } from '@/context/LanguageContext';
 
 const EGYPT_GOVERNORATES = [
@@ -45,6 +46,12 @@ export default function CartPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successOrder, setSuccessOrder] = useState<string | null>(null);
+
+  // Promo Code State
+  const [promoCodeInput, setPromoCodeInput] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
+  const [discountPercentage, setDiscountPercentage] = useState<number>(0);
+  const [promoMessage, setPromoMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
     setCart(getCart());
@@ -89,7 +96,22 @@ export default function CartPage() {
 
   const subtotal = getCartTotalPrice();
   const shippingFee = governorate ? 60 : 0;
-  const grandTotal = subtotal + shippingFee;
+  const discountAmount = appliedPromo ? subtotal * (discountPercentage / 100) : 0;
+  const grandTotal = subtotal - discountAmount + shippingFee;
+
+  const handleApplyPromo = async () => {
+    if (!promoCodeInput.trim()) return;
+    const { valid, discountPercentage, message } = await validatePromoCodeAction(promoCodeInput.trim());
+    if (valid) {
+      setAppliedPromo(promoCodeInput.trim().toUpperCase());
+      setDiscountPercentage(discountPercentage);
+      setPromoMessage({ text: `${discountPercentage}% discount applied!`, type: 'success' });
+    } else {
+      setAppliedPromo(null);
+      setDiscountPercentage(0);
+      setPromoMessage({ text: message || 'Invalid promo code', type: 'error' });
+    }
+  };
 
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,6 +142,7 @@ export default function CartPage() {
       governorate,
       postalCode,
       shippingFee,
+      promoCode: appliedPromo || undefined,
     };
 
     try {
@@ -559,6 +582,43 @@ export default function CartPage() {
 
               <div style={{ width: '100%', height: '1px', background: '#151515' }} />
 
+              {/* Promo Code Input */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em' }}>PROMO CODE</span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={promoCodeInput}
+                    onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
+                    placeholder="ENTER CODE"
+                    className="checkout-input"
+                    style={{ flex: 1, padding: '10px 14px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyPromo}
+                    style={{
+                      background: '#1a1a1a',
+                      color: '#fff',
+                      border: '1px solid #333',
+                      padding: '0 16px',
+                      fontSize: '0.7rem',
+                      fontWeight: 800,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    APPLY
+                  </button>
+                </div>
+                {promoMessage && (
+                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: promoMessage.type === 'success' ? '#3DDC84' : '#ff4444' }}>
+                    {promoMessage.text}
+                  </span>
+                )}
+              </div>
+
+              <div style={{ width: '100%', height: '1px', background: '#151515' }} />
+
               {/* Totals Breakdown */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.8rem', color: '#888888', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 
@@ -567,6 +627,14 @@ export default function CartPage() {
                   <span>SUBTOTAL</span>
                   <span style={{ color: '#ffffff', fontWeight: 600 }}>EGP {subtotal.toFixed(2)}</span>
                 </div>
+
+                {/* Discount */}
+                {appliedPromo && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#3DDC84' }}>
+                    <span>DISCOUNT ({discountPercentage}%)</span>
+                    <span style={{ fontWeight: 600 }}>- EGP {discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
 
                 {/* Shipping */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

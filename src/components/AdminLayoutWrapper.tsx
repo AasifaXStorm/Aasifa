@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { AdminSidebar } from '@/components/AdminSidebar';
+import { Menu } from 'lucide-react';
 
 interface Toast {
   id: string;
@@ -13,6 +14,7 @@ interface Toast {
 export function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     // Check if there is a pending toast in localStorage
@@ -63,23 +65,28 @@ export function AdminLayoutWrapper({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div className="admin-layout" style={{ 
-      display: 'grid',
-      gridTemplateColumns: '260px 1fr',
+    <div className="admin-layout-container" style={{ 
+      display: 'flex',
+      flexDirection: 'column',
       minHeight: '100vh',
       background: '#040404',
       color: '#f5f5f5',
       fontFamily: 'system-ui, -apple-system, sans-serif'
     }}>
-      <AdminSidebar />
-      <main style={{ 
-        padding: '50px 5%', 
-        overflowY: 'auto', 
-        maxHeight: '100vh',
-        background: 'radial-gradient(circle at top right, rgba(20,20,20,0.8) 0%, rgba(4,4,4,1) 70%)'
-      }}>
-        {children}
-      </main>
+      {/* Mobile Topbar */}
+      <div className="admin-mobile-topbar">
+        <button onClick={() => setSidebarOpen(true)} className="admin-menu-btn">
+          <Menu size={24} />
+        </button>
+        <span className="admin-mobile-title">STORM CONSOLE</span>
+      </div>
+
+      <div className="admin-content-wrapper">
+        <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <main className="admin-main-area">
+          {children}
+        </main>
+      </div>
 
       {/* Floating Toast Containers (Bottom Right) */}
       <div style={{
@@ -129,13 +136,49 @@ export function AdminLayoutWrapper({ children }: { children: React.ReactNode }) 
 
       <style jsx global>{`
         @keyframes slideInRight {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .admin-layout-container { flex-direction: row !important; }
+        .admin-mobile-topbar { display: none; }
+        .admin-content-wrapper { display: flex; flex: 1; width: 100%; }
+        .admin-main-area {
+          flex: 1;
+          padding: 50px 5%;
+          overflow-y: auto;
+          max-height: 100vh;
+          background: radial-gradient(circle at top right, rgba(20,20,20,0.8) 0%, rgba(4,4,4,1) 70%);
+        }
+
+        @media (max-width: 900px) {
+          .admin-layout-container { flex-direction: column !important; }
+          .admin-mobile-topbar {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: #070707;
+            border-bottom: 1px solid #1a1a1a;
+            z-index: 90;
           }
-          to {
-            transform: translateX(0);
-            opacity: 1;
+          .admin-menu-btn {
+            background: transparent;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+          }
+          .admin-mobile-title {
+            margin-left: 15px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+          }
+          .admin-main-area {
+            max-height: calc(100vh - 55px);
+            padding: 20px 5%;
           }
         }
       `}</style>

@@ -270,52 +270,54 @@ export default function OverviewPage() {
               {orders.length === 0 ? (
                 <p style={{ color: '#444', textAlign: 'center', padding: '20px 0', fontSize: '0.8rem' }}>NO ORDERS FOUND</p>
               ) : (
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
-                  <thead>
-                    <tr style={{ borderBottom: '1px solid #1a1a1a', color: '#666' }}>
-                      <th style={{ padding: '10px 8px' }}>ORDER ID</th>
-                      <th style={{ padding: '10px 8px' }}>CUSTOMER</th>
-                      <th style={{ padding: '10px 8px' }}>TOTAL</th>
-                      <th style={{ padding: '10px 8px' }}>STATUS</th>
-                      <th style={{ padding: '10px 8px', textAlign: 'center' }}>ACTION</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((o: any, idx) => (
-                      <tr key={idx} style={{ borderBottom: '1px solid #111' }}>
-                        <td style={{ padding: '10px 8px', color: '#aaa', fontFamily: 'monospace', fontSize: '0.7rem' }}>
-                          #{o.id.split('-')[0].toUpperCase()}
-                        </td>
-                        <td style={{ padding: '10px 8px', color: '#fff', fontWeight: 'bold' }}>{o.customer_name}</td>
-                        <td style={{ padding: '10px 8px' }}>{Number(o.total_amount).toLocaleString()} EGP</td>
-                        <td style={{ padding: '10px 8px' }}>
-                          <span style={{
-                            padding: '3px 8px',
-                            borderRadius: '3px',
-                            fontSize: '0.65rem',
-                            fontWeight: 'bold',
-                            textTransform: 'uppercase',
-                            background: o.status === 'cancelled' ? '#222' : o.status === 'completed' ? 'rgba(61,220,132,0.1)' : 'rgba(245,166,35,0.1)',
-                            color: o.status === 'cancelled' ? '#888' : o.status === 'completed' ? '#3DDC84' : '#F5A623'
-                          }}>
-                            {o.status}
-                          </span>
-                        </td>
-                        <td style={{ padding: '10px 8px', textAlign: 'center' }}>
-                          <button
-                            onClick={() => handleDeleteSingleOrder(o.id)}
-                            title="Delete Order"
-                            style={{ background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', padding: 0 }}
-                            onMouseOver={(e) => e.currentTarget.style.color = '#ff4444'}
-                            onMouseOut={(e) => e.currentTarget.style.color = '#555'}
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </td>
+                <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ width: '100%', minWidth: '600px', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid #1a1a1a', color: '#666' }}>
+                        <th style={{ padding: '10px 8px' }}>ORDER ID</th>
+                        <th style={{ padding: '10px 8px' }}>CUSTOMER</th>
+                        <th style={{ padding: '10px 8px' }}>TOTAL</th>
+                        <th style={{ padding: '10px 8px' }}>STATUS</th>
+                        <th style={{ padding: '10px 8px', textAlign: 'center' }}>ACTION</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {orders.map((o: any, idx) => (
+                        <tr key={idx} style={{ borderBottom: '1px solid #111' }}>
+                          <td style={{ padding: '10px 8px', color: '#aaa', fontFamily: 'monospace', fontSize: '0.7rem' }}>
+                            #{o.id.split('-')[0].toUpperCase()}
+                          </td>
+                          <td style={{ padding: '10px 8px', color: '#fff', fontWeight: 'bold' }}>{o.customer_name}</td>
+                          <td style={{ padding: '10px 8px' }}>{Number(o.total_amount).toLocaleString()} EGP</td>
+                          <td style={{ padding: '10px 8px' }}>
+                            <span style={{
+                              padding: '3px 8px',
+                              borderRadius: '3px',
+                              fontSize: '0.65rem',
+                              fontWeight: 'bold',
+                              textTransform: 'uppercase',
+                              background: o.status === 'cancelled' ? '#222' : o.status === 'completed' ? 'rgba(61,220,132,0.1)' : 'rgba(245,166,35,0.1)',
+                              color: o.status === 'cancelled' ? '#888' : o.status === 'completed' ? '#3DDC84' : '#F5A623'
+                            }}>
+                              {o.status}
+                            </span>
+                          </td>
+                          <td style={{ padding: '10px 8px', textAlign: 'center' }}>
+                            <button
+                              onClick={() => handleDeleteSingleOrder(o.id)}
+                              title="Delete Order"
+                              style={{ background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', padding: 0 }}
+                              onMouseOver={(e) => e.currentTarget.style.color = '#ff4444'}
+                              onMouseOut={(e) => e.currentTarget.style.color = '#555'}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
 

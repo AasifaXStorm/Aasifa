@@ -29,6 +29,7 @@ export interface ShippingDetails {
   governorate: string;
   postalCode?: string;
   shippingFee?: number;
+  promoCode?: string;
 }
 
 function sanitizeText(str: string): string {
@@ -62,7 +63,7 @@ export async function processCheckout(
   const customerName = `${firstName} ${lastName}`.trim();
   const customerEmail = shippingDetails.email.trim().toLowerCase();
   const shippingFee = typeof shippingDetails.shippingFee === 'number' && shippingDetails.shippingFee >= 0 ? shippingDetails.shippingFee : 0;
-
+  
   const detailedAddress = sanitizeText(shippingDetails.detailedAddress);
   const governorate = sanitizeText(shippingDetails.governorate);
   const phone = sanitizeText(shippingDetails.phone);
@@ -137,7 +138,27 @@ export async function processCheckout(
       });
     }
 
-    const totalAmount = subtotal + shippingFee;
+    // Apply promo code securely on the server
+    let discountAmount = 0;
+    if (shippingDetails.promoCode) {
+      const { data: siteConfigData } = await supabaseAdmin
+        .from('products')
+        .select('description')
+        .eq('name', '_SITE_CONFIG_')
+        .maybeSingle();
+
+      if (siteConfigData?.description) {
+        const parsed = JSON.parse(siteConfigData.description);
+        const promos = parsed.promo_codes || [];
+        const match = promos.find((p: any) => p.code.toUpperCase() === shippingDetails.promoCode?.trim().toUpperCase() && p.is_active);
+        
+        if (match && match.discount_percentage) {
+          discountAmount = subtotal * (Number(match.discount_percentage) / 100);
+        }
+      }
+    }
+
+    const totalAmount = subtotal - discountAmount + shippingFee;
 
     // 2. Create the order in Supabase
     const { data: order, error: orderError } = await supabaseAdmin

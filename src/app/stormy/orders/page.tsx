@@ -145,68 +145,70 @@ export default function OrdersPage() {
         ) : filteredOrders.length === 0 ? (
           <p style={{ color: '#444', textAlign: 'center', padding: '30px 0', fontSize: '0.8rem' }}>NO MATCHING ORDERS FOUND</p>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid #1a1a1a', color: '#666' }}>
-                <th style={{ padding: '12px' }}>ORDER ID</th>
-                <th style={{ padding: '12px' }}>CUSTOMER</th>
-                <th style={{ padding: '12px' }}>CONTACT</th>
-                <th style={{ padding: '12px' }}>TOTAL</th>
-                <th style={{ padding: '12px' }}>STATUS</th>
-                <th style={{ padding: '12px', textAlign: 'center' }}>ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredOrders.map((o: any, idx) => (
-                <tr key={idx} style={{ borderBottom: '1px solid #111' }}>
-                  <td style={{ padding: '12px', color: '#aaa', fontFamily: 'monospace', fontSize: '0.75rem' }}>
-                    #{o.id.split('-')[0].toUpperCase()}
-                  </td>
-                  <td style={{ padding: '12px', color: '#fff', fontWeight: 'bold' }}>{o.customer_name}</td>
-                  <td style={{ padding: '12px', color: '#888' }}>{o.customer_email}</td>
-                  <td style={{ padding: '12px', fontWeight: 'bold' }}>{o.total_amount} EGP</td>
-                  <td style={{ padding: '12px' }}>
-                    <select
-                      value={o.status}
-                      onChange={(e) => handleStatusChange(o.id, e.target.value)}
-                      style={{
-                        background: '#000',
-                        border: '1px solid #333',
-                        color: '#fff',
-                        padding: '6px',
-                        borderRadius: '4px',
-                        fontFamily: 'monospace',
-                        fontSize: '0.75rem'
-                      }}
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="shipped">Shipped</option>
-                      <option value="completed">Completed</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                  </td>
-                  <td style={{ padding: '12px', textAlign: 'center' }}>
-                    <button
-                      onClick={() => handleDeleteSingleOrder(o.id)}
-                      title="Delete Order"
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#666666',
-                        cursor: 'pointer',
-                        padding: '4px'
-                      }}
-                      onMouseOver={(e) => e.currentTarget.style.color = '#ff4444'}
-                      onMouseOut={(e) => e.currentTarget.style.color = '#666666'}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #1a1a1a', color: '#666' }}>
+                  <th style={{ padding: '12px' }}>ORDER ID</th>
+                  <th style={{ padding: '12px' }}>CUSTOMER</th>
+                  <th style={{ padding: '12px' }}>CONTACT</th>
+                  <th style={{ padding: '12px' }}>TOTAL</th>
+                  <th style={{ padding: '12px' }}>STATUS</th>
+                  <th style={{ padding: '12px', textAlign: 'center' }}>ACTIONS</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredOrders.map((o: any, idx) => (
+                  <tr key={idx} style={{ borderBottom: '1px solid #111' }}>
+                    <td style={{ padding: '12px', color: '#aaa', fontFamily: 'monospace', fontSize: '0.75rem' }}>
+                      #{o.id.split('-')[0].toUpperCase()}
+                    </td>
+                    <td style={{ padding: '12px', color: '#fff', fontWeight: 'bold' }}>{o.customer_name}</td>
+                    <td style={{ padding: '12px', color: '#888' }}>{o.customer_email}</td>
+                    <td style={{ padding: '12px', fontWeight: 'bold' }}>{o.total_amount} EGP</td>
+                    <td style={{ padding: '12px' }}>
+                      <select
+                        value={o.status}
+                        onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                        style={{
+                          background: '#000',
+                          border: '1px solid #333',
+                          color: '#fff',
+                          padding: '6px',
+                          borderRadius: '4px',
+                          fontFamily: 'monospace',
+                          fontSize: '0.75rem'
+                        }}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </td>
+                    <td style={{ padding: '12px', textAlign: 'center' }}>
+                      <button
+                        onClick={() => handleDeleteSingleOrder(o.id)}
+                        title="Delete Order"
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#666666',
+                          cursor: 'pointer',
+                          padding: '4px'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.color = '#ff4444'}
+                        onMouseOut={(e) => e.currentTarget.style.color = '#666666'}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
