@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { LanguageProvider } from "@/context/LanguageContext";
 
 import { BottomLeftLightningBolt } from "@/components/BottomLeftLightningBolt";
+import { StormLoader } from "@/components/StormLoader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,39 +40,41 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative", background: 'var(--bg-base)' }}>
-        <LanguageProvider>
-          <Navigation />
-          <main style={{ flex: 1, display: "flex", flexDirection: "column", position: 'relative', zIndex: 1 }}>
-            {children}
-          </main>
-          <Footer />
-          <BottomLeftLightningBolt />
+        <StormLoader>
+          <LanguageProvider>
+            <Navigation />
+            <main style={{ flex: 1, display: "flex", flexDirection: "column", position: 'relative', zIndex: 1 }}>
+              {children}
+            </main>
+            <Footer />
+            <BottomLeftLightningBolt />
 
-          {/* Scattered Background Lightning Bolts (Subtle Background Texture) */}
-          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
-            {BACKGROUND_BOLTS.map((bolt, idx) => (
-              <div
-                key={idx}
-                className={bolt.flicker ? 'distant-flicker-bolt' : ''}
-                style={{
-                  position: 'absolute',
-                  top: bolt.top,
-                  left: bolt.left,
-                  right: bolt.right,
-                  width: `${bolt.size}px`,
-                  height: `${bolt.size}px`,
-                  opacity: bolt.opacity,
-                  transform: `rotate(${bolt.rotate}deg)`,
-                  color: 'var(--accent)',
-                }}
-              >
-                <svg viewBox="0 0 24 24" fill="currentColor" width="100%" height="100%">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                </svg>
-              </div>
-            ))}
-          </div>
-        </LanguageProvider>
+            {/* Scattered Background Lightning Bolts (Subtle Background Texture) */}
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
+              {BACKGROUND_BOLTS.map((bolt, idx) => (
+                <div
+                  key={idx}
+                  className={bolt.flicker ? 'distant-flicker-bolt' : ''}
+                  style={{
+                    position: 'absolute',
+                    top: bolt.top,
+                    left: bolt.left,
+                    right: bolt.right,
+                    width: `${bolt.size}px`,
+                    height: `${bolt.size}px`,
+                    opacity: bolt.opacity,
+                    transform: `rotate(${bolt.rotate}deg)`,
+                    color: 'var(--accent)',
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="100%" height="100%">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                  </svg>
+                </div>
+              ))}
+            </div>
+          </LanguageProvider>
+        </StormLoader>
       </body>
     </html>
   );

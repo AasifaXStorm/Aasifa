@@ -9,6 +9,7 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   let products: Product[] = [];
   let fetchError = null;
+  let enabledCategories = ['SHIRTS']; // default Shirts only
 
   try {
     const { data, error } = await supabase
@@ -20,12 +21,30 @@ export default async function Home() {
       console.error('Error fetching products:', error);
       fetchError = error;
     } else {
+      // Extract active products
       products = ((data as any[]) || [])
         .filter(p => !p.name.startsWith('_') && !p.category?.endsWith(' (Hidden)'))
         .map(p => ({
           ...p,
           category: p.category ? p.category.replace(' (Hidden)', '') : 'Shirts'
         }));
+
+      // Find site config inside fetched products to avoid extra query
+      const configItem = (data as any[] || []).find(p => p.name === '_SITE_CONFIG_');
+      if (configItem?.description) {
+        try {
+          const parsed = JSON.parse(configItem.description);
+          const cats = [];
+          if (parsed.show_category_shirts !== false) cats.push('SHIRTS');
+          if (parsed.show_category_hoodies === true) cats.push('HOODIES');
+          if (parsed.show_category_pants === true) cats.push('PANTS');
+          if (parsed.show_category_accessories === true) cats.push('ACCESSORIES');
+          
+          if (cats.length > 0) {
+            enabledCategories = cats;
+          }
+        } catch (e) {}
+      }
     }
   } catch (err: any) {
     console.error('Catch fetching products:', err);
@@ -68,7 +87,7 @@ export default async function Home() {
 
           {/* Interactive Catalog Grid with Filters & Titles */}
           {!fetchError && (
-            <ProductCatalog products={products} />
+            <ProductCatalog products={products} enabledCategories={enabledCategories} />
           )}
         </div>
       </section>

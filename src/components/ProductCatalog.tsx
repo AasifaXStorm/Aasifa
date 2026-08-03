@@ -6,18 +6,21 @@ import { useTranslation } from '@/context/LanguageContext';
 
 interface ProductCatalogProps {
   products: Product[];
+  enabledCategories?: string[];
 }
 
-const CATEGORIES = ['ALL', 'SHIRTS', 'HOODIES', 'PANTS', 'ACCESSORIES'];
-
-export function ProductCatalog({ products }: ProductCatalogProps) {
+export function ProductCatalog({ products, enabledCategories }: ProductCatalogProps) {
   const [activeCategory, setActiveCategory] = useState('ALL');
   const { t } = useTranslation();
 
-  // Filter products based on selected tab
+  const allowedRaw = enabledCategories ? enabledCategories.map(c => c.toUpperCase()) : ['SHIRTS', 'HOODIES', 'PANTS', 'ACCESSORIES'];
+  const allowedCategories = ['ALL', ...allowedRaw];
+
+  const visibleProducts = products.filter(p => allowedRaw.includes((p.category || 'Shirts').toUpperCase()));
+
   const filteredProducts = activeCategory === 'ALL'
-    ? products
-    : products.filter(p => (p.category || 'Shirts').toUpperCase() === activeCategory);
+    ? visibleProducts
+    : visibleProducts.filter(p => (p.category || 'Shirts').toUpperCase() === activeCategory);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
@@ -44,7 +47,7 @@ export function ProductCatalog({ products }: ProductCatalogProps) {
         <div style={{ width: '40px', height: '1px', background: '#2a2a2a', marginTop: '20px' }}></div>
       </div>
 
-      {products.length === 0 ? (
+      {visibleProducts.length === 0 ? (
         <div 
           className="out-of-storm-box"
           style={{
@@ -84,7 +87,7 @@ export function ProductCatalog({ products }: ProductCatalogProps) {
             flexWrap: 'wrap',
             marginBottom: '20px',
           }}>
-            {CATEGORIES.map((cat) => {
+            {allowedCategories.map((cat) => {
               const isActive = activeCategory === cat;
               const label = t(`home.cat.${cat.toLowerCase()}`);
               

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, ShoppingBag, Tag, Warehouse, 
-  Truck, Sliders, Settings, LogOut, Trash2 
+  Truck, Sliders, Settings, LogOut
 } from 'lucide-react';
 
 export function AdminSidebar() {
@@ -50,29 +50,30 @@ export function AdminSidebar() {
 
   return (
     <div style={{
-      background: '#0d0d0d',
-      borderRight: '1px solid #1a1a1a',
+      background: 'linear-gradient(180deg, #070707 0%, #121212 100%)',
+      borderRight: '1px solid #222222',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
       height: '100vh',
-      padding: '25px 0',
-      boxSizing: 'border-box'
+      padding: '30px 0',
+      boxSizing: 'border-box',
+      boxShadow: '4px 0 25px rgba(0,0,0,0.5)'
     }}>
       <div>
         {/* Brand Header */}
-        <div style={{ padding: '0 25px 25px 25px', borderBottom: '1px solid #1a1a1a', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/images/WhiteStorm.png" alt="AASIFA" style={{ height: '22px', width: 'auto', objectFit: 'contain' }} />
-          <span style={{ fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.15em', color: '#888' }}>
+        <div style={{ padding: '0 25px 25px 25px', borderBottom: '1px solid #222222', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img src="/images/WhiteStorm.png" alt="AASIFA" style={{ height: '26px', width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.4))' }} />
+          <span style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.2em', color: '#ffffff', textShadow: '0 0 8px rgba(255,255,255,0.3)' }}>
             CONSOLE
           </span>
         </div>
 
         {/* Menu Navigation */}
-        <nav style={{ padding: '20px 0' }}>
+        <nav style={{ padding: '25px 0' }}>
           {menuGroups.map((group, gIdx) => (
-            <div key={gIdx} style={{ marginBottom: '25px' }}>
-              <span style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.15em', color: '#555', padding: '0 25px', display: 'block', marginBottom: '10px' }}>
+            <div key={gIdx} style={{ marginBottom: '30px' }}>
+              <span style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.2em', color: '#555555', padding: '0 25px', display: 'block', marginBottom: '12px' }}>
                 {group.title}
               </span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -87,17 +88,20 @@ export function AdminSidebar() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '12px',
-                        padding: '12px 25px',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
+                        padding: '14px 25px',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
                         textDecoration: 'none',
                         color: isActive ? '#ffffff' : '#888888',
-                        background: isActive ? 'rgba(255,255,255,0.03)' : 'transparent',
+                        background: isActive ? 'linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%)' : 'transparent',
                         borderLeft: isActive ? '3px solid #ffffff' : '3px solid transparent',
-                        transition: 'all 0.2s'
+                        boxShadow: isActive ? 'inset 4px 0 15px rgba(255,255,255,0.05)' : 'none',
+                        textShadow: isActive ? '0 0 10px rgba(255,255,255,0.4)' : 'none',
+                        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                       }}
+                      className="sidebar-link"
                     >
-                      <Icon size={14} />
+                      <Icon size={15} style={{ filter: isActive ? 'drop-shadow(0 0 5px #fff)' : 'none' }} />
                       {item.name}
                     </Link>
                   );
@@ -109,9 +113,9 @@ export function AdminSidebar() {
       </div>
 
       {/* Footer controls */}
-      <div style={{ padding: '0 25px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.65rem', color: '#666' }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#3DDC84' }}></span>
+      <div style={{ padding: '0 25px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.65rem', color: '#888', fontWeight: 600, letterSpacing: '0.05em' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#3DDC84', boxShadow: '0 0 8px #3DDC84', display: 'inline-block' }}></span>
           {syncedTime}
         </div>
         
@@ -120,36 +124,58 @@ export function AdminSidebar() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '10px',
             background: 'transparent',
             border: 'none',
             color: '#888',
             cursor: 'pointer',
-            fontSize: '0.75rem',
+            fontSize: '0.8rem',
+            fontWeight: 700,
             padding: '10px 0',
-            textAlign: 'left'
+            textAlign: 'left',
+            transition: 'color 0.2s',
           }}
+          className="logout-btn"
         >
-          <LogOut size={14} /> LOG OUT
+          <LogOut size={15} /> LOG OUT
         </button>
 
         <button
           onClick={handleLogout}
           style={{
-            background: 'rgba(255, 50, 50, 0.1)',
+            background: 'rgba(255, 50, 50, 0.08)',
             border: '1px solid rgba(255, 50, 50, 0.2)',
             color: '#ff6666',
             borderRadius: '4px',
-            fontSize: '0.7rem',
-            padding: '8px 12px',
+            fontSize: '0.75rem',
+            padding: '10px 14px',
             cursor: 'pointer',
             fontWeight: 'bold',
-            textAlign: 'center'
+            textAlign: 'center',
+            transition: 'all 0.2s',
+            letterSpacing: '0.05em',
           }}
+          className="forget-btn"
         >
           FORGET DEVICE
         </button>
       </div>
+      
+      <style jsx global>{`
+        .sidebar-link:hover {
+          color: #ffffff !important;
+          background: rgba(255,255,255,0.03) !important;
+          padding-left: 28px !important;
+        }
+        .logout-btn:hover {
+          color: #ffffff !important;
+        }
+        .forget-btn:hover {
+          background: rgba(255, 50, 50, 0.15) !important;
+          border-color: rgba(255, 50, 50, 0.4) !important;
+          box-shadow: 0 0 10px rgba(255, 50, 50, 0.1) !important;
+        }
+      `}</style>
     </div>
   );
 }

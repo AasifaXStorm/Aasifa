@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { AdminLayoutWrapper } from '@/components/AdminLayoutWrapper';
 import { verifyAdminSession } from '@/app/actions/auth';
+import { StormLoader } from '@/components/StormLoader';
 
 export default function StormyLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -36,5 +37,9 @@ export default function StormyLayout({ children }: { children: React.ReactNode }
     );
   }
 
-  return <AdminLayoutWrapper>{children}</AdminLayoutWrapper>;
+  return (
+    <StormLoader>
+      <AdminLayoutWrapper>{children}</AdminLayoutWrapper>
+    </StormLoader>
+  );
 }
