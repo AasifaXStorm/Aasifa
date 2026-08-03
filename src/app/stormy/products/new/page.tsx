@@ -116,6 +116,7 @@ export default function NewProductPage() {
       await saveProduct(productData, defaultVariants, true);
 
       setUploadProgress('Success!');
+      localStorage.setItem('storm_pending_toast', JSON.stringify({ message: 'Product created successfully!', type: 'success' }));
       window.location.href = '/stormy/products';
     } catch (err: any) {
       console.error(err);

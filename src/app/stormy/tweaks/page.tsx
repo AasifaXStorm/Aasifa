@@ -88,11 +88,11 @@ export default function AdminTweaksPage() {
 
       await updateSiteConfig(configJson);
 
-      alert('Tweaks saved successfully!');
+      window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'Tweaks saved successfully!', type: 'success' } }));
       window.dispatchEvent(new Event('aasifa_config_updated'));
     } catch (e: any) {
       console.error(e);
-      alert('Failed to save tweaks.');
+      window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'Failed to save tweaks.', type: 'error' } }));
     } finally {
       setSavingTweaks(false);
     }

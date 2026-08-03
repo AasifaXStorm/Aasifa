@@ -127,6 +127,7 @@ export default function EditProductPage() {
     if (!confirm('Are you sure you want to delete this product?')) return;
     try {
       await deleteProduct(id);
+      localStorage.setItem('storm_pending_toast', JSON.stringify({ message: 'Product deleted successfully!', type: 'success' }));
       window.location.href = '/stormy/products';
     } catch (err: any) {
       alert('Failed to delete product.');
@@ -181,6 +182,7 @@ export default function EditProductPage() {
       await saveProduct(productData, defaultVariants, false);
 
       setUploadProgress('Success!');
+      localStorage.setItem('storm_pending_toast', JSON.stringify({ message: 'Product updated successfully!', type: 'success' }));
       window.location.href = '/stormy/products';
     } catch (err: any) {
       console.error(err);
