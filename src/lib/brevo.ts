@@ -15,9 +15,26 @@ export async function sendEmailViaBrevo(
   htmlContent: string,
   emailType: 'order_confirmation' | 'abandoned_cart'
 ): Promise<BrevoSendResult> {
-  let apiKey = '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';
+  let apiKey = process.env.BREVO_API_KEY || '';
   let senderEmail = 'aasifa.storm.eg@gmail.com';
   let senderName = 'Storm';
+
+  try {
+    const { data: configItem } = await supabaseAdmin
+      .from('products')
+      .select('description')
+      .eq('name', '_SITE_CONFIG_')
+      .maybeSingle();
+
+    if (configItem && configItem.description) {
+      const parsed = JSON.parse(configItem.description);
+      if (parsed.brevo_api_key) apiKey = parsed.brevo_api_key;
+      if (parsed.brevo_sender_email) senderEmail = parsed.brevo_sender_email;
+      if (parsed.brevo_sender_name) senderName = parsed.brevo_sender_name;
+    }
+  } catch (err) {
+    console.error('Failed to load Brevo config from DB:', err);
+  }
 
   if (!apiKey) {
     const errorMsg = 'BREVO_API_KEY is not defined in environment variables or settings.';
