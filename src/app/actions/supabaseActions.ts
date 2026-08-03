@@ -322,24 +322,56 @@ export async function sendTestEmailAction(testEmail: string) {
     <!DOCTYPE html>
     <html>
     <head><meta charset="utf-8"></head>
-    <body style="margin: 0; padding: 40px 10px; background-color: #030305; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-      <div style="max-width: 560px; margin: 0 auto; background: #0a0a0e; border: 1px solid #1c1c28; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.9);">
-        <div style="background: linear-gradient(180deg, #14141f 0%, #0a0a0e 100%); padding: 32px 20px; text-align: center; border-bottom: 1px solid #1c1c28;">
-          <div style="display: inline-flex; align-items: center; justify-content: center; gap: 12px;">
-            <span style="font-size: 20px; color: #e5b842;">⚡</span>
-            <span style="font-size: 26px; color: #ffffff; font-weight: 900; letter-spacing: 0.35em; text-transform: uppercase;">AASIFA</span>
-            <span style="font-size: 20px; color: #e5b842;">⚡</span>
-          </div>
-          <div style="margin-top: 10px; font-size: 11px; letter-spacing: 0.25em; color: #e5b842; text-transform: uppercase; font-weight: 700;">SYSTEM TEST EMAIL</div>
+    <body style="margin: 0; padding: 30px 10px; background-color: #050507; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+      <div style="max-width: 520px; margin: 0 auto; background: #0a0a0d; border: 1px solid #181820; border-radius: 4px; overflow: hidden; padding: 35px 25px; box-shadow: 0 30px 60px rgba(0,0,0,0.95);">
+        
+        <div style="text-align: center; margin-bottom: 25px;">
+          <div style="font-size: 24px; font-weight: 900; letter-spacing: 0.45em; color: #ffffff; text-transform: uppercase;">A A S I F A</div>
+          <div style="font-size: 13px; color: #d4af37; margin-top: 4px; letter-spacing: 0.1em; font-family: 'Amiri', 'Traditional Arabic', serif;">عاصفة</div>
         </div>
-        <div style="padding: 32px 28px; text-align: center;">
-          <p style="font-size: 16px; color: #ffffff; font-weight: 600; margin-top: 0;">Test Email Successful!</p>
-          <p style="font-size: 14px; color: #a0a0b0; line-height: 1.6;">
-            If you are reading this, your Brevo email integration for <strong style="color: #ffffff;">AASIFA</strong> is fully active and working smoothly.
+
+        <div style="text-align: center; margin-bottom: 25px;">
+          <div style="display: inline-flex; align-items: center; justify-content: center; width: 60px; height: 60px; border-radius: 50%; border: 1px solid #d4af37; background: #0f0f14;">
+            <span style="font-size: 20px; font-weight: 800; color: #d4af37;">A</span>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 30px;">
+          <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.25em; color: #d4af37; text-transform: uppercase; margin-bottom: 12px;">SYSTEM TRANSMISSION TEST</div>
+          <h2 style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 12px 0;">Test Email Verified!</h2>
+          <p style="font-size: 13px; color: #9999a5; line-height: 1.6; margin: 0; max-width: 440px; margin: 0 auto;">
+            Your Brevo transactional email engine for <strong style="color: #ffffff;">AASIFA</strong> is fully active, authenticated, and ready for orders.
           </p>
         </div>
-        <div style="background: #07070a; border-top: 1px solid #14141f; padding: 20px; text-align: center;">
-          <p style="margin: 0; font-size: 11px; color: #555566; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">⚡ AASIFA STREETWEAR ⚡</p>
+
+        <!-- Live Progress Bar Preview -->
+        <div style="margin-bottom: 35px; text-align: center;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="width: 25%; text-align: center;">
+                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d4af37;"></span>
+                <div style="font-size: 9px; font-weight: 800; color: #d4af37; letter-spacing: 0.1em; margin-top: 6px;">PLACED</div>
+              </td>
+              <td style="width: 25%; text-align: center;">
+                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d4af37;"></span>
+                <div style="font-size: 9px; font-weight: 800; color: #d4af37; letter-spacing: 0.1em; margin-top: 6px;">PROCESSING</div>
+              </td>
+              <td style="width: 25%; text-align: center;">
+                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 1px solid #444; background: transparent;"></span>
+                <div style="font-size: 9px; font-weight: 800; color: #444; letter-spacing: 0.1em; margin-top: 6px;">SHIPPED</div>
+              </td>
+              <td style="width: 25%; text-align: center;">
+                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 1px solid #444; background: transparent;"></span>
+                <div style="font-size: 9px; font-weight: 800; color: #444; letter-spacing: 0.1em; margin-top: 6px;">DELIVERED</div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="text-align: center; border-top: 1px solid #14141d; padding-top: 20px;">
+          <div style="font-size: 9px; color: #555; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;">
+            EXCLUSIVELY CRAFTED IN CAIRO · EGYPT-WIDE SHIPPING
+          </div>
         </div>
       </div>
     </body>

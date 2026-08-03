@@ -161,16 +161,12 @@ export async function processCheckout(
     }
 
     // Trigger transactional order confirmation email via Brevo
-    const shortOrderId = `#${order.id.split('-')[0].toUpperCase()}`;
+    const orderNumberStr = order.id ? `#${order.id.split('-')[0].slice(0, 4).toUpperCase()}` : '#21';
 
-    const orderItemsHtml = validatedItems.map(item => `
+    const orderItemsRows = validatedItems.map(item => `
       <tr style="border-bottom: 1px solid #1a1a22;">
-        <td style="padding: 12px 0; color: #ffffff; font-weight: 600; font-size: 14px;">
-          ${item.name}
-          <span style="display: inline-block; margin-left: 6px; padding: 2px 6px; background: #1a1a24; border: 1px solid #2a2a38; border-radius: 4px; font-size: 11px; color: #aaa;">${item.size}</span>
-        </td>
-        <td style="padding: 12px 0; color: #888899; text-align: center; font-size: 14px;">&times; ${item.quantity}</td>
-        <td style="padding: 12px 0; color: #ffffff; text-align: right; font-weight: 700; font-size: 14px;">${item.unitPrice * item.quantity} EGP</td>
+        <td style="padding: 10px 0; color: #888; font-size: 13px;">Garment</td>
+        <td style="padding: 10px 0; color: #fff; font-weight: 700; font-size: 13px; text-align: right;">${item.name} — ${item.size}</td>
       </tr>
     `).join('');
 
@@ -180,83 +176,124 @@ export async function processCheckout(
       <head>
         <meta charset="utf-8">
         <style>
-          body { margin: 0; padding: 0; background-color: #030305; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+          body { margin: 0; padding: 0; background-color: #050507; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         </style>
       </head>
-      <body style="margin: 0; padding: 40px 10px; background-color: #030305;">
-        <div style="max-width: 560px; margin: 0 auto; background: #0a0a0e; border: 1px solid #1c1c28; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.9);">
+      <body style="margin: 0; padding: 30px 10px; background-color: #050507;">
+        <div style="max-width: 520px; margin: 0 auto; background: #0a0a0d; border: 1px solid #181820; border-radius: 4px; overflow: hidden; padding: 35px 25px; box-shadow: 0 30px 60px rgba(0,0,0,0.95);">
           
-          <!-- Header Banner with Flanking Lightning Bolts -->
-          <div style="background: linear-gradient(180deg, #14141f 0%, #0a0a0e 100%); padding: 32px 20px; text-align: center; border-bottom: 1px solid #1c1c28;">
-            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 12px;">
-              <span style="font-size: 20px; color: #e5b842; text-shadow: 0 0 10px rgba(229,184,66,0.6);">⚡</span>
-              <span style="font-size: 26px; color: #ffffff; font-weight: 900; letter-spacing: 0.35em; text-transform: uppercase;">AASIFA</span>
-              <span style="font-size: 20px; color: #e5b842; text-shadow: 0 0 10px rgba(229,184,66,0.6);">⚡</span>
-            </div>
-            <div style="margin-top: 10px; font-size: 11px; letter-spacing: 0.25em; color: #e5b842; text-transform: uppercase; font-weight: 700;">ORDER CONFIRMATION</div>
+          <!-- Top Logo & Arabic Calligraphy -->
+          <div style="text-align: center; margin-bottom: 25px;">
+            <div style="font-size: 24px; font-weight: 900; letter-spacing: 0.45em; color: #ffffff; text-transform: uppercase;">A A S I F A</div>
+            <div style="font-size: 13px; color: #d4af37; margin-top: 4px; letter-spacing: 0.1em; font-family: 'Amiri', 'Traditional Arabic', serif;">عاصفة</div>
           </div>
 
-          <!-- Body Content -->
-          <div style="padding: 32px 28px;">
-            <p style="font-size: 16px; color: #ffffff; margin-top: 0; font-weight: 600;">Hi ${customerName},</p>
-            <p style="font-size: 14px; color: #a0a0b0; line-height: 1.6; margin-bottom: 28px;">
-              Thank you for ordering with <strong style="color: #ffffff;">AASIFA</strong>. Your order has been placed successfully. Our customer care team will call you within 2 business days to confirm your delivery details.
+          <!-- Circular Monogram Badge -->
+          <div style="text-align: center; margin-bottom: 25px;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 60px; height: 60px; border-radius: 50%; border: 1px solid #d4af37; background: #0f0f14;">
+              <span style="font-size: 20px; font-weight: 800; color: #d4af37;">A</span>
+            </div>
+          </div>
+
+          <!-- Transmission Header & Greeting -->
+          <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.25em; color: #d4af37; text-transform: uppercase; margin-bottom: 12px;">TRANSMISSION RECEIVED</div>
+            <h2 style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 12px 0;">Hi ${customerName},</h2>
+            <p style="font-size: 13px; color: #9999a5; line-height: 1.6; margin: 0; max-width: 440px; margin: 0 auto;">
+              Your pieces are being cut and printed in Cairo. This is your official receipt — keep it, it's also your boarding pass into the drop.
             </p>
+          </div>
 
-            <!-- Order Details Box -->
-            <div style="background: #101016; border: 1px solid #1a1a26; border-radius: 12px; padding: 22px; margin-bottom: 28px;">
-              
-              <!-- Order Header Meta -->
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #1a1a24; padding-bottom: 14px; margin-bottom: 16px;">
-                <div>
-                  <span style="font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; display: block;">ORDER NUMBER</span>
-                  <span style="font-size: 16px; color: #e5b842; font-weight: 800; font-family: monospace;">${shortOrderId}</span>
-                </div>
-                <div style="text-align: right;">
-                  <span style="font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; display: block;">PAYMENT</span>
-                  <span style="font-size: 13px; color: #ffffff; font-weight: 600;">Cash on Delivery (COD)</span>
-                </div>
-              </div>
+          <!-- Live Progress Bar -->
+          <div style="margin-bottom: 35px; text-align: center;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="width: 25%; text-align: center;">
+                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d4af37;"></span>
+                  <div style="font-size: 9px; font-weight: 800; color: #d4af37; letter-spacing: 0.1em; margin-top: 6px;">PLACED</div>
+                </td>
+                <td style="width: 25%; text-align: center;">
+                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d4af37;"></span>
+                  <div style="font-size: 9px; font-weight: 800; color: #d4af37; letter-spacing: 0.1em; margin-top: 6px;">PROCESSING</div>
+                </td>
+                <td style="width: 25%; text-align: center;">
+                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 1px solid #444; background: transparent;"></span>
+                  <div style="font-size: 9px; font-weight: 800; color: #444; letter-spacing: 0.1em; margin-top: 6px;">SHIPPED</div>
+                </td>
+                <td style="width: 25%; text-align: center;">
+                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 1px solid #444; background: transparent;"></span>
+                  <div style="font-size: 9px; font-weight: 800; color: #444; letter-spacing: 0.1em; margin-top: 6px;">DELIVERED</div>
+                </td>
+              </tr>
+            </table>
+          </div>
 
-              <!-- Shipping Address -->
-              <div style="margin-bottom: 20px;">
-                <span style="font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 4px;">DELIVERY ADDRESS</span>
-                <span style="font-size: 13px; color: #cccccc; line-height: 1.5; display: block;">${fullAddress}</span>
-              </div>
-
-              <!-- Purchased Items Table -->
-              <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
-                <thead>
-                  <tr style="border-bottom: 1px solid #222230;">
-                    <th style="text-align: left; font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; padding-bottom: 8px;">ITEM</th>
-                    <th style="text-align: center; font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; padding-bottom: 8px;">QTY</th>
-                    <th style="text-align: right; font-size: 11px; color: #666677; text-transform: uppercase; letter-spacing: 0.1em; padding-bottom: 8px;">PRICE</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${orderItemsHtml}
-                </tbody>
-              </table>
-
-              <!-- Total Row -->
-              <div style="border-top: 1px solid #222230; margin-top: 16px; padding-top: 16px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 14px; color: #ffffff; font-weight: 700;">TOTAL AMOUNT</span>
-                <span style="font-size: 20px; color: #e5b842; font-weight: 900;">${totalAmount} EGP</span>
-              </div>
-
+          <!-- Order Summary Card with Barcode -->
+          <div style="background: #101015; border: 1px solid #1c1c26; border-radius: 4px; padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span style="font-size: 10px; font-weight: 800; letter-spacing: 0.15em; color: #777; text-transform: uppercase;">ORDER REFERENCE</span>
+              <span style="font-size: 14px; font-weight: 900; color: #d4af37; font-family: monospace;">#${orderNumberStr}</span>
             </div>
 
-            <!-- Action / Support Note -->
-            <div style="text-align: center; background: rgba(229,184,66,0.05); border: 1px solid rgba(229,184,66,0.15); border-radius: 8px; padding: 14px; margin-bottom: 10px;">
-              <span style="font-size: 12px; color: #d4af37;">Need to modify your order? Contact us anytime with <strong>${shortOrderId}</strong></span>
+            <!-- Stylized Barcode -->
+            <div style="letter-spacing: 3px; font-family: monospace; font-size: 16px; color: #333344; margin-bottom: 18px; line-height: 1;">
+              ||| | |||| ||| || |||| | ||| | |||
             </div>
+
+            <!-- Items Table -->
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+              <tbody>
+                ${orderItemsRows}
+                <tr style="border-bottom: 1px solid #1a1a22;">
+                  <td style="padding: 10px 0; color: #888; font-size: 13px;">Payment</td>
+                  <td style="padding: 10px 0; color: #fff; font-weight: 700; font-size: 13px; text-align: right;">COD</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #1a1a22;">
+                  <td style="padding: 10px 0; color: #888; font-size: 13px;">Phone</td>
+                  <td style="padding: 10px 0; color: #fff; font-weight: 700; font-size: 13px; text-align: right;">${shippingDetails.phone}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Pricing Breakdown -->
+            <div style="border-top: 1px solid #1f1f2a; padding-top: 12px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 6px;">
+                <span>Subtotal</span>
+                <span>${totalAmount - shippingFee} EGP</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 12px;">
+                <span>Shipping fee</span>
+                <span>${shippingFee} EGP</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 900; color: #d4af37; border-top: 1px solid #222230; padding-top: 10px;">
+                <span>Total</span>
+                <span>${totalAmount} EGP</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delivery Manifest Box -->
+          <div style="background: #101015; border: 1px solid #1c1c26; border-radius: 4px; padding: 20px; margin-bottom: 30px;">
+            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.15em; color: #d4af37; text-transform: uppercase; margin-bottom: 14px;">DELIVERY MANIFEST</div>
+            <div style="font-size: 12px; color: #aaa; line-height: 1.7;">
+              <div><strong style="color: #666; width: 90px; display: inline-block;">Recipient:</strong> <span style="color: #fff;">${customerName}</span></div>
+              <div><strong style="color: #666; width: 90px; display: inline-block;">Address:</strong> <span style="color: #fff;">${fullAddress}</span></div>
+              <div><strong style="color: #666; width: 90px; display: inline-block;">City:</strong> <span style="color: #fff;">${shippingDetails.governorate}, Egypt</span></div>
+            </div>
+          </div>
+
+          <!-- Track Order CTA Button -->
+          <div style="text-align: center; margin-bottom: 30px;">
+            <a href="https://aasifastreetwear.com/stormy" style="display: inline-block; padding: 14px 36px; border: 1px solid #d4af37; color: #d4af37; text-decoration: none; font-size: 11px; font-weight: 800; letter-spacing: 0.25em; text-transform: uppercase; background: #08080b;">
+              TRACK ORDER
+            </a>
           </div>
 
           <!-- Footer -->
-          <div style="background: #07070a; border-top: 1px solid #14141f; padding: 20px; text-align: center;">
-            <p style="margin: 0; font-size: 11px; color: #555566; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">
-              ⚡ AASIFA STREETWEAR ⚡
-            </p>
+          <div style="text-align: center; border-top: 1px solid #14141d; padding-top: 20px;">
+            <div style="font-size: 9px; color: #555; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;">
+              EXCLUSIVELY CRAFTED IN CAIRO · EGYPT-WIDE SHIPPING
+            </div>
           </div>
 
         </div>
