@@ -221,6 +221,15 @@ button {
   transform: scale(1.05);
 }
 
+/* Out of Storm hover overlay */
+.oos-card:hover .oos-overlay {
+  opacity: 1 !important;
+}
+.oos-card:hover .product-card-img {
+  filter: brightness(0.3) contrast(1.1) !important;
+  transform: scale(1.05);
+}
+
 /* Scrollbar customization */
 ::-webkit-scrollbar {
   width: 6px;

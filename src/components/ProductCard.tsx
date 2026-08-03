@@ -23,7 +23,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const primaryImage = product.images?.[0] || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80'; // fallback placeholder image from unsplash
+  const primaryImage = product.images?.[0] || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80';
   
   // Calculate total stock
   const totalStock = product.product_variants?.reduce((sum, v) => sum + v.stock_quantity, 0) ?? 0;
@@ -38,13 +38,13 @@ export function ProductCard({ product }: ProductCardProps) {
       flexDirection: 'column',
       background: 'var(--bg-elevated)',
       border: '1px solid var(--border-color)',
-      borderRadius: '0px', // minimal sharp corners
+      borderRadius: '0px',
       overflow: 'hidden',
       transition: 'var(--transition-smooth)',
       position: 'relative',
     }} className="product-card-hover">
       {/* Product Image Link */}
-      <Link href={`/products/${product.id}`} className="image-skeleton-loader" style={{ display: 'block', position: 'relative', width: '100%', aspectRatio: '3/4', overflow: 'hidden' }}>
+      <Link href={`/products/${product.id}`} className={`image-skeleton-loader ${isOutOfStock ? 'oos-card' : ''}`} style={{ display: 'block', position: 'relative', width: '100%', aspectRatio: '3/4', overflow: 'hidden' }}>
         <Image
           src={primaryImage}
           alt={product.name}
@@ -53,21 +53,21 @@ export function ProductCard({ product }: ProductCardProps) {
           loading="lazy"
           style={{
             objectFit: 'cover',
-            filter: 'brightness(0.85) contrast(1.1)',
-            transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+            filter: isOutOfStock ? 'brightness(0.5) contrast(1.1)' : 'brightness(0.85) contrast(1.1)',
+            transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease',
           }}
           className="product-card-img"
         />
 
-        {/* Badges */}
-        {isOutOfStock ? (
+        {/* Small corner badge — always visible for OOS */}
+        {isOutOfStock && (
           <div style={{
             position: 'absolute',
             top: '15px',
             left: '15px',
             background: 'rgba(0,0,0,0.85)',
             border: '1px solid #555555',
-            color: '#888888',
+            color: '#cc3333',
             fontSize: '0.7rem',
             padding: '4px 10px',
             fontWeight: 'bold',
@@ -77,10 +77,38 @@ export function ProductCard({ product }: ProductCardProps) {
           }}>
             Out of Storm
           </div>
-        ) : null}
+        )}
+
+        {/* Full hover overlay — appears on hover for OOS items */}
+        {isOutOfStock && (
+          <div className="oos-overlay" style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.75)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: 0,
+            transition: 'opacity 0.35s ease',
+            zIndex: 5,
+          }}>
+            <span style={{
+              fontSize: 'clamp(1.2rem, 4vw, 1.8rem)',
+              fontWeight: 900,
+              color: '#cc3333',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              fontStyle: 'italic',
+              textShadow: '0 2px 20px rgba(204, 51, 51, 0.4)',
+            }}>
+              OUT OF STORM
+            </span>
+          </div>
+        )}
       </Link>
 
-      {/* Info Info */}
+      {/* Product Info */}
       <div style={{
         padding: '20px',
         display: 'flex',
