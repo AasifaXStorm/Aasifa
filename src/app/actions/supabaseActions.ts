@@ -127,8 +127,12 @@ export async function deleteAllOrders() {
   if (ordersErr) throw ordersErr;
 
   // Clear abandoned carts & email logs if existing
-  await supabaseAdmin.from('abandoned_carts').delete().neq('id', '00000000-0000-0000-0000-000000000000').catch(() => {});
-  await supabaseAdmin.from('email_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000').catch(() => {});
+  try {
+    await supabaseAdmin.from('abandoned_carts').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    await supabaseAdmin.from('email_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  } catch (e) {
+    // Optional table cleanup failure ignore
+  }
 
   return true;
 }
