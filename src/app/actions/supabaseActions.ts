@@ -204,7 +204,8 @@ export async function uploadImageAction(formData: FormData) {
   const urls: string[] = [];
 
   for (const file of files) {
-    const filePath = `${crypto.randomUUID()}_${file.name}`;
+    const fileExt = file.name.split('.').pop() || 'jpg';
+    const filePath = `${crypto.randomUUID()}.${fileExt}`;
     const singleForm = new FormData();
     singleForm.append('file', file);
     singleForm.append('filePath', filePath);
