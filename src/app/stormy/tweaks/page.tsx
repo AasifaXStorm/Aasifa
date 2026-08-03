@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getSiteConfig, updateSiteConfig } from '@/app/actions/supabaseActions';
+import { getSiteConfig, updateSiteConfig, sendTestEmailAction } from '@/app/actions/supabaseActions';
 import { DEFAULT_TICKER_TEXT, DEFAULT_TICKER_SPEED } from '@/lib/constants';
 
 export default function AdminTweaksPage() {
@@ -129,7 +129,6 @@ export default function AdminTweaksPage() {
     }
     setSendingTestEmail(true);
     try {
-      const { sendTestEmailAction } = await import('@/app/actions/supabaseActions');
       await sendTestEmailAction(testEmail);
       window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'Test email sent successfully!', type: 'success' } }));
     } catch (e: any) {
