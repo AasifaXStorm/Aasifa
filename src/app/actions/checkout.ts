@@ -161,145 +161,257 @@ export async function processCheckout(
     }
 
     // Trigger transactional order confirmation email via Brevo
-    const orderNumberStr = order.id ? `#${order.id.split('-')[0].slice(0, 4).toUpperCase()}` : '#21';
+    const shortOrderId = `#${order.id.split('-')[0].toUpperCase()}`;
 
-    const orderItemsRows = validatedItems.map(item => `
-      <tr style="border-bottom: 1px solid #1a1a22;">
-        <td style="padding: 10px 0; color: #888; font-size: 13px;">Garment</td>
-        <td style="padding: 10px 0; color: #fff; font-weight: 700; font-size: 13px; text-align: right;">${item.name} — ${item.size}</td>
+    const orderItemsHtml = validatedItems.map(item => `
+      <tr>
+        <td style="padding:8px 26px 12px 26px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="font-size:15px; font-weight:600; color:#f5f0e8; vertical-align:middle;">
+                ${item.name}
+                <span style="display:inline-block; margin-left:8px; padding:2px 9px; background-color:#2a2318; border:1px solid #3a3226; border-radius:5px; font-size:11px; font-weight:700; color:#D4A64A; vertical-align:middle;">${item.size}</span>
+              </td>
+              <td align="center" style="font-size:14px; color:#a8a096; vertical-align:middle;">&times; ${item.quantity}</td>
+              <td align="right" style="font-size:15px; font-weight:700; color:#f5f0e8; vertical-align:middle;">${item.unitPrice * item.quantity} EGP</td>
+            </tr>
+          </table>
+        </td>
       </tr>
     `).join('');
 
-    const emailHtmlContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { margin: 0; padding: 0; background-color: #050507; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        </style>
-      </head>
-      <body style="margin: 0; padding: 30px 10px; background-color: #050507;">
-        <div style="max-width: 520px; margin: 0 auto; background: #0a0a0d; border: 1px solid #181820; border-radius: 4px; overflow: hidden; padding: 35px 25px; box-shadow: 0 30px 60px rgba(0,0,0,0.95);">
-          
-          <!-- Top Logo & Arabic Calligraphy -->
-          <div style="text-align: center; margin-bottom: 25px;">
-            <div style="font-size: 24px; font-weight: 900; letter-spacing: 0.45em; color: #ffffff; text-transform: uppercase;">A A S I F A</div>
-            <div style="font-size: 13px; color: #d4af37; margin-top: 4px; letter-spacing: 0.1em; font-family: 'Amiri', 'Traditional Arabic', serif;">عاصفة</div>
-          </div>
+    const formattedAddressLines = [
+      shippingDetails.detailedAddress,
+      [
+        shippingDetails.building ? `Bldg: ${shippingDetails.building}` : null,
+        shippingDetails.floor ? `Floor: ${shippingDetails.floor}` : null,
+        shippingDetails.apartment ? `Apt: ${shippingDetails.apartment}` : null,
+      ].filter(Boolean).join(', '),
+      [
+        shippingDetails.landmark ? `Landmark: ${shippingDetails.landmark}` : null,
+        shippingDetails.governorate,
+        shippingDetails.country || 'Egypt'
+      ].filter(Boolean).join(', ')
+    ].filter(Boolean).join('<br>');
 
-          <!-- Circular Monogram Badge -->
-          <div style="text-align: center; margin-bottom: 25px;">
-            <div style="display: inline-flex; align-items: center; justify-content: center; width: 60px; height: 60px; border-radius: 50%; border: 1px solid #d4af37; background: #0f0f14;">
-              <span style="font-size: 20px; font-weight: 800; color: #d4af37;">A</span>
-            </div>
-          </div>
+    const emailHtmlContent = `<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Order Confirmation</title>
+<!--[if mso]>
+<noscript>
+<xml>
+<o:OfficeDocumentSettings>
+<o:PixelsPerInch>96</o:PixelsPerInch>
+</o:OfficeDocumentSettings>
+</xml>
+</noscript>
+<![endif]-->
+<style>
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+  img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+  body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; background-color: #050505; }
 
-          <!-- Transmission Header & Greeting -->
-          <div style="text-align: center; margin-bottom: 30px;">
-            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.25em; color: #d4af37; text-transform: uppercase; margin-bottom: 12px;">TRANSMISSION RECEIVED</div>
-            <h2 style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 12px 0;">Hi ${customerName},</h2>
-            <p style="font-size: 13px; color: #9999a5; line-height: 1.6; margin: 0; max-width: 440px; margin: 0 auto;">
-              Your pieces are being cut and printed in Cairo. This is your official receipt — keep it, it's also your boarding pass into the drop.
-            </p>
-          </div>
+  @media screen and (max-width: 600px) {
+    .email-container { width: 100% !important; }
+    .fluid-padding { padding-left: 22px !important; padding-right: 22px !important; }
+    .stack-col { display: block !important; width: 100% !important; text-align: left !important; }
+    .stack-col-right { text-align: left !important; padding-top: 10px !important; }
+    .side-bolt { display: none !important; }
+  }
+</style>
+</head>
+<body style="margin:0; padding:0; background-color:#050505; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
 
-          <!-- Live Progress Bar -->
-          <div style="margin-bottom: 35px; text-align: center;">
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr>
-                <td style="width: 25%; text-align: center;">
-                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d4af37;"></span>
-                  <div style="font-size: 9px; font-weight: 800; color: #d4af37; letter-spacing: 0.1em; margin-top: 6px;">PLACED</div>
-                </td>
-                <td style="width: 25%; text-align: center;">
-                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d4af37;"></span>
-                  <div style="font-size: 9px; font-weight: 800; color: #d4af37; letter-spacing: 0.1em; margin-top: 6px;">PROCESSING</div>
-                </td>
-                <td style="width: 25%; text-align: center;">
-                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 1px solid #444; background: transparent;"></span>
-                  <div style="font-size: 9px; font-weight: 800; color: #444; letter-spacing: 0.1em; margin-top: 6px;">SHIPPED</div>
-                </td>
-                <td style="width: 25%; text-align: center;">
-                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 1px solid #444; background: transparent;"></span>
-                  <div style="font-size: 9px; font-weight: 800; color: #444; letter-spacing: 0.1em; margin-top: 6px;">DELIVERED</div>
-                </td>
-              </tr>
-            </table>
-          </div>
+  <div style="display:none; max-height:0; overflow:hidden; mso-hide:all;">
+    Your AASIFA order ${shortOrderId} has been confirmed — total ${totalAmount} EGP, Cash on Delivery.
+  </div>
 
-          <!-- Order Summary Card with Barcode -->
-          <div style="background: #101015; border: 1px solid #1c1c26; border-radius: 4px; padding: 20px; margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-              <span style="font-size: 10px; font-weight: 800; letter-spacing: 0.15em; color: #777; text-transform: uppercase;">ORDER REFERENCE</span>
-              <span style="font-size: 14px; font-weight: 900; color: #d4af37; font-family: monospace;">#${orderNumberStr}</span>
-            </div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#050505;">
+    <tr>
+      <td align="center" style="padding: 40px 16px;">
 
-            <!-- Stylized Barcode -->
-            <div style="letter-spacing: 3px; font-family: monospace; font-size: 16px; color: #333344; margin-bottom: 18px; line-height: 1;">
-              ||| | |||| ||| || |||| | ||| | |||
-            </div>
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px;">
+          <tr>
 
-            <!-- Items Table -->
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
-              <tbody>
-                ${orderItemsRows}
-                <tr style="border-bottom: 1px solid #1a1a22;">
-                  <td style="padding: 10px 0; color: #888; font-size: 13px;">Payment</td>
-                  <td style="padding: 10px 0; color: #fff; font-weight: 700; font-size: 13px; text-align: right;">COD</td>
+            <!-- Main card -->
+            <td width="600" style="width:600px;">
+        <table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px; background-color:#141210; border-radius:18px; overflow:hidden; border:1px solid #3a3226; box-shadow: 0 0 0 1px rgba(212,166,74,0.08);">
+
+          <!-- Gold top hairline -->
+          <tr><td style="height:3px; background: linear-gradient(90deg, transparent, #D4A64A 20%, #F5C463 50%, #D4A64A 80%, transparent);"></td></tr>
+
+          <!-- Header -->
+          <tr>
+            <td align="center" class="fluid-padding" style="padding: 44px 40px 26px 40px; background-color:#141210;">
+              <div style="font-size:30px; font-weight:800; letter-spacing:6px; color:#f5f0e8; font-family: Georgia, 'Times New Roman', serif;">
+                AASIFA
+              </div>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:14px auto 0 auto;">
+                <tr>
+                  <td style="height:1px; width:36px; background-color:#D4A64A; opacity:0.6;"></td>
+                  <td style="padding:0 12px; font-size:11px; font-weight:700; letter-spacing:3px; color:#D4A64A; text-transform:uppercase; white-space:nowrap;">Order Confirmation</td>
+                  <td style="height:1px; width:36px; background-color:#D4A64A; opacity:0.6;"></td>
                 </tr>
-                <tr style="border-bottom: 1px solid #1a1a22;">
-                  <td style="padding: 10px 0; color: #888; font-size: 13px;">Phone</td>
-                  <td style="padding: 10px 0; color: #fff; font-weight: 700; font-size: 13px; text-align: right;">${shippingDetails.phone}</td>
+              </table>
+            </td>
+          </tr>
+
+          <tr><td style="border-top:1px solid #2a251d;"></td></tr>
+
+          <!-- Greeting -->
+          <tr>
+            <td class="fluid-padding" style="padding: 34px 44px 8px 44px;">
+              <p style="margin:0 0 14px 0; font-size:19px; font-weight:700; color:#f5f0e8; font-family: Georgia, 'Times New Roman', serif;">Hi ${customerName},</p>
+              <p style="margin:0; font-size:14px; line-height:23px; color:#a8a096;">
+                Thank you for ordering with <strong style="color:#e8e0d4;">AASIFA</strong>. Your order has been placed successfully. Our customer care team will call you within
+                <strong style="color:#e8e0d4;">2 business days</strong> to confirm your delivery details.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Order Card -->
+          <tr>
+            <td class="fluid-padding" style="padding: 26px 44px 8px 44px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#1b1712; border-radius:14px; border:1px solid #34291c;">
+
+                <!-- Order # / Payment -->
+                <tr>
+                  <td style="padding:26px 26px 18px 26px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td class="stack-col" width="50%" style="vertical-align:top;">
+                          <div style="font-size:10px; font-weight:700; letter-spacing:1.5px; color:#8a8378; text-transform:uppercase; margin-bottom:7px;">Order Number</div>
+                          <div style="font-size:16px; font-weight:700; color:#F5C463;">${shortOrderId}</div>
+                        </td>
+                        <td class="stack-col stack-col-right" width="50%" style="vertical-align:top;">
+                          <div style="font-size:10px; font-weight:700; letter-spacing:1.5px; color:#8a8378; text-transform:uppercase; margin-bottom:7px;">Payment</div>
+                          <div style="font-size:16px; font-weight:700; color:#f5f0e8;">Cash on Delivery</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
                 </tr>
-              </tbody>
-            </table>
 
-            <!-- Pricing Breakdown -->
-            <div style="border-top: 1px solid #1f1f2a; padding-top: 12px;">
-              <div style="display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 6px;">
-                <span>Subtotal</span>
-                <span>${totalAmount - shippingFee} EGP</span>
-              </div>
-              <div style="display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 12px;">
-                <span>Shipping fee</span>
-                <span>${shippingFee} EGP</span>
-              </div>
-              <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 900; color: #d4af37; border-top: 1px solid #222230; padding-top: 10px;">
-                <span>Total</span>
-                <span>${totalAmount} EGP</span>
-              </div>
-            </div>
-          </div>
+                <tr><td style="padding:0 26px;"><div style="border-top:1px solid #34291c;"></div></td></tr>
 
-          <!-- Delivery Manifest Box -->
-          <div style="background: #101015; border: 1px solid #1c1c26; border-radius: 4px; padding: 20px; margin-bottom: 30px;">
-            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.15em; color: #d4af37; text-transform: uppercase; margin-bottom: 14px;">DELIVERY MANIFEST</div>
-            <div style="font-size: 12px; color: #aaa; line-height: 1.7;">
-              <div><strong style="color: #666; width: 90px; display: inline-block;">Recipient:</strong> <span style="color: #fff;">${customerName}</span></div>
-              <div><strong style="color: #666; width: 90px; display: inline-block;">Address:</strong> <span style="color: #fff;">${fullAddress}</span></div>
-              <div><strong style="color: #666; width: 90px; display: inline-block;">City:</strong> <span style="color: #fff;">${shippingDetails.governorate}, Egypt</span></div>
-            </div>
-          </div>
+                <!-- Delivery Address -->
+                <tr>
+                  <td style="padding:20px 26px;">
+                    <div style="font-size:10px; font-weight:700; letter-spacing:1.5px; color:#8a8378; text-transform:uppercase; margin-bottom:14px;">Delivery Address</div>
 
-          <!-- Track Order CTA Button -->
-          <div style="text-align: center; margin-bottom: 30px;">
-            <a href="https://aasifastreetwear.com/stormy" style="display: inline-block; padding: 14px 36px; border: 1px solid #d4af37; color: #d4af37; text-decoration: none; font-size: 11px; font-weight: 800; letter-spacing: 0.25em; text-transform: uppercase; background: #08080b;">
-              TRACK ORDER
-            </a>
-          </div>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="30%" valign="top" style="padding-bottom:10px; font-size:12px; color:#6b6459;">Address</td>
+                        <td valign="top" style="padding-bottom:10px; font-size:14px; color:#d8d0c4; line-height:21px;">${formattedAddressLines}</td>
+                      </tr>
+                      ${shippingDetails.postalCode ? `
+                      <tr>
+                        <td width="30%" valign="top" style="padding-bottom:10px; font-size:12px; color:#6b6459;">Postal Code</td>
+                        <td valign="top" style="padding-bottom:10px; font-size:14px; color:#d8d0c4;">${shippingDetails.postalCode}</td>
+                      </tr>
+                      ` : ''}
+                      <tr>
+                        <td width="30%" valign="top" style="font-size:12px; color:#6b6459;">Phone</td>
+                        <td valign="top" style="font-size:14px; color:#d8d0c4;">${shippingDetails.phone}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr><td style="padding:0 26px;"><div style="border-top:1px solid #34291c;"></div></td></tr>
+
+                <!-- Line Items Header -->
+                <tr>
+                  <td style="padding:18px 26px 10px 26px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-size:10px; font-weight:700; letter-spacing:1.5px; color:#8a8378; text-transform:uppercase;">Item</td>
+                        <td align="center" style="font-size:10px; font-weight:700; letter-spacing:1.5px; color:#8a8378; text-transform:uppercase;">Qty</td>
+                        <td align="right" style="font-size:10px; font-weight:700; letter-spacing:1.5px; color:#8a8378; text-transform:uppercase;">Price</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Line Item Rows -->
+                ${orderItemsHtml}
+
+                <tr><td style="padding:0 26px;"><div style="border-top:1px solid #34291c;"></div></td></tr>
+
+                <!-- Total -->
+                <tr>
+                  <td style="padding:22px 26px 26px 26px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-size:12px; font-weight:700; letter-spacing:1px; color:#a8a096; text-transform:uppercase; vertical-align:middle;">Total Amount</td>
+                        <td align="right" style="font-size:27px; font-weight:800; color:#F5C463; vertical-align:middle; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">${totalAmount} EGP</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+
+          <!-- Support callout -->
+          <tr>
+            <td class="fluid-padding" style="padding: 22px 44px 8px 44px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:rgba(212,166,74,0.07); border:1px solid rgba(212,166,74,0.28); border-radius:12px;">
+                <tr>
+                  <td align="center" style="padding:17px 20px; font-size:13px; font-weight:600; color:#F5C463;">
+                    Need to modify your order? Contact us anytime with <strong>${shortOrderId}</strong>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA button -->
+          <tr>
+            <td align="center" class="fluid-padding" style="padding: 26px 44px 10px 44px;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="border-radius:8px; background: linear-gradient(90deg, #D4A64A, #F5C463);">
+                    <a href="https://aasifastreetwear.com/stormy" style="display:inline-block; padding:15px 36px; font-size:13px; font-weight:700; letter-spacing:1px; color:#141210; text-decoration:none; text-transform:uppercase;">Track Your Order</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr><td style="padding-top:34px; border-top:1px solid #2a251d;"></td></tr>
 
           <!-- Footer -->
-          <div style="text-align: center; border-top: 1px solid #14141d; padding-top: 20px;">
-            <div style="font-size: 9px; color: #555; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;">
-              EXCLUSIVELY CRAFTED IN CAIRO · EGYPT-WIDE SHIPPING
-            </div>
-          </div>
+          <tr>
+            <td align="center" style="padding: 26px 40px 42px 40px;">
+              <div style="font-size:12px; font-weight:700; letter-spacing:3px; color:#8a8378;">AASIFA STREETWEAR</div>
+              <p style="margin:16px 0 0 0; font-size:11px; color:#54503f;">
+                © 2026 AASIFA. All rights reserved.
+              </p>
+            </td>
+          </tr>
 
-        </div>
-      </body>
-      </html>
-    `;
+          <!-- Gold bottom hairline -->
+          <tr><td style="height:3px; background: linear-gradient(90deg, transparent, #D4A64A 20%, #F5C463 50%, #D4A64A 80%, transparent);"></td></tr>
+
+        </table>
+            </td>
+
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>`;
 
     sendEmailViaBrevo(customerEmail, `AASIFA Order ${shortOrderId} Confirmation`, emailHtmlContent, 'order_confirmation')
       .catch(err => console.error('Async Brevo order confirmation error:', err));

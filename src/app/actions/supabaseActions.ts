@@ -318,65 +318,76 @@ export async function updateInventory(productId: string, variants: { size: strin
 export async function sendTestEmailAction(testEmail: string) {
   if (!(await verifyAdminSession())) return { success: false, error: 'Unauthorized' };
   
-  const testHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head><meta charset="utf-8"></head>
-    <body style="margin: 0; padding: 30px 10px; background-color: #050507; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-      <div style="max-width: 520px; margin: 0 auto; background: #0a0a0d; border: 1px solid #181820; border-radius: 4px; overflow: hidden; padding: 35px 25px; box-shadow: 0 30px 60px rgba(0,0,0,0.95);">
-        
-        <div style="text-align: center; margin-bottom: 25px;">
-          <div style="font-size: 24px; font-weight: 900; letter-spacing: 0.45em; color: #ffffff; text-transform: uppercase;">A A S I F A</div>
-          <div style="font-size: 13px; color: #d4af37; margin-top: 4px; letter-spacing: 0.1em; font-family: 'Amiri', 'Traditional Arabic', serif;">عاصفة</div>
-        </div>
+  const testHtml = `<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Order Confirmation</title>
+<style>
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+  body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; background-color: #050505; }
+  @media screen and (max-width: 600px) {
+    .email-container { width: 100% !important; }
+    .fluid-padding { padding-left: 22px !important; padding-right: 22px !important; }
+    .stack-col { display: block !important; width: 100% !important; text-align: left !important; }
+  }
+</style>
+</head>
+<body style="margin:0; padding:0; background-color:#050505; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
 
-        <div style="text-align: center; margin-bottom: 25px;">
-          <div style="display: inline-flex; align-items: center; justify-content: center; width: 60px; height: 60px; border-radius: 50%; border: 1px solid #d4af37; background: #0f0f14;">
-            <span style="font-size: 20px; font-weight: 800; color: #d4af37;">A</span>
-          </div>
-        </div>
-
-        <div style="text-align: center; margin-bottom: 30px;">
-          <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.25em; color: #d4af37; text-transform: uppercase; margin-bottom: 12px;">SYSTEM TRANSMISSION TEST</div>
-          <h2 style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 12px 0;">Test Email Verified!</h2>
-          <p style="font-size: 13px; color: #9999a5; line-height: 1.6; margin: 0; max-width: 440px; margin: 0 auto;">
-            Your Brevo transactional email engine for <strong style="color: #ffffff;">AASIFA</strong> is fully active, authenticated, and ready for orders.
-          </p>
-        </div>
-
-        <!-- Live Progress Bar Preview -->
-        <div style="margin-bottom: 35px; text-align: center;">
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="width: 25%; text-align: center;">
-                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d4af37;"></span>
-                <div style="font-size: 9px; font-weight: 800; color: #d4af37; letter-spacing: 0.1em; margin-top: 6px;">PLACED</div>
-              </td>
-              <td style="width: 25%; text-align: center;">
-                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d4af37;"></span>
-                <div style="font-size: 9px; font-weight: 800; color: #d4af37; letter-spacing: 0.1em; margin-top: 6px;">PROCESSING</div>
-              </td>
-              <td style="width: 25%; text-align: center;">
-                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 1px solid #444; background: transparent;"></span>
-                <div style="font-size: 9px; font-weight: 800; color: #444; letter-spacing: 0.1em; margin-top: 6px;">SHIPPED</div>
-              </td>
-              <td style="width: 25%; text-align: center;">
-                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 1px solid #444; background: transparent;"></span>
-                <div style="font-size: 9px; font-weight: 800; color: #444; letter-spacing: 0.1em; margin-top: 6px;">DELIVERED</div>
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <div style="text-align: center; border-top: 1px solid #14141d; padding-top: 20px;">
-          <div style="font-size: 9px; color: #555; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;">
-            EXCLUSIVELY CRAFTED IN CAIRO · EGYPT-WIDE SHIPPING
-          </div>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#050505;">
+    <tr>
+      <td align="center" style="padding: 40px 16px;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px;">
+          <tr>
+            <td width="600" style="width:600px;">
+        <table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px; background-color:#141210; border-radius:18px; overflow:hidden; border:1px solid #3a3226; box-shadow: 0 0 0 1px rgba(212,166,74,0.08);">
+          <tr><td style="height:3px; background: linear-gradient(90deg, transparent, #D4A64A 20%, #F5C463 50%, #D4A64A 80%, transparent);"></td></tr>
+          <tr>
+            <td align="center" class="fluid-padding" style="padding: 44px 40px 26px 40px; background-color:#141210;">
+              <div style="font-size:30px; font-weight:800; letter-spacing:6px; color:#f5f0e8; font-family: Georgia, 'Times New Roman', serif;">
+                AASIFA
+              </div>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:14px auto 0 auto;">
+                <tr>
+                  <td style="height:1px; width:36px; background-color:#D4A64A; opacity:0.6;"></td>
+                  <td style="padding:0 12px; font-size:11px; font-weight:700; letter-spacing:3px; color:#D4A64A; text-transform:uppercase; white-space:nowrap;">Test Transmission</td>
+                  <td style="height:1px; width:36px; background-color:#D4A64A; opacity:0.6;"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr><td style="border-top:1px solid #2a251d;"></td></tr>
+          <tr>
+            <td class="fluid-padding" style="padding: 34px 44px 24px 44px; text-align: center;">
+              <p style="margin:0 0 14px 0; font-size:19px; font-weight:700; color:#f5f0e8; font-family: Georgia, 'Times New Roman', serif;">System Integration Verified</p>
+              <p style="margin:0; font-size:14px; line-height:23px; color:#a8a096;">
+                Your Brevo transactional email engine for <strong style="color:#e8e0d4;">AASIFA</strong> is fully active, authenticated, and ready to dispatch customer receipts.
+              </p>
+            </td>
+          </tr>
+          <tr><td style="padding-top:20px; border-top:1px solid #2a251d;"></td></tr>
+          <tr>
+            <td align="center" style="padding: 26px 40px 42px 40px;">
+              <div style="font-size:12px; font-weight:700; letter-spacing:3px; color:#8a8378;">AASIFA STREETWEAR</div>
+              <p style="margin:16px 0 0 0; font-size:11px; color:#54503f;">
+                © 2026 AASIFA. All rights reserved.
+              </p>
+            </td>
+          </tr>
+          <tr><td style="height:3px; background: linear-gradient(90deg, transparent, #D4A64A 20%, #F5C463 50%, #D4A64A 80%, transparent);"></td></tr>
+        </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 
   const result = await sendEmailViaBrevo(
     testEmail,
