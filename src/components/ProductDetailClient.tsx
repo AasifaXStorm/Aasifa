@@ -274,7 +274,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             {/* Sizes Buttons Grid */}
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {((product.product_variants && product.product_variants.length > 0)
-                ? product.product_variants.filter(v => ['S', 'M', 'L', 'XL'].includes(v.size))
+                ? [...product.product_variants]
+                    .filter(v => ['S', 'M', 'L', 'XL'].includes(v.size))
+                    .sort((a, b) => ['S', 'M', 'L', 'XL'].indexOf(a.size) - ['S', 'M', 'L', 'XL'].indexOf(b.size))
                 : ['S', 'M', 'L', 'XL'].map((s, idx) => ({ id: `default-${idx}`, size: s, stock_quantity: 0 }))
               ).map((v) => {
                 const isAvailable = v.stock_quantity > 0;

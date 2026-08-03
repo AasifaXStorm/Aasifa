@@ -29,8 +29,12 @@ export function ProductCard({ product }: ProductCardProps) {
   const totalStock = product.product_variants?.reduce((sum, v) => sum + v.stock_quantity, 0) ?? 0;
   const isOutOfStock = totalStock === 0;
 
-  // Get list of available sizes
-  const sizes = product.product_variants?.map(v => v.size) || [];
+  // Get list of available sizes (only S, M, L, XL, sorted smallest to biggest)
+  const sizeOrder = ['S', 'M', 'L', 'XL'];
+  const rawSizes = product.product_variants?.map(v => v.size) || [];
+  const sizes = Array.from(new Set(rawSizes))
+    .filter(size => sizeOrder.includes(size))
+    .sort((a, b) => sizeOrder.indexOf(a) - sizeOrder.indexOf(b));
 
   return (
     <div style={{
