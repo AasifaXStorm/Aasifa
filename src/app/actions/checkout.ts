@@ -198,3 +198,33 @@ export async function saveAbandonedCartAction(email: string, cartPayload: string
   const { trackAbandonedCart } = await import('@/lib/brevo');
   return trackAbandonedCart(email, cartPayload);
 }
+
+export async function trackOrdersByEmail(email: string) {
+  if (!email || !email.trim() || !email.includes('@')) {
+    return { success: false, error: 'Please enter a valid email address.' };
+  }
+
+  try {
+    const { data: orders, error } = await supabaseAdmin
+      .from('orders')
+      .select('id, created_at, status, total_amount')
+      .eq('customer_email', email.trim())
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const formattedOrders = (orders || []).map(o => ({
+      id: o.id,
+      shortId: `#${o.id.split('-')[0].toUpperCase()}`,
+      createdAt: o.created_at,
+      status: o.status || 'completed',
+      totalAmount: o.total_amount
+    }));
+
+    return { success: true, orders: formattedOrders };
+  } catch (err: any) {
+    console.error('Error tracking order by email:', err);
+    return { success: false, error: err.message || 'Failed to retrieve order history.' };
+  }
+}
+

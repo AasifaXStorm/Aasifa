@@ -179,7 +179,7 @@ export default function CartPage() {
             color: '#e5e5e5',
             margin: '10px 0',
           }}>
-            Order ID: {successOrder}
+            Order #{successOrder.split('-')[0].toUpperCase()}
           </div>
           <Link href="/#shop" className="btn-primary" style={{ marginTop: '10px', display: 'inline-block', background: '#fff', color: '#000', padding: '12px 24px', fontWeight: 800 }}>
             {t('explore.collection')}

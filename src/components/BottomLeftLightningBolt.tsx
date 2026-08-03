@@ -3,13 +3,21 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Zap, X, ShoppingBag, Info, Mail, Ruler, Calculator } from 'lucide-react';
+import { Zap, X, ShoppingBag, Info, Mail, Ruler, Calculator, Package, Lock, Search } from 'lucide-react';
+import { trackOrdersByEmail } from '@/app/actions/checkout';
 
 export function BottomLeftLightningBolt() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [showChart, setShowChart] = useState(false);
   const [showCalc, setShowCalc] = useState(false);
+
+  // Track Order State
+  const [showTrack, setShowTrack] = useState(false);
+  const [trackEmail, setTrackEmail] = useState('');
+  const [trackLoading, setTrackLoading] = useState(false);
+  const [trackError, setTrackError] = useState('');
+  const [trackedOrders, setTrackedOrders] = useState<any[] | null>(null);
 
   // Calculator state
   const [calcTab, setCalcTab] = useState<'kg' | 'cm'>('kg');
@@ -19,6 +27,37 @@ export function BottomLeftLightningBolt() {
   const [calcError, setCalcError] = useState('');
 
   if (pathname.startsWith('/stormy')) return null;
+
+  const handleTrackOrderSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTrackError('');
+    setTrackLoading(true);
+    setTrackedOrders(null);
+
+    try {
+      const res = await trackOrdersByEmail(trackEmail);
+      if (res.success && res.orders) {
+        if (res.orders.length === 0) {
+          setTrackError('No orders found associated with this email address.');
+        } else {
+          setTrackedOrders(res.orders);
+        }
+      } else {
+        setTrackError(res.error || 'Failed to retrieve order history.');
+      }
+    } catch (err: any) {
+      setTrackError(err.message || 'An error occurred while fetching your order status.');
+    } finally {
+      setTrackLoading(false);
+    }
+  };
+
+  const handleLockStore = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('aasifa_store_unlocked');
+      window.location.reload();
+    }
+  };
 
   const handleCalculateWeight = (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,6 +138,13 @@ export function BottomLeftLightningBolt() {
             <ShoppingBag size={14} color="#ffffff" /> Shop Drops
           </Link>
 
+          <button
+            onClick={() => { setShowTrack(true); setOpen(false); setTrackedOrders(null); setTrackError(''); }}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', background: 'transparent', border: 'none', fontSize: '0.8rem', cursor: 'pointer', padding: 0, textAlign: 'left', fontFamily: 'monospace' }}
+          >
+            <Package size={14} color="#ffffff" /> Track Order
+          </button>
+
           <Link href="/about" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.8rem', fontFamily: 'monospace' }}>
             <Info size={14} color="#ffffff" /> About AASIFA
           </Link>
@@ -120,6 +166,13 @@ export function BottomLeftLightningBolt() {
               style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', background: 'transparent', border: 'none', fontSize: '0.8rem', cursor: 'pointer', padding: 0, textAlign: 'left', fontFamily: 'monospace' }}
             >
               <Calculator size={14} color="#ffffff" /> Size Calculator
+            </button>
+
+            <button
+              onClick={() => { handleLockStore(); setOpen(false); }}
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#ff6666', background: 'transparent', border: 'none', fontSize: '0.8rem', cursor: 'pointer', padding: 0, textAlign: 'left', fontFamily: 'monospace', marginTop: '4px' }}
+            >
+              <Lock size={14} color="#ff6666" /> Lock The Store
             </button>
           </div>
         </div>
@@ -374,6 +427,139 @@ export function BottomLeftLightningBolt() {
                 <span style={{ fontSize: '0.7rem', color: '#888', marginTop: '10px', display: 'block' }}>
                   Fits chest: {recommendedSize === 'S' ? '55' : recommendedSize === 'M' ? '57' : recommendedSize === 'L' ? '61' : '64'}cm · Length: {recommendedSize === 'S' ? '69' : recommendedSize === 'M' ? '70' : recommendedSize === 'L' ? '73' : '77'}cm
                 </span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Track Order Modal */}
+      {showTrack && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.92)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: 'var(--bg-base)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '6px',
+            padding: '30px',
+            width: '100%',
+            maxWidth: '450px',
+            position: 'relative',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.95)',
+            fontFamily: 'monospace'
+          }}>
+            <button
+              onClick={() => { setShowTrack(false); setTrackedOrders(null); setTrackError(''); setTrackEmail(''); }}
+              style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: '#888', cursor: 'pointer' }}
+            >
+              <X size={20} />
+            </button>
+
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 900, letterSpacing: '0.05em', color: '#fff', textTransform: 'uppercase', marginBottom: '8px' }}>
+              TRACK YOUR ORDER
+            </h3>
+            <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '20px' }}>
+              Enter your email address to check order status and updates.
+            </p>
+
+            <form onSubmit={handleTrackOrderSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="email"
+                  required
+                  placeholder="name@example.com"
+                  value={trackEmail}
+                  onChange={(e) => setTrackEmail(e.target.value)}
+                  style={{
+                    flex: 1,
+                    background: '#000',
+                    border: '1px solid #222',
+                    color: '#fff',
+                    padding: '12px',
+                    borderRadius: '4px',
+                    fontFamily: 'monospace',
+                    fontSize: '0.85rem',
+                    outline: 'none'
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={trackLoading}
+                  style={{
+                    background: '#fff',
+                    color: '#000',
+                    border: 'none',
+                    padding: '12px 18px',
+                    fontWeight: 'bold',
+                    fontSize: '0.75rem',
+                    borderRadius: '4px',
+                    cursor: trackLoading ? 'not-allowed' : 'pointer',
+                    letterSpacing: '0.05em',
+                    fontFamily: 'monospace',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {trackLoading ? 'SEARCHING...' : 'TRACK'}
+                </button>
+              </div>
+            </form>
+
+            {trackError && (
+              <p style={{ color: '#ff6666', fontSize: '0.75rem', marginTop: '15px', margin: '15px 0 0 0' }}>
+                {trackError}
+              </p>
+            )}
+
+            {trackedOrders && (
+              <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '250px', overflowY: 'auto' }}>
+                {trackedOrders.map((ord) => (
+                  <div key={ord.id} style={{
+                    background: '#0d0d0d',
+                    border: '1px solid #222',
+                    borderRadius: '4px',
+                    padding: '14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '6px'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#ffffff' }}>
+                        Order {ord.shortId}
+                      </span>
+                      <span style={{
+                        fontSize: '0.65rem',
+                        fontWeight: 800,
+                        padding: '2px 8px',
+                        borderRadius: '2px',
+                        background: ord.status === 'completed' ? 'rgba(61,220,132,0.15)' : 'rgba(255,170,0,0.15)',
+                        color: ord.status === 'completed' ? '#3DDC84' : '#F5A623',
+                        border: `1px solid ${ord.status === 'completed' ? '#3DDC84' : '#F5A623'}`,
+                        textTransform: 'uppercase'
+                      }}>
+                        {ord.status.toUpperCase()}
+                      </span>
+                    </div>
+
+                    <span style={{ fontSize: '0.75rem', color: '#aaa' }}>
+                      Total: {ord.totalAmount} EGP
+                    </span>
+
+                    <span style={{ fontSize: '0.7rem', color: '#666' }}>
+                      Status: Order received & pending phone confirmation call (within 2 business days).
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </div>

@@ -27,6 +27,13 @@ export default function AdminTweaksPage() {
   const [showPants, setShowPants] = useState(false);
   const [showAccessories, setShowAccessories] = useState(false);
 
+  // System & Launch Modes State
+  const [testingMode, setTestingMode] = useState(false);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [launchingMode, setLaunchingMode] = useState(true);
+  const [launchDate, setLaunchDate] = useState('2026-08-15T00:00');
+  const [storePassword, setStorePassword] = useState('stormydormy');
+
   useEffect(() => {
     loadTweaks();
   }, []);
@@ -56,6 +63,13 @@ export default function AdminTweaksPage() {
           if (parsed.show_category_hoodies !== undefined) setShowHoodies(!!parsed.show_category_hoodies);
           if (parsed.show_category_pants !== undefined) setShowPants(!!parsed.show_category_pants);
           if (parsed.show_category_accessories !== undefined) setShowAccessories(!!parsed.show_category_accessories);
+
+          // System & Launch Modes
+          if (parsed.testing_mode !== undefined) setTestingMode(!!parsed.testing_mode);
+          if (parsed.maintenance_mode !== undefined) setMaintenanceMode(!!parsed.maintenance_mode);
+          if (parsed.launching_mode !== undefined) setLaunchingMode(!!parsed.launching_mode);
+          if (parsed.launch_date !== undefined) setLaunchDate(parsed.launch_date);
+          if (parsed.store_password !== undefined) setStorePassword(parsed.store_password);
         } catch (e) {
           console.error('Failed parsing site configuration:', e);
         }
@@ -84,7 +98,12 @@ export default function AdminTweaksPage() {
         show_category_shirts: showShirts,
         show_category_hoodies: showHoodies,
         show_category_pants: showPants,
-        show_category_accessories: showAccessories
+        show_category_accessories: showAccessories,
+        testing_mode: testingMode,
+        maintenance_mode: maintenanceMode,
+        launching_mode: launchingMode,
+        launch_date: launchDate,
+        store_password: storePassword,
       });
 
       await updateSiteConfig(configJson);
@@ -264,6 +283,89 @@ export default function AdminTweaksPage() {
                     style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#fff' }}
                   />
                 </label>
+              </div>
+            </div>
+
+            {/* Panel 3: System Modes & Launch Timer */}
+            <div style={{
+              background: '#0d0d0d',
+              border: '1px solid #222222',
+              borderRadius: '6px',
+              padding: '24px',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px'
+            }}>
+              <h3 style={{ fontSize: '0.9rem', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                🚀 SYSTEM MODES & LAUNCH TIMER
+              </h3>
+              <p style={{ color: '#666', fontSize: '0.75rem', margin: 0 }}>
+                Configure testing mode, countdown timers, maintenance mode, and store unlock passwords.
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: '#050505', border: '1px solid #1a1a1a', borderRadius: '4px', cursor: 'pointer' }}>
+                  <div>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#fff', display: 'block' }}>Testing Mode</span>
+                    <span style={{ fontSize: '0.7rem', color: '#888' }}>When enabled, nothing assumes real orders.</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={testingMode}
+                    onChange={(e) => setTestingMode(e.target.checked)}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#fff' }}
+                  />
+                </label>
+
+                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: '#050505', border: '1px solid #1a1a1a', borderRadius: '4px', cursor: 'pointer' }}>
+                  <div>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#fff', display: 'block' }}>Launching Mode (Countdown Page)</span>
+                    <span style={{ fontSize: '0.7rem', color: '#888' }}>Locks storefront behind live countdown screen.</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={launchingMode}
+                    onChange={(e) => setLaunchingMode(e.target.checked)}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#fff' }}
+                  />
+                </label>
+
+                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: '#050505', border: '1px solid #1a1a1a', borderRadius: '4px', cursor: 'pointer' }}>
+                  <div>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#fff', display: 'block' }}>Under Maintenance Mode</span>
+                    <span style={{ fontSize: '0.7rem', color: '#888' }}>Shows Maintenance screen to visitors.</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={maintenanceMode}
+                    onChange={(e) => setMaintenanceMode(e.target.checked)}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#fff' }}
+                  />
+                </label>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: '0.7rem', color: '#888', display: 'block', marginBottom: '8px' }}>LAUNCH DATE & TIME</label>
+                  <input
+                    type="datetime-local"
+                    className="form-input"
+                    style={{ width: '100%', padding: '12px', background: '#050505', border: '1px solid #222', color: '#fff', borderRadius: '4px', fontSize: '0.85rem' }}
+                    value={launchDate}
+                    onChange={(e) => setLaunchDate(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: '0.7rem', color: '#888', display: 'block', marginBottom: '8px' }}>STORE ENTRY PASSWORD</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ width: '100%', padding: '12px', background: '#050505', border: '1px solid #222', color: '#fff', borderRadius: '4px', fontSize: '0.85rem' }}
+                    value={storePassword}
+                    onChange={(e) => setStorePassword(e.target.value)}
+                    placeholder="stormydormy"
+                  />
+                </div>
               </div>
             </div>
           </div>
