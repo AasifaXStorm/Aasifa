@@ -72,6 +72,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/admin",
+        destination: "/stormy",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
