@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getOrders, updateOrderStatus } from '@/app/actions/supabaseActions';
+import { getOrders, updateOrderStatus, deleteOrder, deleteAllOrders } from '@/app/actions/supabaseActions';
+import { Trash2 } from 'lucide-react';
 
 export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadOrders();
@@ -34,18 +36,64 @@ export default function OrdersPage() {
     }
   };
 
-  const tabs = ['ALL', 'PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+  const handleDeleteSingleOrder = async (id: string) => {
+    if (!confirm('Are you sure you want to permanently delete this order?')) return;
+    try {
+      await deleteOrder(id);
+      setOrders(orders.filter(o => o.id !== id));
+      window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'Order deleted successfully!', type: 'success' } }));
+    } catch (e) {
+      alert('Failed to delete order.');
+    }
+  };
+
+  const handlePurgeAllOrders = async () => {
+    if (!confirm('WARNING: Are you sure you want to DELETE ALL ORDERS and reset all test data? This action cannot be undone.')) return;
+    try {
+      await deleteAllOrders();
+      setOrders([]);
+      window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'All orders purged successfully!', type: 'success' } }));
+    } catch (e) {
+      alert('Failed to purge orders.');
+    }
+  };
+
+  const tabs = ['ALL', 'PENDING', 'CONFIRMED', 'SHIPPED', 'COMPLETED', 'CANCELLED'];
 
   const filteredOrders = orders.filter((o: any) => {
-    if (activeTab === 'ALL') return true;
-    return o.status?.toUpperCase() === activeTab;
+    const matchesTab = activeTab === 'ALL' || o.status?.toUpperCase() === activeTab;
+    const matchesSearch = !searchQuery || 
+      (o.customer_name && o.customer_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (o.customer_email && o.customer_email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (o.id && o.id.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesTab && matchesSearch;
   });
 
   return (
     <div>
-      <h1 style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '30px' }}>
-        ORDERS
-      </h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <h1 style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '0.05em', margin: 0 }}>
+          ORDERS
+        </h1>
+        {orders.length > 0 && (
+          <button
+            onClick={handlePurgeAllOrders}
+            style={{
+              background: 'rgba(255, 50, 50, 0.1)',
+              border: '1px solid #ff3333',
+              color: '#ffaaaa',
+              padding: '8px 16px',
+              borderRadius: '4px',
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              letterSpacing: '0.05em'
+            }}
+          >
+            DELETE ALL ORDERS
+          </button>
+        )}
+      </div>
 
       {/* Horizontal Tabs */}
       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '25px' }}>
@@ -74,7 +122,9 @@ export default function OrdersPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '15px', marginBottom: '20px' }}>
           <input
             type="text"
-            placeholder="Search name, phone..."
+            placeholder="Search customer name, email, order ID..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               flex: 1,
               padding: '10px 14px',
@@ -93,20 +143,25 @@ export default function OrdersPage() {
         {loading ? (
           <p style={{ color: '#666' }}>Loading orders...</p>
         ) : filteredOrders.length === 0 ? (
-          <p style={{ color: '#444', textAlign: 'center', padding: '20px 0', fontSize: '0.8rem' }}>NO MATCHING ORDERS</p>
+          <p style={{ color: '#444', textAlign: 'center', padding: '30px 0', fontSize: '0.8rem' }}>NO MATCHING ORDERS FOUND</p>
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #1a1a1a', color: '#666' }}>
+                <th style={{ padding: '12px' }}>ORDER ID</th>
                 <th style={{ padding: '12px' }}>CUSTOMER</th>
                 <th style={{ padding: '12px' }}>CONTACT</th>
                 <th style={{ padding: '12px' }}>TOTAL</th>
                 <th style={{ padding: '12px' }}>STATUS</th>
+                <th style={{ padding: '12px', textAlign: 'center' }}>ACTIONS</th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.map((o: any, idx) => (
                 <tr key={idx} style={{ borderBottom: '1px solid #111' }}>
+                  <td style={{ padding: '12px', color: '#aaa', fontFamily: 'monospace', fontSize: '0.75rem' }}>
+                    #{o.id.split('-')[0].toUpperCase()}
+                  </td>
                   <td style={{ padding: '12px', color: '#fff', fontWeight: 'bold' }}>{o.customer_name}</td>
                   <td style={{ padding: '12px', color: '#888' }}>{o.customer_email}</td>
                   <td style={{ padding: '12px', fontWeight: 'bold' }}>{o.total_amount} EGP</td>
@@ -131,6 +186,23 @@ export default function OrdersPage() {
                       <option value="cancelled">Cancelled</option>
                     </select>
                   </td>
+                  <td style={{ padding: '12px', textAlign: 'center' }}>
+                    <button
+                      onClick={() => handleDeleteSingleOrder(o.id)}
+                      title="Delete Order"
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#666666',
+                        cursor: 'pointer',
+                        padding: '4px'
+                      }}
+                      onMouseOver={(e) => e.currentTarget.style.color = '#ff4444'}
+                      onMouseOut={(e) => e.currentTarget.style.color = '#666666'}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -140,3 +212,4 @@ export default function OrdersPage() {
     </div>
   );
 }
+

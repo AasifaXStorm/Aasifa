@@ -90,6 +90,49 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
   return true;
 }
 
+export async function deleteOrder(orderId: string) {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
+  // Delete order items first
+  const { error: itemsErr } = await supabaseAdmin
+    .from('order_items')
+    .delete()
+    .eq('order_id', orderId);
+  if (itemsErr) console.error('Error deleting order items:', itemsErr);
+
+  // Delete order
+  const { error } = await supabaseAdmin
+    .from('orders')
+    .delete()
+    .eq('id', orderId);
+  if (error) throw error;
+  return true;
+}
+
+export async function deleteAllOrders() {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
+  // Delete all order items
+  const { error: itemsErr } = await supabaseAdmin
+    .from('order_items')
+    .delete()
+    .neq('id', '00000000-0000-0000-0000-000000000000');
+  if (itemsErr) console.error('Error deleting all order items:', itemsErr);
+
+  // Delete all orders
+  const { error: ordersErr } = await supabaseAdmin
+    .from('orders')
+    .delete()
+    .neq('id', '00000000-0000-0000-0000-000000000000');
+  if (ordersErr) throw ordersErr;
+
+  // Clear abandoned carts & email logs if existing
+  await supabaseAdmin.from('abandoned_carts').delete().neq('id', '00000000-0000-0000-0000-000000000000').catch(() => {});
+  await supabaseAdmin.from('email_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000').catch(() => {});
+
+  return true;
+}
+
 export async function getProducts() {
   if (!(await verifyAdminSession())) throw new Error('Unauthorized');
 

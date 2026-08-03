@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getDashboardStats, getProducts } from '@/app/actions/supabaseActions';
+import { getDashboardStats, getProducts, deleteOrder, deleteAllOrders } from '@/app/actions/supabaseActions';
+import { Trash2 } from 'lucide-react';
 
 export default function OverviewPage() {
   const [loading, setLoading] = useState(true);
@@ -11,79 +12,103 @@ export default function OverviewPage() {
   const [sizePopularity, setSizePopularity] = useState<Record<string, number>>({});
   const [salesTrend, setSalesTrend] = useState<{ day: string; amount: number }[]>([]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const { ordersData, itemsData } = await getDashboardStats();
-        const productsData = await getProducts();
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const { ordersData, itemsData } = await getDashboardStats();
+      const productsData = await getProducts();
 
-        // Calculate general stats
-        const activeOrders = (ordersData || []).filter(o => o.status !== 'cancelled');
-        const revenue = activeOrders.reduce((sum, o) => sum + Number(o.total_amount), 0);
-        const unitsSold = (itemsData || []).reduce((sum, item) => sum + (item.quantity || 0), 0);
-        const pendingCount = (ordersData || []).filter(o => o.status === 'pending').length;
+      // Calculate general stats
+      const activeOrders = (ordersData || []).filter(o => o.status !== 'cancelled');
+      const revenue = activeOrders.reduce((sum, o) => sum + Number(o.total_amount), 0);
+      const unitsSold = (itemsData || []).reduce((sum, item) => sum + (item.quantity || 0), 0);
+      const pendingCount = (ordersData || []).filter(o => o.status === 'pending').length;
 
-        setStats({
-          revenue,
-          ordersCount: (ordersData || []).length,
-          unitsSold,
-          pendingCount
-        });
+      setStats({
+        revenue,
+        ordersCount: (ordersData || []).length,
+        unitsSold,
+        pendingCount
+      });
 
-        setOrders((ordersData || []).slice(0, 5));
+      setOrders((ordersData || []).slice(0, 8));
 
-        // Calculate low stock alerts (stock <= 5)
-        const lowStock: any[] = [];
-        (productsData || []).forEach((prod: any) => {
-          (prod.product_variants || []).forEach((variant: any) => {
-            if (variant.stock_quantity <= 5) {
-              lowStock.push({
-                productName: prod.name,
-                size: variant.size,
-                stock: variant.stock_quantity
-              });
-            }
-          });
-        });
-        setLowStockAlerts(lowStock.slice(0, 6));
-
-        // Calculate size popularity
-        const sizes: Record<string, number> = {};
-        (itemsData || []).forEach((item: any) => {
-          const sz = item.product_variants?.size || 'Unknown';
-          sizes[sz] = (sizes[sz] || 0) + (item.quantity || 0);
-        });
-        setSizePopularity(sizes);
-
-        // Calculate sales trend for the last 7 days
-        const trendMap: Record<string, number> = {};
-        const today = new Date();
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date();
-          d.setDate(today.getDate() - i);
-          const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-          trendMap[dateStr] = 0;
-        }
-
-        activeOrders.forEach(o => {
-          const dateStr = new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-          if (trendMap[dateStr] !== undefined) {
-            trendMap[dateStr] += Number(o.total_amount);
+      // Calculate low stock alerts (stock <= 5)
+      const lowStock: any[] = [];
+      (productsData || []).forEach((prod: any) => {
+        (prod.product_variants || []).forEach((variant: any) => {
+          if (variant.stock_quantity <= 5) {
+            lowStock.push({
+              productName: prod.name,
+              size: variant.size,
+              stock: variant.stock_quantity
+            });
           }
         });
+      });
+      setLowStockAlerts(lowStock.slice(0, 6));
 
-        const trendList = Object.entries(trendMap).map(([day, amount]) => ({ day, amount }));
-        setSalesTrend(trendList);
+      // Calculate size popularity
+      const sizes: Record<string, number> = {};
+      (itemsData || []).forEach((item: any) => {
+        const sz = item.product_variants?.size || 'Unknown';
+        sizes[sz] = (sizes[sz] || 0) + (item.quantity || 0);
+      });
+      setSizePopularity(sizes);
 
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-        window.dispatchEvent(new Event('storm_data_loaded'));
+      // Calculate sales trend for the last 7 days
+      const trendMap: Record<string, number> = {};
+      const today = new Date();
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(today.getDate() - i);
+        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        trendMap[dateStr] = 0;
       }
-    };
+
+      activeOrders.forEach(o => {
+        const dateStr = new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        if (trendMap[dateStr] !== undefined) {
+          trendMap[dateStr] += Number(o.total_amount);
+        }
+      });
+
+      const trendList = Object.entries(trendMap).map(([day, amount]) => ({ day, amount }));
+      setSalesTrend(trendList);
+
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+      window.dispatchEvent(new Event('storm_data_loaded'));
+    }
+  };
+
+  useEffect(() => {
     loadData();
   }, []);
+
+  const handleDeleteSingleOrder = async (id: string) => {
+    if (!confirm('Permanently delete this order?')) return;
+    try {
+      await deleteOrder(id);
+      await loadData();
+      window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'Order deleted!', type: 'success' } }));
+    } catch (e) {
+      alert('Failed to delete order.');
+    }
+  };
+
+  const handlePurgeAllOrders = async () => {
+    if (!confirm('WARNING: Are you sure you want to DELETE ALL ORDERS and reset statistics?')) return;
+    try {
+      await deleteAllOrders();
+      await loadData();
+      window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'All orders purged!', type: 'success' } }));
+    } catch (e) {
+      alert('Failed to purge orders.');
+    }
+  };
 
   const cards = [
     { title: 'TOTAL ORDERS', value: stats.ordersCount, sub: 'ALL TIME' },
@@ -97,9 +122,29 @@ export default function OverviewPage() {
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 0' }}>
-      <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '30px' }}>
-        OVERVIEW
-      </h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '0.05em', margin: 0 }}>
+          OVERVIEW
+        </h1>
+        {stats.ordersCount > 0 && (
+          <button
+            onClick={handlePurgeAllOrders}
+            style={{
+              background: 'rgba(255, 50, 50, 0.1)',
+              border: '1px solid #ff3333',
+              color: '#ffaaaa',
+              padding: '8px 16px',
+              borderRadius: '4px',
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              letterSpacing: '0.05em'
+            }}
+          >
+            PURGE ALL ORDERS
+          </button>
+        )}
+      </div>
 
       {loading ? (
         <p style={{ color: '#666', fontFamily: 'monospace' }}>Loading metrics...</p>
@@ -226,15 +271,19 @@ export default function OverviewPage() {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid #1a1a1a', color: '#666' }}>
+                      <th style={{ padding: '10px 8px' }}>ORDER ID</th>
                       <th style={{ padding: '10px 8px' }}>CUSTOMER</th>
                       <th style={{ padding: '10px 8px' }}>TOTAL</th>
                       <th style={{ padding: '10px 8px' }}>STATUS</th>
-                      <th style={{ padding: '10px 8px' }}>DATE</th>
+                      <th style={{ padding: '10px 8px', textAlign: 'center' }}>ACTION</th>
                     </tr>
                   </thead>
                   <tbody>
                     {orders.map((o: any, idx) => (
                       <tr key={idx} style={{ borderBottom: '1px solid #111' }}>
+                        <td style={{ padding: '10px 8px', color: '#aaa', fontFamily: 'monospace', fontSize: '0.7rem' }}>
+                          #{o.id.split('-')[0].toUpperCase()}
+                        </td>
                         <td style={{ padding: '10px 8px', color: '#fff', fontWeight: 'bold' }}>{o.customer_name}</td>
                         <td style={{ padding: '10px 8px' }}>{Number(o.total_amount).toLocaleString()} EGP</td>
                         <td style={{ padding: '10px 8px' }}>
@@ -250,7 +299,17 @@ export default function OverviewPage() {
                             {o.status}
                           </span>
                         </td>
-                        <td style={{ padding: '10px 8px', color: '#555' }}>{new Date(o.created_at).toLocaleDateString()}</td>
+                        <td style={{ padding: '10px 8px', textAlign: 'center' }}>
+                          <button
+                            onClick={() => handleDeleteSingleOrder(o.id)}
+                            title="Delete Order"
+                            style={{ background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', padding: 0 }}
+                            onMouseOver={(e) => e.currentTarget.style.color = '#ff4444'}
+                            onMouseOut={(e) => e.currentTarget.style.color = '#555'}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
