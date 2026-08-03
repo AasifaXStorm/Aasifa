@@ -7,6 +7,9 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testingMode, setTestingMode] = useState(false);
+  const [brevoApiKey, setBrevoApiKey] = useState('');
+  const [brevoSenderEmail, setBrevoSenderEmail] = useState('');
+  const [brevoSenderName, setBrevoSenderName] = useState('');
   const [fullConfig, setFullConfig] = useState<any>({});
 
   useEffect(() => {
@@ -23,6 +26,15 @@ export default function SettingsPage() {
         if (parsed.testing_mode !== undefined) {
           setTestingMode(!!parsed.testing_mode);
         }
+        if (parsed.brevo_api_key !== undefined) {
+          setBrevoApiKey(parsed.brevo_api_key);
+        }
+        if (parsed.brevo_sender_email !== undefined) {
+          setBrevoSenderEmail(parsed.brevo_sender_email);
+        }
+        if (parsed.brevo_sender_name !== undefined) {
+          setBrevoSenderName(parsed.brevo_sender_name);
+        }
       }
     } catch (e) {
       console.error('Failed to load settings:', e);
@@ -37,7 +49,10 @@ export default function SettingsPage() {
     try {
       const updatedConfig = {
         ...fullConfig,
-        testing_mode: testingMode
+        testing_mode: testingMode,
+        brevo_api_key: brevoApiKey.trim(),
+        brevo_sender_email: brevoSenderEmail.trim(),
+        brevo_sender_name: brevoSenderName.trim()
       };
       await updateSiteConfig(JSON.stringify(updatedConfig));
       setFullConfig(updatedConfig);
@@ -87,6 +102,78 @@ export default function SettingsPage() {
                 style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#fff' }}
               />
             </label>
+          </div>
+
+          <div style={{
+            background: '#0d0d0d',
+            border: '1px solid #1a1a1a',
+            padding: '24px',
+            borderRadius: '6px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px'
+          }}>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fff', textTransform: 'uppercase', margin: 0, letterSpacing: '0.05em' }}>
+              ✉️ BREVO EMAIL SETTINGS
+            </h3>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#888' }}>BREVO API KEY</label>
+              <input
+                type="password"
+                placeholder="xkeysib-..."
+                value={brevoApiKey}
+                onChange={(e) => setBrevoApiKey(e.target.value)}
+                style={{
+                  background: '#000',
+                  border: '1px solid #222',
+                  color: '#fff',
+                  padding: '12px',
+                  borderRadius: '4px',
+                  fontSize: '0.8rem',
+                  fontFamily: 'monospace',
+                  outline: 'none'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#888' }}>SENDER EMAIL (Verified on Brevo)</label>
+              <input
+                type="email"
+                placeholder="e.g. sales@aasifa.com"
+                value={brevoSenderEmail}
+                onChange={(e) => setBrevoSenderEmail(e.target.value)}
+                style={{
+                  background: '#000',
+                  border: '1px solid #222',
+                  color: '#fff',
+                  padding: '12px',
+                  borderRadius: '4px',
+                  fontSize: '0.8rem',
+                  outline: 'none'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#888' }}>SENDER NAME</label>
+              <input
+                type="text"
+                placeholder="e.g. Storm Aasifa"
+                value={brevoSenderName}
+                onChange={(e) => setBrevoSenderName(e.target.value)}
+                style={{
+                  background: '#000',
+                  border: '1px solid #222',
+                  color: '#fff',
+                  padding: '12px',
+                  borderRadius: '4px',
+                  fontSize: '0.8rem',
+                  outline: 'none'
+                }}
+              />
+            </div>
           </div>
 
           <button

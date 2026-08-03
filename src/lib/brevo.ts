@@ -15,9 +15,35 @@ export async function sendEmailViaBrevo(
   htmlContent: string,
   emailType: 'order_confirmation' | 'abandoned_cart'
 ): Promise<BrevoSendResult> {
-  const apiKey = process.env.BREVO_API_KEY;
+  let apiKey = process.env.BREVO_API_KEY;
+  let senderEmail = 'sales@aasifa.com';
+  let senderName = 'Storm Aasifa';
+
+  try {
+    const { data: configItem } = await supabaseAdmin
+      .from('products')
+      .select('description')
+      .eq('name', '_SITE_CONFIG_')
+      .maybeSingle();
+
+    if (configItem && configItem.description) {
+      const parsed = JSON.parse(configItem.description);
+      if (parsed.brevo_api_key) {
+        apiKey = parsed.brevo_api_key;
+      }
+      if (parsed.brevo_sender_email) {
+        senderEmail = parsed.brevo_sender_email;
+      }
+      if (parsed.brevo_sender_name) {
+        senderName = parsed.brevo_sender_name;
+      }
+    }
+  } catch (dbErr) {
+    console.error('Failed to retrieve dynamic Brevo credentials:', dbErr);
+  }
+
   if (!apiKey) {
-    const errorMsg = 'BREVO_API_KEY is not defined in environment variables.';
+    const errorMsg = 'BREVO_API_KEY is not defined in environment variables or settings.';
     console.error(errorMsg);
     
     // Log failure in Supabase
@@ -34,7 +60,7 @@ export async function sendEmailViaBrevo(
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: 'Storm Aasifa', email: 'sales@aasifa.com' }, // Default storefront email
+        sender: { name: senderName, email: senderEmail },
         to: [{ email: recipientEmail }],
         subject: subject,
         htmlContent: htmlContent,
