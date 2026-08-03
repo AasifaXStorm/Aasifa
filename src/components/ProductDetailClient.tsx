@@ -270,51 +270,67 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               )}
             </div>
 
-            {isFullyOutOfStock ? (
-              <div style={{ color: '#ff4444', fontSize: '0.95rem', fontWeight: 'bold' }}>
-                {t('product.out_of_stock')}
-              </div>
-            ) : (
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                {product.product_variants?.map((v) => {
-                  const isAvailable = v.stock_quantity > 0;
-                  const isSelected = selectedSize === v.size;
-                  
-                  return (
-                    <button
-                      key={v.id}
-                      disabled={!isAvailable}
-                      onClick={() => {
-                        setSelectedSize(v.size);
-                        setQuantity(1); // reset quantity to 1 when changing size
-                      }}
-                      style={{
-                        padding: '12px 20px',
-                        fontSize: '0.9rem',
-                        fontWeight: 600,
-                        border: isSelected 
-                          ? '1px solid var(--accent)' 
-                          : isAvailable 
-                            ? '1px solid var(--border-highlight)' 
-                            : '1px dashed var(--border-color)',
-                        background: isSelected 
-                          ? 'var(--accent)' 
-                          : 'transparent',
-                        color: isSelected 
-                          ? '#030303' 
-                          : isAvailable 
-                            ? 'var(--text-primary)' 
-                            : 'var(--text-muted)',
-                        cursor: isAvailable ? 'pointer' : 'not-allowed',
-                        opacity: isAvailable ? 1 : 0.4,
-                      }}
-                    >
-                      {v.size}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            {/* Sizes Buttons Grid */}
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              {((product.product_variants && product.product_variants.length > 0)
+                ? product.product_variants
+                : ['S', 'M', 'L', 'XL'].map((s, idx) => ({ id: `default-${idx}`, size: s, stock_quantity: 0 }))
+              ).map((v) => {
+                const isAvailable = v.stock_quantity > 0;
+                const isSelected = selectedSize === v.size;
+                
+                return (
+                  <button
+                    key={v.id}
+                    disabled={!isAvailable}
+                    onClick={() => {
+                      if (!isAvailable) return;
+                      setSelectedSize(v.size);
+                      setQuantity(1);
+                    }}
+                    style={{
+                      position: 'relative',
+                      overflow: 'hidden',
+                      padding: '12px 20px',
+                      fontSize: '0.9rem',
+                      fontWeight: 600,
+                      border: isSelected 
+                        ? '1px solid var(--accent)' 
+                        : isAvailable 
+                          ? '1px solid var(--border-highlight)' 
+                          : '1px solid #282828',
+                      background: isSelected 
+                        ? 'var(--accent)' 
+                        : 'transparent',
+                      color: isSelected 
+                        ? '#030303' 
+                        : isAvailable 
+                          ? 'var(--text-primary)' 
+                          : '#555555',
+                      cursor: isAvailable ? 'pointer' : 'not-allowed',
+                      opacity: isAvailable ? 1 : 0.6,
+                    }}
+                  >
+                    {v.size}
+                    {!isAvailable && (
+                      <svg
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          pointerEvents: 'none',
+                        }}
+                      >
+                        <line x1="0" y1="0" x2="100%" y2="100%" stroke="#555555" strokeWidth="1.2" />
+                        <line x1="0" y1="100%" x2="100%" y2="0" stroke="#555555" strokeWidth="1.2" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Quantity and Checkout */}
@@ -365,7 +381,22 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             </div>
           )}
 
-          {!selectedSize && !isFullyOutOfStock && (
+          {isFullyOutOfStock ? (
+            <button
+              disabled
+              className="btn-primary"
+              style={{
+                width: '100%',
+                padding: '15px',
+                background: 'var(--bg-elevated-2)',
+                borderColor: 'var(--bg-elevated-2)',
+                color: '#666666',
+                cursor: 'not-allowed',
+              }}
+            >
+              OUT OF STORM
+            </button>
+          ) : !selectedSize && (
             <button
               disabled
               className="btn-primary"
