@@ -14,19 +14,49 @@ export interface CheckoutResponse {
   error?: string;
 }
 
+export interface ShippingDetails {
+  phone: string;
+  email: string;
+  country?: string;
+  firstName: string;
+  lastName: string;
+  detailedAddress: string;
+  building?: string;
+  floor?: string;
+  apartment?: string;
+  landmark?: string;
+  governorate: string;
+  postalCode?: string;
+  shippingFee?: number;
+}
+
 export async function processCheckout(
-  customerName: string,
-  customerEmail: string,
-  items: CheckoutItem[],
-  promoCode?: string
+  shippingDetails: ShippingDetails,
+  items: CheckoutItem[]
 ): Promise<CheckoutResponse> {
-  if (!customerName || !customerEmail || !items || items.length === 0) {
-    return { success: false, error: 'Customer information and items are required.' };
+  if (!shippingDetails || !shippingDetails.email || !shippingDetails.phone || !shippingDetails.firstName || !shippingDetails.detailedAddress || !items || items.length === 0) {
+    return { success: false, error: 'Complete contact, shipping address, and cart items are required.' };
   }
+
+  const customerName = `${shippingDetails.firstName.trim()} ${shippingDetails.lastName ? shippingDetails.lastName.trim() : ''}`.trim();
+  const customerEmail = shippingDetails.email.trim();
+  const shippingFee = shippingDetails.shippingFee || 0;
+
+  const fullAddress = [
+    shippingDetails.detailedAddress,
+    shippingDetails.building ? `Bldg: ${shippingDetails.building}` : null,
+    shippingDetails.floor ? `Floor: ${shippingDetails.floor}` : null,
+    shippingDetails.apartment ? `Apt: ${shippingDetails.apartment}` : null,
+    shippingDetails.landmark ? `Landmark: ${shippingDetails.landmark}` : null,
+    shippingDetails.governorate,
+    shippingDetails.country || 'Egypt',
+    shippingDetails.postalCode ? `Postal: ${shippingDetails.postalCode}` : null,
+    `Phone: ${shippingDetails.phone}`
+  ].filter(Boolean).join(', ');
 
   try {
     // 1. Validate stock and calculate total price on the server (prevents price manipulation)
-    let totalAmount = 0;
+    let subtotal = 0;
     const validatedItems = [];
 
     for (const item of items) {
@@ -70,9 +100,11 @@ export async function processCheckout(
       }
 
       const itemTotal = Number(product.price) * item.quantity;
-      totalAmount += itemTotal;
+      subtotal += itemTotal;
 
       validatedItems.push({
+        name: product.name,
+        size: variant.size,
         variantId: variant.id,
         quantity: item.quantity,
         unitPrice: Number(product.price),
@@ -80,19 +112,16 @@ export async function processCheckout(
       });
     }
 
-    // Apply discount code if valid
-    if (promoCode === 'STORM10') {
-      totalAmount = totalAmount * 0.90; // 10% discount
-    }
+    const totalAmount = subtotal + shippingFee;
 
-    // 2. Create the order
+    // 2. Create the order in Supabase
     const { data: order, error: orderError } = await supabaseAdmin
       .from('orders')
       .insert({
         customer_name: customerName,
         customer_email: customerEmail,
         total_amount: totalAmount,
-        status: 'completed', // auto-completed for mockup, could be pending
+        status: 'completed',
       })
       .select('id')
       .single();
@@ -104,7 +133,6 @@ export async function processCheckout(
 
     // 3. Create order items and update stock quantities
     for (const item of validatedItems) {
-      // Insert order item
       const { error: itemError } = await supabaseAdmin
         .from('order_items')
         .insert({
@@ -116,7 +144,6 @@ export async function processCheckout(
 
       if (itemError) {
         console.error('Order item insert error:', itemError);
-        // Continue to record as much as possible but log the error
       }
 
       // Decrement inventory stock
@@ -132,30 +159,33 @@ export async function processCheckout(
       }
     }
 
-    // Trigger transactional order confirmation email asynchronously
+    // Trigger transactional order confirmation email via Brevo
     const orderItemsHtml = validatedItems.map(item => `
-      <li style="margin-bottom: 8px;">Quantity: ${item.quantity} | Price: ${item.unitPrice} EGP</li>
+      <li style="margin-bottom: 8px;"><strong>${item.name}</strong> (Size: ${item.size}) &times; ${item.quantity} — ${item.unitPrice * item.quantity} EGP</li>
     `).join('');
 
     const emailHtmlContent = `
-      <div style="font-family: sans-serif; background: #050505; color: #f5f5f5; padding: 40px 20px; border-radius: 8px; max-width: 600px; margin: 0 auto; border: 1px solid #222;">
-        <h2 style="text-align: center; border-bottom: 1px solid #222; padding-bottom: 20px; text-transform: uppercase; letter-spacing: 0.1em;">⚡ ORDER RECEIVED</h2>
+      <div style="font-family: Arial, sans-serif; background: #050505; color: #f5f5f5; padding: 40px 20px; border-radius: 8px; max-width: 600px; margin: 0 auto; border: 1px solid #222;">
+        <h2 style="text-align: center; border-bottom: 1px solid #222; padding-bottom: 20px; text-transform: uppercase; letter-spacing: 0.1em; color: #ffffff;">⚡ ORDER RECEIVED</h2>
         <p>Hi ${customerName},</p>
-        <p>Thanks for ordering with STORM. We have received your order and our sales team will call you within 2 days at varying times to confirm your order by phone. Please stay reachable.</p>
+        <p>Thank you for ordering with <strong>STORM AASIFA</strong>. We have received your order and our customer care team will call you within 2 business days to confirm your phone order.</p>
+        
         <div style="background: #111; padding: 20px; border: 1px solid #222; border-radius: 4px; margin: 20px 0;">
-          <h4 style="margin-top: 0; text-transform: uppercase; color: #888; letter-spacing: 0.05em;">Order Details</h4>
+          <h4 style="margin-top: 0; text-transform: uppercase; color: #888; letter-spacing: 0.05em;">Order Summary</h4>
           <p><strong>Order ID:</strong> ${order.id}</p>
-          <p><strong>Total:</strong> ${totalAmount} EGP</p>
+          <p><strong>Delivery Address:</strong> ${fullAddress}</p>
+          <p><strong>Payment Method:</strong> Cash on Delivery (COD)</p>
           <ul style="padding-left: 20px; color: #ccc;">
             ${orderItemsHtml}
           </ul>
+          <p style="border-top: 1px solid #222; padding-top: 10px; font-size: 1.1rem; color: #fff;"><strong>Total:</strong> ${totalAmount} EGP</p>
         </div>
         <p style="color: #666; font-size: 0.8rem; text-align: center; margin-top: 30px;">STORM AASIFA STREETWEAR</p>
       </div>
     `;
 
     sendEmailViaBrevo(customerEmail, `STORM Order #${order.id} Confirmation`, emailHtmlContent, 'order_confirmation')
-      .catch(err => console.error('Async order confirmation trigger failure:', err));
+      .catch(err => console.error('Async Brevo order confirmation error:', err));
 
     return { success: true, orderId: order.id };
   } catch (err: any) {
