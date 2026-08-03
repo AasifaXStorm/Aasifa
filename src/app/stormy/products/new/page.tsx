@@ -11,6 +11,7 @@ export default function NewProductPage() {
   const [sessionChecked, setSessionChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
 
   // Form fields matching Screenshot 2
   const [name, setName] = useState('');
@@ -26,6 +27,8 @@ export default function NewProductPage() {
   const [frontImageUrl, setFrontImageUrl] = useState('');
   const [backImageUrl, setBackImageUrl] = useState('');
   const [extraFiles, setExtraFiles] = useState<File[]>([]);
+  const [frontFile, setFrontFile] = useState<File | null>(null);
+  const [backFile, setBackFile] = useState<File | null>(null);
 
   const handleExtraFilesSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {

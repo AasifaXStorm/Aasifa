@@ -341,7 +341,7 @@ export function StormHero() {
         padding: '0 20px',
       }}>
         {/* WhiteStorm.png Logo Image instead of text "AASIFA" */}
-        <div style={{ marginBottom: '25px', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ marginBottom: '25px', display: 'flex', justifyContent: 'center', width: '100%' }}>
           <Image
             src="/images/WhiteStorm.png"
             alt="WhiteStorm"
@@ -349,9 +349,10 @@ export function StormHero() {
             height={180}
             priority
             style={{
-              maxWidth: '85vw',
+              width: '70%',
+              maxWidth: '420px',
               height: 'auto',
-              maxHeight: '150px',
+              maxHeight: 'clamp(60px, 12vh, 110px)',
               objectFit: 'contain',
               filter: 'drop-shadow(0 0 25px rgba(255,255,255,0.25))'
             }}

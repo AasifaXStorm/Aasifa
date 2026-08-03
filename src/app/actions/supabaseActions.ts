@@ -1,6 +1,7 @@
 'use server';
 
 import { supabaseAdmin } from '@/lib/supabaseServer';
+import { verifyAdminSession } from '@/app/actions/auth';
 
 export async function getSiteConfig() {
   const { data, error } = await supabaseAdmin
@@ -14,6 +15,8 @@ export async function getSiteConfig() {
 }
 
 export async function updateSiteConfig(configJson: string) {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
   const { data: existing } = await supabaseAdmin
     .from('products')
     .select('id')
@@ -41,6 +44,8 @@ export async function updateSiteConfig(configJson: string) {
 }
 
 export async function getDashboardStats() {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
   const { data: ordersData, error: ordError } = await supabaseAdmin
     .from('orders')
     .select('*');
@@ -64,6 +69,8 @@ export async function getDashboardStats() {
 }
 
 export async function getOrders() {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
   const { data, error } = await supabaseAdmin
     .from('orders')
     .select('*')
@@ -73,6 +80,8 @@ export async function getOrders() {
 }
 
 export async function updateOrderStatus(orderId: string, newStatus: string) {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
   const { error } = await supabaseAdmin
     .from('orders')
     .update({ status: newStatus })
@@ -82,25 +91,41 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
 }
 
 export async function getProducts() {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
   const { data, error } = await supabaseAdmin
     .from('products')
     .select('*, product_variants(*)')
     .order('created_at', { ascending: false });
   if (error) throw error;
-  return data || [];
+  
+  return (data || []).map((p: any) => ({
+    ...p,
+    is_active: !p.category?.endsWith(' (Hidden)'),
+    category: p.category ? p.category.replace(' (Hidden)', '') : 'Shirts'
+  }));
 }
 
 export async function getProduct(id: string) {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
   const { data, error } = await supabaseAdmin
     .from('products')
     .select('*, product_variants(*)')
     .eq('id', id)
     .single();
   if (error) throw error;
+
+  if (data) {
+    data.is_active = !data.category?.endsWith(' (Hidden)');
+    data.category = data.category ? data.category.replace(' (Hidden)', '') : 'Shirts';
+  }
   return data;
 }
 
 export async function deleteProduct(id: string) {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
   const { error } = await supabaseAdmin
     .from('products')
     .delete()
@@ -110,6 +135,8 @@ export async function deleteProduct(id: string) {
 }
 
 export async function deleteProductVariant(variantId: string) {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
   const { error } = await supabaseAdmin
     .from('product_variants')
     .delete()
@@ -119,7 +146,11 @@ export async function deleteProductVariant(variantId: string) {
 }
 
 export async function saveProduct(productData: any, variantsData: any[], isNew: boolean) {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
   let productId = productData.id;
+
+  const categoryValue = productData.is_active ? productData.category : `${productData.category} (Hidden)`;
 
   if (isNew) {
     const { data: newProd, error: insertError } = await supabaseAdmin
@@ -129,8 +160,7 @@ export async function saveProduct(productData: any, variantsData: any[], isNew: 
         description: productData.description,
         price: productData.price,
         images: productData.images,
-        category: productData.category,
-        is_active: productData.is_active
+        category: categoryValue
       })
       .select('id')
       .single();
@@ -144,8 +174,7 @@ export async function saveProduct(productData: any, variantsData: any[], isNew: 
         description: productData.description,
         price: productData.price,
         images: productData.images,
-        category: productData.category,
-        is_active: productData.is_active
+        category: categoryValue
       })
       .eq('id', productId);
     if (updateError) throw updateError;
@@ -169,6 +198,8 @@ export async function saveProduct(productData: any, variantsData: any[], isNew: 
 
 // Since Storage requires a FormData payload or similar for server actions
 export async function uploadImageAction(formData: FormData) {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
   // Accept either a single file (legacy) or multiple files (new "Instagram" style)
   const files = (formData.getAll('file') as File[]);
   const urls: string[] = [];
@@ -193,9 +224,15 @@ async function uploadImageActionSingle(formData: FormData): Promise<string> {
 
   if (!file || !filePath) throw new Error('Missing file or filePath');
 
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
   const { error } = await supabaseAdmin.storage
     .from('product-images')
-    .upload(filePath, file);
+    .upload(filePath, buffer, {
+      contentType: file.type || 'image/jpeg',
+      duplex: 'half'
+    });
 
   if (error) throw error;
 

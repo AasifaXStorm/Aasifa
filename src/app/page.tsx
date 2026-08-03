@@ -20,7 +20,12 @@ export default async function Home() {
       console.error('Error fetching products:', error);
       fetchError = error;
     } else {
-      products = ((data as any[]) || []).filter(p => !p.name.startsWith('_'));
+      products = ((data as any[]) || [])
+        .filter(p => !p.name.startsWith('_') && !p.category?.endsWith(' (Hidden)'))
+        .map(p => ({
+          ...p,
+          category: p.category ? p.category.replace(' (Hidden)', '') : 'Shirts'
+        }));
     }
   } catch (err: any) {
     console.error('Catch fetching products:', err);

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { AdminLayoutWrapper } from '@/components/AdminLayoutWrapper';
+import { verifyAdminSession } from '@/app/actions/auth';
 
 export default function StormyLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -12,15 +13,9 @@ export default function StormyLayout({ children }: { children: React.ReactNode }
   useEffect(() => {
     if (pathname === '/stormy/login') return;
 
-    const checkAuth = () => {
-      const isAuthLocal = typeof window !== 'undefined' && localStorage.getItem('admin_session') === 'authenticated';
-    const isAuthCookie = typeof document !== 'undefined' && (() => {
-      const cookies = document.cookie.split(';');
-      const sessionCookie = cookies.find(c => c.trim().startsWith('admin_session='));
-      return sessionCookie && sessionCookie.split('=')[1] === 'authenticated';
-    })();
-
-      if (isAuthLocal || isAuthCookie) {
+    const checkAuth = async () => {
+      const isAuth = await verifyAdminSession();
+      if (isAuth) {
         setAuthorized(true);
       } else {
         router.push('/stormy/login');

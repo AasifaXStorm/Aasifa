@@ -31,7 +31,14 @@ export default async function ProductPage({ params }: PageProps) {
       return notFound();
     }
 
-    product = data as Product;
+    if (data.category?.endsWith(' (Hidden)')) {
+      return notFound();
+    }
+
+    product = {
+      ...data,
+      category: data.category ? data.category.replace(' (Hidden)', '') : 'Shirts'
+    } as Product;
   } catch (err) {
     console.error('Catch fetching product detail:', err);
     return notFound();
