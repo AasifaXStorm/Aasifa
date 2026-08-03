@@ -87,11 +87,12 @@ export function Navigation() {
           <div style={{
             display: 'flex',
             width: 'max-content',
+            willChange: 'transform',
             animation: `marqueeAnim ${marquee.speed}s linear infinite`,
           }}>
             <div style={{
               display: 'inline-flex',
-              paddingRight: '50px',
+              alignItems: 'center',
               fontSize: '0.75rem',
               letterSpacing: '0.15em',
               fontWeight: 700,
@@ -99,11 +100,18 @@ export function Navigation() {
               textTransform: 'uppercase',
               whiteSpace: 'nowrap'
             }}>
-              {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp;
+              <span>{marquee.text}</span>
+              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
+              <span>{marquee.text}</span>
+              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
+              <span>{marquee.text}</span>
+              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
+              <span>{marquee.text}</span>
+              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
             </div>
             <div style={{
               display: 'inline-flex',
-              paddingRight: '50px',
+              alignItems: 'center',
               fontSize: '0.75rem',
               letterSpacing: '0.15em',
               fontWeight: 700,
@@ -111,13 +119,20 @@ export function Navigation() {
               textTransform: 'uppercase',
               whiteSpace: 'nowrap'
             }}>
-              {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp;
+              <span>{marquee.text}</span>
+              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
+              <span>{marquee.text}</span>
+              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
+              <span>{marquee.text}</span>
+              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
+              <span>{marquee.text}</span>
+              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
             </div>
           </div>
           <style jsx>{`
             @keyframes marqueeAnim {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
+              0% { transform: translate3d(0, 0, 0); }
+              100% { transform: translate3d(-50%, 0, 0); }
             }
           `}</style>
         </div>
