@@ -316,7 +316,7 @@ export async function updateInventory(productId: string, variants: { size: strin
 }
 
 export async function sendTestEmailAction(testEmail: string) {
-  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+  if (!(await verifyAdminSession())) return { success: false, error: 'Unauthorized' };
   
   const result = await sendEmailViaBrevo(
     testEmail,
@@ -325,6 +325,8 @@ export async function sendTestEmailAction(testEmail: string) {
     'order_confirmation'
   );
   
-  if (!result.success) throw new Error(result.error || 'Failed to send test email');
-  return true;
+  if (!result.success) {
+    return { success: false, error: result.error || 'Failed to send test email' };
+  }
+  return { success: true };
 }

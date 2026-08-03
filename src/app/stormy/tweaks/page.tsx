@@ -129,8 +129,12 @@ export default function AdminTweaksPage() {
     }
     setSendingTestEmail(true);
     try {
-      await sendTestEmailAction(testEmail);
-      window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'Test email sent successfully!', type: 'success' } }));
+      const res = await sendTestEmailAction(testEmail);
+      if (res.success) {
+        window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'Test email sent successfully!', type: 'success' } }));
+      } else {
+        window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: res.error || 'Failed to send test email.', type: 'error' } }));
+      }
     } catch (e: any) {
       console.error(e);
       window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: e.message || 'Failed to send test email.', type: 'error' } }));
