@@ -342,7 +342,7 @@ export function StormHero() {
         padding: '0 20px',
       }}>
         {/* WhiteStorm.png Logo Image instead of text "AASIFA" */}
-        <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'center', width: '100%' }}>
+        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center', width: '100%' }}>
           <Image
             src="/images/WhiteStorm.png"
             alt="WhiteStorm"
@@ -350,22 +350,22 @@ export function StormHero() {
             height={180}
             priority
             style={{
-              width: 'clamp(160px, 50vw, 360px)',
+              width: 'clamp(190px, 68vw, 380px)',
               height: 'auto',
-              maxHeight: 'clamp(40px, 10vh, 90px)',
+              maxHeight: 'clamp(45px, 11vh, 100px)',
               objectFit: 'contain',
-              filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.2))'
+              filter: 'drop-shadow(0 0 22px rgba(255,255,255,0.22))'
             }}
           />
         </div>
 
         {/* Moody subtitle */}
         <p style={{
-          fontSize: 'clamp(0.72rem, 2.2vw, 0.9rem)',
+          fontSize: 'clamp(0.8rem, 2.5vw, 1rem)',
           color: 'var(--text-muted)',
-          maxWidth: '400px',
+          maxWidth: '450px',
           lineHeight: '1.6',
-          marginBottom: 'clamp(20px, 4vh, 30px)',
+          marginBottom: 'clamp(25px, 4vh, 35px)',
           fontWeight: 400,
           letterSpacing: '0.15em',
           textTransform: 'uppercase',
@@ -375,8 +375,8 @@ export function StormHero() {
 
         {/* CTA Button */}
         <a href="#shop" className="btn-primary" style={{
-          padding: 'clamp(10px, 2.5vw, 14px) clamp(20px, 5vw, 28px)',
-          fontSize: 'clamp(0.7rem, 2vw, 0.8rem)',
+          padding: 'clamp(11px, 2.5vw, 14px) clamp(22px, 5vw, 28px)',
+          fontSize: 'clamp(0.75rem, 2vw, 0.85rem)',
           fontWeight: 700,
           letterSpacing: '0.15em',
         }}>
