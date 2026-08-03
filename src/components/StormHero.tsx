@@ -342,7 +342,7 @@ export function StormHero() {
         padding: '0 20px',
       }}>
         {/* WhiteStorm.png Logo Image instead of text "AASIFA" */}
-        <div style={{ marginBottom: '25px', display: 'flex', justifyContent: 'center', width: '100%' }}>
+        <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'center', width: '100%' }}>
           <Image
             src="/images/WhiteStorm.png"
             alt="WhiteStorm"
@@ -350,30 +350,36 @@ export function StormHero() {
             height={180}
             priority
             style={{
-              width: 'clamp(220px, 85vw, 420px)',
+              width: 'clamp(160px, 50vw, 360px)',
               height: 'auto',
-              maxHeight: 'clamp(50px, 12vh, 110px)',
+              maxHeight: 'clamp(40px, 10vh, 90px)',
               objectFit: 'contain',
-              filter: 'drop-shadow(0 0 25px rgba(255,255,255,0.25))'
+              filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.2))'
             }}
           />
         </div>
 
         {/* Moody subtitle */}
         <p style={{
-          fontSize: 'clamp(0.9rem, 2vw, 1.1rem)',
+          fontSize: 'clamp(0.72rem, 2.2vw, 0.9rem)',
           color: 'var(--text-muted)',
-          maxWidth: '500px',
+          maxWidth: '400px',
           lineHeight: '1.6',
-          marginBottom: '40px',
-          fontWeight: 300,
-          letterSpacing: '0.05em',
+          marginBottom: 'clamp(20px, 4vh, 30px)',
+          fontWeight: 400,
+          letterSpacing: '0.15em',
+          textTransform: 'uppercase',
         }}>
           {t('brand.slogan')}
         </p>
 
         {/* CTA Button */}
-        <a href="#shop" className="btn-primary">
+        <a href="#shop" className="btn-primary" style={{
+          padding: 'clamp(10px, 2.5vw, 14px) clamp(20px, 5vw, 28px)',
+          fontSize: 'clamp(0.7rem, 2vw, 0.8rem)',
+          fontWeight: 700,
+          letterSpacing: '0.15em',
+        }}>
           {t('explore.collection')}
         </a>
       </div>
