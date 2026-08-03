@@ -12,7 +12,7 @@ export default function ContactPage() {
     <div style={{
       background: '#0a0a0a',
       minHeight: 'calc(100vh - 70px)',
-      padding: '80px 5%',
+      padding: 'clamp(40px, 8vw, 80px) 5%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -40,18 +40,18 @@ export default function ContactPage() {
 
         {/* Header */}
         <div style={{ textAlign: 'center' }}>
-          <span style={{ fontSize: '0.8rem', color: '#555555', letterSpacing: '0.2em', textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>
+          <span style={{ fontSize: 'clamp(0.7rem, 2vw, 0.8rem)', color: '#555555', letterSpacing: '0.2em', textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>
             {t('contact.connect')}
           </span>
-          <h1 className="brand-title" style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '20px', letterSpacing: '0.1em' }}>
+          <h1 className="brand-title" style={{ fontSize: 'clamp(1.6rem, 7vw, 2.5rem)', fontWeight: 900, marginBottom: '20px', letterSpacing: '0.1em' }}>
             {t('contact.title')}
           </h1>
           <div style={{ width: '40px', height: '1px', background: '#2a2a2a', margin: '0 auto' }}></div>
         </div>
 
         {/* Info Box */}
-        <div className="glass-panel" style={{ padding: '40px 30px', border: '1px solid #1a1a1a', display: 'flex', flexDirection: 'column', gap: '30px' }}>
-          <p style={{ color: '#b0b0b0', lineHeight: '1.8', fontSize: '1rem', fontWeight: 300, textAlign: 'center' }}>
+        <div className="glass-panel" style={{ padding: 'clamp(20px, 5vw, 40px) clamp(15px, 4vw, 30px)', border: '1px solid #1a1a1a', display: 'flex', flexDirection: 'column', gap: '30px' }}>
+          <p style={{ color: '#b0b0b0', lineHeight: '1.8', fontSize: 'clamp(0.9rem, 2.5vw, 1rem)', fontWeight: 300, textAlign: 'center' }}>
             {t('contact.blurb')}
           </p>
 

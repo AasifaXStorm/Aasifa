@@ -71,7 +71,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       maxWidth: '1100px',
       width: '90%',
       margin: '0 auto',
-      padding: '50px 0',
+      padding: 'clamp(20px, 6vw, 50px) 0',
     }}>
       {/* Back to collection */}
       <Link href="/#shop" style={{
@@ -80,7 +80,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         gap: '8px',
         color: 'var(--text-muted)',
         fontSize: '0.85rem',
-        marginBottom: '40px',
+        marginBottom: 'clamp(20px, 5vw, 40px)',
         letterSpacing: '0.05em',
         textTransform: 'uppercase',
       }}>
@@ -90,7 +90,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       <div style={{
         display: 'flex',
         flexWrap: 'wrap',
-        gap: '50px',
+        gap: 'clamp(20px, 6vw, 50px)',
       }}>
         {/* Left Column: Image Slider */}
         <div style={{
@@ -204,22 +204,22 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           flex: '1 1 400px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '25px',
+          gap: 'clamp(15px, 4vw, 25px)',
         }}>
           <div>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {product.category || 'Apparel'}
             </span>
-            <h1 style={{ fontSize: '2.2rem', marginTop: '10px', marginBottom: '15px', fontWeight: 800 }}>
+            <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', marginTop: '10px', marginBottom: '15px', fontWeight: 800 }}>
               {product.name}
             </h1>
-            <div style={{ fontSize: '1.4rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+            <div style={{ fontSize: 'clamp(1.1rem, 4vw, 1.4rem)', color: 'var(--text-primary)', fontWeight: 600 }}>
               {product.price} EGP
             </div>
           </div>
 
           {/* Description */}
-          <div style={{ borderTop: '1px solid #1a1a1a', borderBottom: '1px solid #1a1a1a', padding: '20px 0' }}>
+          <div style={{ borderTop: '1px solid #1a1a1a', borderBottom: '1px solid #1a1a1a', padding: 'clamp(12px, 3vw, 20px) 0' }}>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
               {product.description || 'No description available for this premium piece.'}
             </p>

@@ -29,7 +29,7 @@ export default function AboutPage() {
     <div style={{
       background: 'var(--bg-base)',
       minHeight: 'calc(100vh - 70px)',
-      padding: '80px 5%',
+      padding: 'clamp(40px, 8vw, 80px) 5%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -57,7 +57,7 @@ export default function AboutPage() {
 
         {/* Header */}
         <div style={{ textAlign: 'center' }}>
-          <h1 className="brand-title" style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '20px', letterSpacing: '0.2em' }}>
+          <h1 className="brand-title" style={{ fontSize: 'clamp(1.6rem, 7vw, 2.5rem)', fontWeight: 900, marginBottom: '20px', letterSpacing: '0.2em' }}>
             {pageTitle}
           </h1>
           <div style={{ width: '40px', height: '1px', background: '#2a2a2a', margin: '0 auto' }}></div>

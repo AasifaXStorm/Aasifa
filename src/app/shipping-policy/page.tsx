@@ -109,28 +109,22 @@ export default function ShippingPolicyPage() {
               <br />
               • If your order included <em>other undamaged shirts</em> alongside the defective piece, STORM does not cover the initial return courier fee. However, we will cover the shipping fee to resend your replacement item.
             </p>
-          </section>
-
-          {/* Section 5: Refund Methods */}
+          </section>          {/* Section 5: Refund Methods */}
           <section>
             <h2 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '15px' }}>
               5. INITIATION & REFUND PROCESSING
             </h2>
             <p>
               <strong>All returns must first be initialized and confirmed via WhatsApp.</strong> 
-              Do not visit a store branch or ship items back before receiving written confirmation from our customer care team on WhatsApp.
+              Do not ship items back before receiving written confirmation from our customer care team on WhatsApp.
             </p>
             <p style={{ marginTop: '10px' }}>
               <strong>Refund Channels:</strong>
               <br />
-              • <strong>Store Branch Returns:</strong> Refunded on the spot in cash after our store staff manually inspects and verifies the condition of the shirts.
-              <br />
               • <strong>Courier-Based Returns:</strong> Once shipped, items undergo terminal inspection at our fulfillment facility (takes 7 to 10 business days). Approved returns will be refunded via <strong>Vodafone Cash</strong> or <strong>InstaPay</strong>.
             </p>
           </section>
-
         </div>
-
         {/* Back Button */}
         <div style={{ marginTop: '60px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
           <Link href="/" style={{

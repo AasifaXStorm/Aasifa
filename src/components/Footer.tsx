@@ -15,7 +15,7 @@ export function Footer() {
     <footer style={{
       background: 'var(--bg-base)',
       borderTop: '1px solid var(--border-color)',
-      padding: '50px 5% 30px 5%',
+      padding: 'clamp(30px, 8vw, 50px) 5% clamp(20px, 5vw, 30px) 5%',
       color: 'var(--text-muted)',
       fontSize: '0.9rem',
       position: 'relative',
@@ -32,7 +32,7 @@ export function Footer() {
       }}>
         {/* Brand column */}
         <div style={{ flex: '1 1 300px' }}>
-          <h3 className="brand-title" style={{ fontSize: '1.2rem', marginBottom: '20px', color: 'var(--text-primary)' }}>
+          <h3 className="brand-title" style={{ fontSize: 'clamp(1rem, 3vw, 1.2rem)', marginBottom: '20px', color: 'var(--text-primary)' }}>
             {t('brand.title')}
           </h3>
           <p style={{ lineHeight: '1.6', maxWidth: '280px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>

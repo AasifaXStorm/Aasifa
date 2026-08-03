@@ -167,7 +167,7 @@ export function Navigation() {
             width={120}
             height={32}
             priority
-            style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
+            style={{ height: 'clamp(24px, 6vw, 32px)', width: 'auto', objectFit: 'contain' }}
             className={`storm-logo-hover ${theme === 'light' ? 'storm-logo-invert' : ''}`}
           />
         </Link>

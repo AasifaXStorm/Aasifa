@@ -163,7 +163,7 @@ export default function CartPage() {
           border: '1px solid #1c1c1c',
         }}>
           <CheckCircle size={60} color="#ffffff" />
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#ffffff' }}>
+          <h1 style={{ fontSize: 'clamp(1.3rem, 5vw, 1.8rem)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#ffffff' }}>
             ORDER CONFIRMED
           </h1>
           <p style={{ color: '#aaaaaa', fontSize: '0.9rem', lineHeight: '1.6' }}>
@@ -222,7 +222,7 @@ export default function CartPage() {
           <form onSubmit={handleCheckoutSubmit} style={{
             display: 'grid',
             gridTemplateColumns: '1.2fr 0.8fr',
-            gap: '60px',
+            gap: 'clamp(20px, 5vw, 60px)',
             alignItems: 'start',
           }} className="checkout-responsive-grid">
             
@@ -231,7 +231,7 @@ export default function CartPage() {
               
               {/* Header: Title + Cancel Link */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #151515', paddingBottom: '20px' }}>
-                <h1 className="brand-title" style={{ fontSize: '1.6rem', fontWeight: 900, letterSpacing: '0.25em', color: '#ffffff' }}>
+                <h1 className="brand-title" style={{ fontSize: 'clamp(1.2rem, 4vw, 1.6rem)', fontWeight: 900, letterSpacing: '0.25em', color: '#ffffff' }}>
                   AASIFA
                 </h1>
                 <Link href="/#shop" style={{ fontSize: '0.75rem', color: '#666666', letterSpacing: '0.1em', textTransform: 'uppercase', transition: 'color 0.2s' }} className="cancel-link">

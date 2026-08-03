@@ -30,14 +30,14 @@ export function ProductCatalog({ products, enabledCategories }: ProductCatalogPr
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        marginBottom: '40px',
+        marginBottom: 'clamp(20px, 5vw, 40px)',
         textAlign: 'center',
       }}>
-        <span style={{ fontSize: '0.8rem', color: '#666666', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '10px' }}>
+        <span style={{ fontSize: 'clamp(0.7rem, 2vw, 0.8rem)', color: '#666666', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '10px' }}>
           {t('home.selected')}
         </span>
         <h2 style={{
-          fontSize: '2rem',
+          fontSize: 'clamp(1.4rem, 5vw, 2rem)',
           fontWeight: 800,
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
