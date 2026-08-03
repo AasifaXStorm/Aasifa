@@ -11,6 +11,7 @@ export interface CheckoutItem {
 export interface CheckoutResponse {
   success: boolean;
   orderId?: string;
+  shortId?: string;
   error?: string;
 }
 
