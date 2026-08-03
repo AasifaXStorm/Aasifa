@@ -298,6 +298,7 @@ export function StormHero() {
           alt="Storm Clouds Background"
           fill
           priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1920px"
           style={{
             objectFit: 'cover',
             objectPosition: 'center',

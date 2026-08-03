@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from '@/context/LanguageContext';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Product } from './ProductCard';
 import { addToCart } from '@/lib/cart';
 
@@ -97,12 +98,14 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             border: '1px solid #1a1a1a',
             overflow: 'hidden',
           }}>
-            <img
+            <Image
               src={images[activeImgIdx]}
               alt={product.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 550px"
+              priority={activeImgIdx === 0}
+              loading={activeImgIdx === 0 ? undefined : 'lazy'}
               style={{
-                width: '100%',
-                height: '100%',
                 objectFit: 'cover',
                 filter: 'brightness(0.9) contrast(1.05)',
               }}
@@ -171,11 +174,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                     background: '#0a0a0a',
                   }}
                 >
-                  <img
-                    src={img}
-                    alt={`${product.name} thumbnail ${idx + 1}`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7)' }}
-                  />
+                  <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                    <Image
+                      src={img}
+                      alt={`${product.name} thumbnail ${idx + 1}`}
+                      fill
+                      sizes="70px"
+                      loading="lazy"
+                      style={{ objectFit: 'cover', filter: 'brightness(0.7)' }}
+                    />
+                  </div>
                 </button>
               ))}
             </div>

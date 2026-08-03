@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
 import { getCartTotalItems } from '@/lib/cart';
@@ -123,9 +124,12 @@ export function Navigation() {
       }}>
       {/* Brand Logo */}
       <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-        <img
+        <Image
           src="/images/WhiteStorm.png"
           alt="WhiteStorm"
+          width={120}
+          height={32}
+          priority
           style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
         />
       </Link>

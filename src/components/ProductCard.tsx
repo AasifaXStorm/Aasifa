@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export interface ProductVariant {
   id: string;
@@ -44,12 +45,13 @@ export function ProductCard({ product }: ProductCardProps) {
     }} className="product-card-hover">
       {/* Product Image Link */}
       <Link href={`/products/${product.id}`} style={{ display: 'block', position: 'relative', width: '100%', aspectRatio: '3/4', overflow: 'hidden' }}>
-        <img
+        <Image
           src={primaryImage}
           alt={product.name}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          loading="lazy"
           style={{
-            width: '100%',
-            height: '100%',
             objectFit: 'cover',
             filter: 'brightness(0.85) contrast(1.1)',
             transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
