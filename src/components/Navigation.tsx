@@ -72,21 +72,39 @@ export function Navigation() {
           alignItems: 'center'
         }}>
           <div style={{
-            whiteSpace: 'nowrap',
-            display: 'inline-block',
+            display: 'flex',
+            width: 'max-content',
             animation: `marqueeAnim ${marquee.speed}s linear infinite`,
-            fontSize: '0.75rem',
-            letterSpacing: '0.15em',
-            fontWeight: 700,
-            color: 'var(--text-primary)',
-            textTransform: 'uppercase'
           }}>
-            {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text}
+            <div style={{
+              display: 'inline-flex',
+              paddingRight: '50px',
+              fontSize: '0.75rem',
+              letterSpacing: '0.15em',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              textTransform: 'uppercase',
+              whiteSpace: 'nowrap'
+            }}>
+              {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp;
+            </div>
+            <div style={{
+              display: 'inline-flex',
+              paddingRight: '50px',
+              fontSize: '0.75rem',
+              letterSpacing: '0.15em',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              textTransform: 'uppercase',
+              whiteSpace: 'nowrap'
+            }}>
+              {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp;
+            </div>
           </div>
           <style jsx>{`
             @keyframes marqueeAnim {
-              0% { transform: translateX(100%); }
-              100% { transform: translateX(-100%); }
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
             }
           `}</style>
         </div>
