@@ -16,7 +16,13 @@ export function Navigation() {
   const { t } = useTranslation();
   const pathname = usePathname();
 
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const stored = typeof window !== 'undefined' ? localStorage.getItem('aasifa_theme') : null;
+  const initialTheme = stored === 'light' ? 'light' : 'dark';
+  const [theme, setTheme] = useState(initialTheme);
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark-theme', theme === 'dark');
+    document.documentElement.classList.toggle('light-theme', theme === 'light');
+  }, [theme]);
 
   const [marquee, setMarquee] = useState<{ text: string; speed: number; visible: boolean }>({
     text: DEFAULT_TICKER_TEXT,
@@ -24,23 +30,10 @@ export function Navigation() {
     visible: true
   });
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('aasifa_theme') || 'dark';
-    setTheme(savedTheme as 'dark' | 'light');
-    if (savedTheme === 'light') {
-      document.documentElement.classList.add('light-theme');
-    }
-  }, []);
-
   const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    localStorage.setItem('aasifa_theme', nextTheme);
-    if (nextTheme === 'light') {
-      document.documentElement.classList.add('light-theme');
-    } else {
-      document.documentElement.classList.remove('light-theme');
-    }
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('aasifa_theme', newTheme);
+    setTheme(newTheme);
   };
 
   useEffect(() => {
@@ -76,7 +69,7 @@ export function Navigation() {
     };
   }, []);
 
-  if (pathname.startsWith('/stormy')) return null;
+  if (pathname.startsWith('/stormy')) return null; // keep admin routes hidden
 
   return (
     <>
@@ -87,7 +80,7 @@ export function Navigation() {
           left: 0,
           width: '100%',
           height: '32px',
-          background: '#0d0d0d',
+          background: 'var(--panel-bg, #0a0a0a)',
           borderBottom: '1px solid #222',
           overflow: 'hidden',
           zIndex: 101,
@@ -134,7 +127,6 @@ export function Navigation() {
       )}
       <header className="glass-nav" style={{
         position: 'fixed',
-        top: marquee.visible ? '32px' : 0,
         left: 0,
         width: '100%',
         height: '70px',
@@ -147,11 +139,10 @@ export function Navigation() {
       <Link 
         href="/" 
         onClick={(e) => {
-          if (pathname === '/') {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }
-        }}
+        }
         style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}
       >
         <Image
@@ -165,9 +156,7 @@ export function Navigation() {
         />
       </Link>
 
-      {/* Right Nav Icons */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
           style={{
@@ -185,33 +174,24 @@ export function Navigation() {
           aria-label="Toggle theme"
         >
           {theme === 'dark' ? (
-            <svg 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              style={{ width: '20px', height: '20px', transition: 'transform 0.4s', transform: 'rotate(0deg)' }}
-            >
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', transform: 'rotate(0deg)' }}>
+              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
             </svg>
           ) : (
-            <svg 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              style={{ width: '20px', height: '20px', transition: 'transform 0.4s', transform: 'rotate(15deg)' }}
-            >
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', transform: 'rotate(15deg)' }}>
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
             </svg>
           )}
         </button>
 
-        {/* Cart Icon */}
         <Link href="/cart" style={{ position: 'relative', display: 'flex', alignItems: 'center', color: 'var(--text-primary)' }} className="cart-nav-hover">
           <ShoppingCart size={20} />
           {cartCount > 0 && (
@@ -237,6 +217,12 @@ export function Navigation() {
       </div>
 
       <style jsx>{`
+        .glass-nav {
+          background: var(--nav-bg, rgba(3, 3, 3, 0.8));
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-bottom: 1px solid var(--border-color);
+        }
         .cart-nav-hover:hover {
           color: var(--accent) !important;
           filter: drop-shadow(0 0 5px var(--accent));
