@@ -64,6 +64,7 @@ export default function AdminTweaksPage() {
       setErrorMsg(err.message || 'Failed to load tweaks from Supabase config.');
     } finally {
       setLoading(false);
+      window.dispatchEvent(new Event('storm_data_loaded'));
     }
   };
 

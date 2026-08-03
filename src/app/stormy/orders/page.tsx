@@ -21,6 +21,7 @@ export default function OrdersPage() {
       console.error(e);
     } finally {
       setLoading(false);
+      window.dispatchEvent(new Event('storm_data_loaded'));
     }
   };
 

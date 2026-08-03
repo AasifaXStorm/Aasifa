@@ -1,34 +1,58 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export function StormLoader({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [fadeout, setFadeout] = useState(false);
 
   useEffect(() => {
-    // Wait for page load / mount
-    const handleLoad = () => {
+    const isAdmin = pathname?.startsWith('/stormy');
+
+    const handleLoadComplete = () => {
+      // Small timeout for smooth animation transition
       setTimeout(() => {
         setFadeout(true);
         setTimeout(() => {
           setLoading(false);
-        }, 300); // match transition duration
-      }, 750); // aesthetic loading duration
+        }, 300);
+      }, 400);
     };
 
-    if (document.readyState === 'complete') {
-      handleLoad();
-    } else {
-      window.addEventListener('load', handleLoad);
-      // Fallback timeout in case window load event already fired
-      const fallback = setTimeout(handleLoad, 1000);
+    if (isAdmin) {
+      // In Admin panel, wait for the page data to explicitly signal completion
+      const handleDataLoaded = () => {
+        handleLoadComplete();
+      };
+      window.addEventListener('storm_data_loaded', handleDataLoaded);
+      
+      // Fallback timeout in case event is missed or doesn't fire (max 3 seconds)
+      const fallback = setTimeout(handleLoadComplete, 3000);
+
       return () => {
-        window.removeEventListener('load', handleLoad);
+        window.removeEventListener('storm_data_loaded', handleDataLoaded);
         clearTimeout(fallback);
       };
+    } else {
+      // Storefront/Visitor pages: fade out after window finishes loading
+      const handleLoad = () => {
+        handleLoadComplete();
+      };
+
+      if (document.readyState === 'complete') {
+        handleLoad();
+      } else {
+        window.addEventListener('load', handleLoad);
+        const fallback = setTimeout(handleLoad, 1200);
+        return () => {
+          window.removeEventListener('load', handleLoad);
+          clearTimeout(fallback);
+        };
+      }
     }
-  }, []);
+  }, [pathname]);
 
   if (!loading) {
     return <>{children}</>;

@@ -83,6 +83,7 @@ export default function EditProductPage() {
       setErrorMsg(err.message || 'Failed to fetch product data.');
     } finally {
       setFetching(false);
+      window.dispatchEvent(new Event('storm_data_loaded'));
     }
   };
 
@@ -126,8 +127,7 @@ export default function EditProductPage() {
     if (!confirm('Are you sure you want to delete this product?')) return;
     try {
       await deleteProduct(id);
-      router.push('/stormy/products');
-      router.refresh();
+      window.location.href = '/stormy/products';
     } catch (err: any) {
       alert('Failed to delete product.');
     }
@@ -181,8 +181,7 @@ export default function EditProductPage() {
       await saveProduct(productData, defaultVariants, false);
 
       setUploadProgress('Success!');
-      router.push('/stormy/products');
-      router.refresh();
+      window.location.href = '/stormy/products';
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || 'An error occurred during update.');

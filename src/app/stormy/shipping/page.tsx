@@ -1,5 +1,12 @@
 'use client';
+
+import { useEffect } from 'react';
+
 export default function ShippingPage() {
+  useEffect(() => {
+    window.dispatchEvent(new Event('storm_data_loaded'));
+  }, []);
+
   return (
     <div>
       <h1 style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '30px' }}>SHIPPING</h1>

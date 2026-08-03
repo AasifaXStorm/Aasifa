@@ -30,6 +30,7 @@ export default function NewProductPage() {
 
   useEffect(() => {
     setSessionChecked(true);
+    window.dispatchEvent(new Event('storm_data_loaded'));
   }, []);
 
   const handleUploadImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,8 +116,7 @@ export default function NewProductPage() {
       await saveProduct(productData, defaultVariants, true);
 
       setUploadProgress('Success!');
-      router.push('/stormy/products');
-      router.refresh();
+      window.location.href = '/stormy/products';
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || 'An error occurred during product creation.');

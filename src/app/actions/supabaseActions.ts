@@ -36,8 +36,7 @@ export async function updateSiteConfig(configJson: string) {
         name: '_SITE_CONFIG_',
         description: configJson,
         price: 0,
-        category: 'Config',
-        is_active: false
+        category: 'Config'
       });
     if (error) throw error;
   }

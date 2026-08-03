@@ -79,6 +79,7 @@ export default function OverviewPage() {
         console.error(e);
       } finally {
         setLoading(false);
+        window.dispatchEvent(new Event('storm_data_loaded'));
       }
     };
     loadData();
