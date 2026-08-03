@@ -9,8 +9,6 @@ import { Shield, Key, Lock, ArrowRight } from 'lucide-react';
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [mfaCode, setMfaCode] = useState('');
-  const [showMfa, setShowMfa] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -21,12 +19,9 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await verifyAdminLogin(username, password, showMfa ? mfaCode : undefined);
+      const res = await verifyAdminLogin(username, password);
       if (res.success) {
         window.location.href = '/stormy';
-      } else if (res.requireMfa) {
-        setShowMfa(true);
-        if (res.error) setError(res.error);
       } else {
         setError(res.error || 'Authentication failed.');
       }
@@ -64,7 +59,7 @@ export default function LoginPage() {
           <Image src="/images/WhiteStorm.png" alt="AASIFA" width={180} height={40} style={{ height: '24px', width: 'auto', marginBottom: '12px' }} />
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#888', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
             <Shield size={14} color="#fff" />
-            ADMIN SECURITY PORTAL
+            ADMIN PORTAL
           </div>
         </div>
 
@@ -74,81 +69,47 @@ export default function LoginPage() {
           </div>
         )}
 
-        {!showMfa ? (
-          <>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '0.65rem', color: '#666', letterSpacing: '0.1em' }}>USERNAME</label>
-              <input
-                type="text"
-                required
-                placeholder="ENTER USERNAME"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                style={{
-                  background: '#000',
-                  border: '1px solid #222',
-                  color: '#fff',
-                  padding: '12px',
-                  fontSize: '0.85rem',
-                  borderRadius: '4px',
-                  fontFamily: 'monospace',
-                  outline: 'none'
-                }}
-              />
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <label style={{ fontSize: '0.65rem', color: '#666', letterSpacing: '0.1em' }}>USERNAME</label>
+          <input
+            type="text"
+            required
+            placeholder="ENTER USERNAME"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            style={{
+              background: '#000',
+              border: '1px solid #222',
+              color: '#fff',
+              padding: '12px',
+              fontSize: '0.85rem',
+              borderRadius: '4px',
+              fontFamily: 'monospace',
+              outline: 'none'
+            }}
+          />
+        </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '0.65rem', color: '#666', letterSpacing: '0.1em' }}>PASSWORD</label>
-              <input
-                type="password"
-                required
-                placeholder="ENTER SYSTEM KEY"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{
-                  background: '#000',
-                  border: '1px solid #222',
-                  color: '#fff',
-                  padding: '12px',
-                  fontSize: '0.85rem',
-                  borderRadius: '4px',
-                  fontFamily: 'monospace',
-                  outline: 'none'
-                }}
-              />
-            </div>
-          </>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#fff', fontSize: '0.8rem', fontWeight: 'bold' }}>
-              <Key size={16} /> ENTER 6-DIGIT MFA CODE
-            </div>
-            <p style={{ fontSize: '0.7rem', color: '#888', margin: 0 }}>
-              Enter the multi-factor authentication code for administrator access.
-            </p>
-            <input
-              type="text"
-              required
-              autoFocus
-              maxLength={6}
-              placeholder="e.g. 684920"
-              value={mfaCode}
-              onChange={(e) => setMfaCode(e.target.value.trim())}
-              style={{
-                background: '#000',
-                border: '1px solid #333',
-                color: '#fff',
-                padding: '14px',
-                fontSize: '1.2rem',
-                letterSpacing: '0.3em',
-                textAlign: 'center',
-                borderRadius: '4px',
-                fontFamily: 'monospace',
-                outline: 'none'
-              }}
-            />
-          </div>
-        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <label style={{ fontSize: '0.65rem', color: '#666', letterSpacing: '0.1em' }}>PASSWORD</label>
+          <input
+            type="password"
+            required
+            placeholder="ENTER PASSWORD"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{
+              background: '#000',
+              border: '1px solid #222',
+              color: '#fff',
+              padding: '12px',
+              fontSize: '0.85rem',
+              borderRadius: '4px',
+              fontFamily: 'monospace',
+              outline: 'none'
+            }}
+          />
+        </div>
 
         <button
           type="submit"
@@ -170,7 +131,7 @@ export default function LoginPage() {
             opacity: loading ? 0.7 : 1
           }}
         >
-          {loading ? 'VERIFYING...' : showMfa ? 'CONFIRM MFA' : 'AUTHENTICATE'}
+          {loading ? 'LOGGING IN...' : 'LOG IN'}
           {!loading && <ArrowRight size={14} />}
         </button>
       </form>

@@ -31,9 +31,8 @@ export async function verifyAdminLogin(
   const defaultHash = '$2b$12$wD3ViGQRGpILnnbSnYcBs.6A4qM8VBAne.9LaJgLxzAMUMekm0yHa';
   const adminHash = process.env.ADMIN_PASSWORD_HASH || defaultHash;
 
-  // MFA Code requirement (can be set in env, defaults to enabled 6-digit code for admin protection)
-  const expectedMfaCode = process.env.ADMIN_MFA_CODE || '684920';
-  const isMfaRequired = true;
+  // MFA is disabled as requested by admin
+  const isMfaRequired = false;
 
   if (!usernameInput || !passwordInput) {
     return { success: false, error: 'Please enter both username and password.' };
@@ -114,30 +113,7 @@ export async function verifyAdminLogin(
       };
     }
 
-    // 3. MFA Verification Step
-    if (isMfaRequired) {
-      if (!mfaCodeInput || !mfaCodeInput.trim()) {
-        return {
-          success: false,
-          requireMfa: true,
-          error: 'Multi-Factor Authentication (MFA) code required.'
-        };
-      }
 
-      if (mfaCodeInput.trim() !== expectedMfaCode) {
-        await logSecurityEvent({
-          event: 'ADMIN_MFA_FAILED',
-          userId: usernameInput,
-          ip: clientIp,
-          status: 'failure'
-        });
-        return {
-          success: false,
-          requireMfa: true,
-          error: 'Invalid MFA verification code. Please check your authenticator code.'
-        };
-      }
-    }
 
     // 4. Login successful - Reset failed attempts
     if (lockoutData.attempts > 0 || lockoutData.lockoutUntil > 0) {
