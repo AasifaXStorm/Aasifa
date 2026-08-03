@@ -44,7 +44,7 @@ export function ProductCard({ product }: ProductCardProps) {
       position: 'relative',
     }} className="product-card-hover">
       {/* Product Image Link */}
-      <Link href={`/products/${product.id}`} style={{ display: 'block', position: 'relative', width: '100%', aspectRatio: '3/4', overflow: 'hidden' }}>
+      <Link href={`/products/${product.id}`} className="image-skeleton-loader" style={{ display: 'block', position: 'relative', width: '100%', aspectRatio: '3/4', overflow: 'hidden' }}>
         <Image
           src={primaryImage}
           alt={product.name}
@@ -75,7 +75,7 @@ export function ProductCard({ product }: ProductCardProps) {
             textTransform: 'uppercase',
             zIndex: 10,
           }}>
-            Sold Out
+            Out of Storm
           </div>
         ) : null}
       </Link>

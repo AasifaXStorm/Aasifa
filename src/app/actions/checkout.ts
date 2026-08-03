@@ -1,6 +1,7 @@
 'use server';
 
 import { supabaseAdmin } from '@/lib/supabaseServer';
+import { sendEmailViaBrevo } from '@/lib/brevo';
 
 export interface CheckoutItem {
   variantId: string;
@@ -131,9 +132,39 @@ export async function processCheckout(
       }
     }
 
+    // Trigger transactional order confirmation email asynchronously
+    const orderItemsHtml = validatedItems.map(item => `
+      <li style="margin-bottom: 8px;">Quantity: ${item.quantity} | Price: ${item.unitPrice} EGP</li>
+    `).join('');
+
+    const emailHtmlContent = `
+      <div style="font-family: sans-serif; background: #050505; color: #f5f5f5; padding: 40px 20px; border-radius: 8px; max-width: 600px; margin: 0 auto; border: 1px solid #222;">
+        <h2 style="text-align: center; border-bottom: 1px solid #222; padding-bottom: 20px; text-transform: uppercase; letter-spacing: 0.1em;">⚡ ORDER RECEIVED</h2>
+        <p>Hi ${customerName},</p>
+        <p>Thanks for ordering with STORM. We have received your order and our sales team will call you within 2 days at varying times to confirm your order by phone. Please stay reachable.</p>
+        <div style="background: #111; padding: 20px; border: 1px solid #222; border-radius: 4px; margin: 20px 0;">
+          <h4 style="margin-top: 0; text-transform: uppercase; color: #888; letter-spacing: 0.05em;">Order Details</h4>
+          <p><strong>Order ID:</strong> ${order.id}</p>
+          <p><strong>Total:</strong> ${totalAmount} EGP</p>
+          <ul style="padding-left: 20px; color: #ccc;">
+            ${orderItemsHtml}
+          </ul>
+        </div>
+        <p style="color: #666; font-size: 0.8rem; text-align: center; margin-top: 30px;">STORM AASIFA STREETWEAR</p>
+      </div>
+    `;
+
+    sendEmailViaBrevo(customerEmail, `STORM Order #${order.id} Confirmation`, emailHtmlContent, 'order_confirmation')
+      .catch(err => console.error('Async order confirmation trigger failure:', err));
+
     return { success: true, orderId: order.id };
   } catch (err: any) {
     console.error('Checkout processing exception:', err);
     return { success: false, error: err.message || 'An unexpected error occurred.' };
   }
+}
+
+export async function saveAbandonedCartAction(email: string, cartPayload: string) {
+  const { trackAbandonedCart } = await import('@/lib/brevo');
+  return trackAbandonedCart(email, cartPayload);
 }

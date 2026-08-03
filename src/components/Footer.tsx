@@ -46,9 +46,8 @@ export function Footer() {
             {t('nav.shop')}
           </h4>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px', padding: 0 }}>
-            <li><Link href="/about" className="footer-link-hover">{t('nav.about')}</Link></li>
-            <li><a href="mailto:aasifa.storm.eg@gmail.com?subject=Aasifa%20Inquiry" className="footer-link-hover">{t('nav.contact')}</a></li>
             <li><Link href="/#shop" className="footer-link-hover">{t('nav.shop')}</Link></li>
+            <li><Link href="/shipping-policy" className="footer-link-hover">Shipping & Returns</Link></li>
           </ul>
         </div>
 

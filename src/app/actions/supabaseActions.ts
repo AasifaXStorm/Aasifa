@@ -2,6 +2,7 @@
 
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { verifyAdminSession } from '@/app/actions/auth';
+import { SUPPORTED_SIZES } from '@/lib/constants';
 
 export async function getSiteConfig() {
   const { data, error } = await supabaseAdmin
@@ -180,11 +181,14 @@ export async function saveProduct(productData: any, variantsData: any[], isNew: 
   }
 
   // Handle variants via upsert to handle both new and existing variants cleanly
-  const variantsToUpsert = variantsData.map((v: any) => ({
-    product_id: productId,
-    size: v.size,
-    stock_quantity: v.stock_quantity
-  }));
+  const validSizes = SUPPORTED_SIZES as readonly string[];
+  const variantsToUpsert = variantsData
+    .filter((v: any) => validSizes.includes(v.size))
+    .map((v: any) => ({
+      product_id: productId,
+      size: v.size,
+      stock_quantity: v.stock_quantity
+    }));
 
   const { error: variantError } = await supabaseAdmin
     .from('product_variants')
@@ -246,11 +250,14 @@ async function uploadImageActionSingle(formData: FormData): Promise<string> {
 export async function updateInventory(productId: string, variants: { size: string, stock_quantity: number }[]) {
   if (!(await verifyAdminSession())) throw new Error('Unauthorized');
 
-  const variantsToUpsert = variants.map(v => ({
-    product_id: productId,
-    size: v.size,
-    stock_quantity: v.stock_quantity
-  }));
+  const validSizes = SUPPORTED_SIZES as readonly string[];
+  const variantsToUpsert = variants
+    .filter(v => validSizes.includes(v.size))
+    .map(v => ({
+      product_id: productId,
+      size: v.size,
+      stock_quantity: v.stock_quantity
+    }));
 
   const { error } = await supabaseAdmin
     .from('product_variants')

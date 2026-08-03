@@ -86,7 +86,7 @@ const translations: Record<string, Record<Language, string>> = {
 
   // Product detail page
   'product.select_size': { en: 'Select Size', ar: 'اختر المقاس' },
-  'product.out_of_stock': { en: 'Out of Stock', ar: 'نفد من المخزن' },
+  'product.out_of_stock': { en: 'Out of Storm', ar: 'نفد من العاصفة' },
   'product.add_to_cart': { en: 'Add to Cart', ar: 'أضف إلى الحقيبة' },
   'product.adding': { en: 'Adding...', ar: 'جاري الإضافة...' },
   'product.added': { en: 'Added to Cart', ar: 'تمت الإضافة للحقيبة' },

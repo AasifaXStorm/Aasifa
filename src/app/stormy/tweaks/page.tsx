@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getSiteConfig, updateSiteConfig } from '@/app/actions/supabaseActions';
+import { DEFAULT_TICKER_TEXT, DEFAULT_TICKER_SPEED } from '@/lib/constants';
 
 export default function AdminTweaksPage() {
   const [loading, setLoading] = useState(true);
@@ -15,8 +16,8 @@ export default function AdminTweaksPage() {
   const [tweaksShowFooter, setTweaksShowFooter] = useState(true);
 
   // Promotion Marquee State
-  const [marqueeText, setMarqueeText] = useState('ꜱᴛᴏʀᴍ ɪɴ ʏᴏᴜʀ ꜱᴛʏʟᴇ');
-  const [marqueeSpeed, setMarqueeSpeed] = useState(120);
+  const [marqueeText, setMarqueeText] = useState(DEFAULT_TICKER_TEXT);
+  const [marqueeSpeed, setMarqueeSpeed] = useState(DEFAULT_TICKER_SPEED);
   const [marqueeRepetition, setMarqueeRepetition] = useState(1);
   const [marqueeVisibility, setMarqueeVisibility] = useState('Active');
 

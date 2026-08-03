@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from '@/context/LanguageContext';
+import { LOW_STOCK_THRESHOLD } from '@/lib/constants';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from './ProductCard';
@@ -25,8 +26,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
   // Size Calculator states
   const [showCalculator, setShowCalculator] = useState(false);
-  const [calcHeight, setCalcHeight] = useState('');
-  const [calcWeight, setCalcWeight] = useState('');
+  const [calcStep, setCalcStep] = useState(1);
+  const [calcHeight, setCalcHeight] = useState(175);
+  const [calcWeight, setCalcWeight] = useState(70);
+  const [fitPreference, setFitPreference] = useState<'Slim' | 'Regular' | 'Oversized'>('Regular');
   const [calcResult, setCalcResult] = useState<{ size: string; note: string } | null>(null);
 
   // Find active variant
@@ -96,11 +99,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           gap: '15px',
         }}>
           {/* Main Display Image */}
-          <div style={{
+          <div className="image-skeleton-loader" style={{
             position: 'relative',
             width: '100%',
             aspectRatio: '3/4',
-            background: '#0a0a0a',
             border: '1px solid #1a1a1a',
             overflow: 'hidden',
           }}>
@@ -231,24 +233,39 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 </span>
                 <button
                   type="button"
-                  onClick={() => setShowCalculator(true)}
+                  onClick={() => {
+                    setCalcStep(1);
+                    setCalcResult(null);
+                    setShowCalculator(true);
+                  }}
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    color: 'var(--accent)',
+                    color: 'var(--text-primary)',
+                    opacity: 0.8,
                     fontSize: '0.8rem',
                     textDecoration: 'underline',
                     cursor: 'pointer',
                     padding: 0,
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    letterSpacing: '0.05em'
                   }}
                 >
                   Find your size (Calculator)
                 </button>
               </div>
               {selectedSize && (
-                <span style={{ fontSize: '0.85rem', color: maxStock > 0 ? '#888' : '#ff4444' }}>
-                  {maxStock > 0 ? t('product.only_left').replace('{qty}', String(maxStock)) : t('product.out_of_stock')}
+                <span style={{ 
+                  fontSize: '0.85rem', 
+                  color: maxStock === 0 ? '#ff4444' : maxStock <= LOW_STOCK_THRESHOLD ? '#ffaa00' : '#888',
+                  fontWeight: maxStock <= LOW_STOCK_THRESHOLD ? 'bold' : 'normal'
+                }}>
+                  {maxStock === 0 
+                    ? t('product.out_of_stock') 
+                    : maxStock <= LOW_STOCK_THRESHOLD 
+                      ? `Low Stock: Only ${maxStock} left` 
+                      : 'In Stock'
+                  }
                 </span>
               )}
             </div>
@@ -278,16 +295,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                         border: isSelected 
                           ? '1px solid var(--accent)' 
                           : isAvailable 
-                            ? '1px solid #222222' 
-                            : '1px dashed #222222',
+                            ? '1px solid var(--border-highlight)' 
+                            : '1px dashed var(--border-color)',
                         background: isSelected 
                           ? 'var(--accent)' 
                           : 'transparent',
                         color: isSelected 
                           ? '#030303' 
                           : isAvailable 
-                            ? '#ffffff' 
-                            : '#444444',
+                            ? 'var(--text-primary)' 
+                            : 'var(--text-muted)',
                         cursor: isAvailable ? 'pointer' : 'not-allowed',
                         opacity: isAvailable ? 1 : 0.4,
                       }}
@@ -307,7 +324,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#888' }}>
                   Quantity
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #222' }}>
+                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border-highlight)' }}>
                   <button
                     onClick={() => setQuantity(q => Math.max(1, q - 1))}
                     style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -337,9 +354,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   gap: '10px',
                   width: '100%',
                   padding: '15px',
-                  background: feedback ? '#22c55e' : '#ffffff',
-                  borderColor: feedback ? '#22c55e' : '#ffffff',
-                  color: feedback ? '#ffffff' : '#030303',
+                  background: feedback ? '#22c55e' : 'var(--text-primary)',
+                  borderColor: feedback ? '#22c55e' : 'var(--text-primary)',
+                  color: feedback ? '#ffffff' : 'var(--bg-base)',
                 }}
               >
                 <ShoppingBag size={18} />
@@ -355,9 +372,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               style={{
                 width: '100%',
                 padding: '15px',
-                background: '#1a1a1a',
-                borderColor: '#1a1a1a',
-                color: '#666666',
+                background: 'var(--bg-elevated-2)',
+                borderColor: 'var(--bg-elevated-2)',
+                color: 'var(--text-muted)',
                 cursor: 'not-allowed',
               }}
             >
@@ -381,7 +398,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           padding: '20px'
         }}>
           <div style={{
-            background: '#0d0d0d',
+            background: '#0a0a0a',
             border: '1px solid #222',
             padding: '30px',
             borderRadius: '8px',
@@ -390,9 +407,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             color: '#fff',
             boxShadow: '0 20px 50px rgba(0,0,0,0.8)'
           }}>
+            {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #222', paddingBottom: '12px' }}>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                📏 STORM SIZE RECOMMENDER
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#fff' }}>
+                ⚡ STORM SIZE CALCULATOR
               </h3>
               <button
                 type="button"
@@ -400,90 +418,174 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   setShowCalculator(false);
                   setCalcResult(null);
                 }}
-                style={{ background: 'transparent', border: 'none', color: '#888', fontSize: '1.2rem', cursor: 'pointer' }}
+                style={{ background: 'transparent', border: 'none', color: '#888', fontSize: '1.4rem', cursor: 'pointer' }}
               >
                 &times;
               </button>
             </div>
 
-            {!calcResult ? (
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const h = parseFloat(calcHeight);
-                const w = parseFloat(calcWeight);
-                if (isNaN(h) || isNaN(w)) return;
-
-                if (h > 185 || w > 95) {
-                  setCalcResult({
-                    size: 'XL (Over Limit)',
-                    note: "You are above our standard size guide. Don't worry! Our XL features an extreme oversized streetwear cut, so you'll fit perfectly. Go ahead and rock the XL!"
-                  });
-                } else if (h > 175 || w > 78) {
-                  setCalcResult({
-                    size: 'XL',
-                    note: 'Oversized aesthetic fit. Fits perfectly.'
-                  });
-                } else if (h > 168 || w > 65) {
-                  setCalcResult({
-                    size: 'L',
-                    note: 'Streetwear slouchy fit.'
-                  });
-                } else if (h > 158 || w > 52) {
-                  setCalcResult({
-                    size: 'M',
-                    note: 'Relaxed standard fit.'
-                  });
-                } else {
-                  setCalcResult({
-                    size: 'S',
-                    note: 'Perfect casual fit.'
-                  });
-                }
-              }} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#888', letterSpacing: '0.05em' }}>YOUR HEIGHT (CM)</label>
+            {/* STEP 1: HEIGHT & WEIGHT SLIDERS */}
+            {calcStep === 1 && !calcResult && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                {/* Height */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 900, color: '#888', letterSpacing: '0.05em' }}>
+                    <span>HEIGHT</span>
+                    <span style={{ color: '#fff' }}>{calcHeight} CM</span>
+                  </div>
                   <input
-                    type="number"
-                    required
-                    placeholder="e.g. 180"
+                    type="range"
+                    min="140"
+                    max="210"
                     value={calcHeight}
-                    onChange={(e) => setCalcHeight(e.target.value)}
-                    style={{ padding: '12px', background: '#050505', border: '1px solid #222', color: '#fff', borderRadius: '4px' }}
+                    onChange={(e) => setCalcHeight(parseInt(e.target.value))}
+                    style={{
+                      width: '100%',
+                      accentColor: '#ffffff',
+                      height: '4px',
+                      background: '#222',
+                      borderRadius: '2px',
+                      cursor: 'pointer'
+                    }}
                   />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#888', letterSpacing: '0.05em' }}>YOUR WEIGHT (KG)</label>
+
+                {/* Weight */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 900, color: '#888', letterSpacing: '0.05em' }}>
+                    <span>WEIGHT</span>
+                    <span style={{ color: '#fff' }}>{calcWeight} KG</span>
+                  </div>
                   <input
-                    type="number"
-                    required
-                    placeholder="e.g. 80"
+                    type="range"
+                    min="40"
+                    max="120"
                     value={calcWeight}
-                    onChange={(e) => setCalcWeight(e.target.value)}
-                    style={{ padding: '12px', background: '#050505', border: '1px solid #222', color: '#fff', borderRadius: '4px' }}
+                    onChange={(e) => setCalcWeight(parseInt(e.target.value))}
+                    style={{
+                      width: '100%',
+                      accentColor: '#ffffff',
+                      height: '4px',
+                      background: '#222',
+                      borderRadius: '2px',
+                      cursor: 'pointer'
+                    }}
                   />
                 </div>
+
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={() => setCalcStep(2)}
                   style={{
                     background: '#ffffff',
                     color: '#000',
                     padding: '14px',
                     border: 'none',
-                    fontWeight: 'bold',
+                    fontWeight: 900,
                     textTransform: 'uppercase',
                     cursor: 'pointer',
                     borderRadius: '4px',
+                    fontSize: '0.8rem',
+                    letterSpacing: '0.05em',
                     marginTop: '10px'
                   }}
                 >
-                  CALCULATE RECOMMENDED SIZE
+                  NEXT STEP
                 </button>
-              </form>
-            ) : (
+              </div>
+            )}
+
+            {/* STEP 2: FIT PREFERENCE */}
+            {calcStep === 2 && !calcResult && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#888', letterSpacing: '0.05em' }}>
+                  SELECT FIT PREFERENCE
+                </span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+                  {(['Slim', 'Regular', 'Oversized'] as const).map((fit) => (
+                    <button
+                      key={fit}
+                      type="button"
+                      onClick={() => setFitPreference(fit)}
+                      style={{
+                        padding: '12px 6px',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        background: fitPreference === fit ? '#fff' : 'transparent',
+                        color: fitPreference === fit ? '#000' : '#888',
+                        border: `1px solid ${fitPreference === fit ? '#fff' : '#222'}`,
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {fit.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setCalcStep(1)}
+                    style={{ flex: 1, padding: '12px', background: 'transparent', border: '1px solid #333', color: '#888', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}
+                  >
+                    BACK
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      let baseSize = 'S';
+                      if (calcHeight > 185 || calcWeight > 95) {
+                        baseSize = 'XL (Over Limit)';
+                      } else {
+                        // Estimate size index based on weight & height
+                        const score = (calcHeight - 150) + (calcWeight - 40);
+                        if (score > 105) baseSize = 'XL';
+                        else if (score > 75) baseSize = 'L';
+                        else if (score > 40) baseSize = 'M';
+                        else baseSize = 'S';
+                      }
+
+                      // Adjust based on fit preference
+                      let finalSize = baseSize;
+                      if (baseSize !== 'XL (Over Limit)') {
+                        if (fitPreference === 'Oversized') {
+                          if (baseSize === 'S') finalSize = 'M';
+                          else if (baseSize === 'M') finalSize = 'L';
+                          else if (baseSize === 'L') finalSize = 'XL';
+                        } else if (fitPreference === 'Slim') {
+                          if (baseSize === 'XL') finalSize = 'L';
+                          else if (baseSize === 'L') finalSize = 'M';
+                          else if (baseSize === 'M') finalSize = 'S';
+                        }
+                      }
+
+                      let note = '';
+                      if (finalSize.startsWith('XL')) {
+                        note = "You are above our standard size guide. Don't worry! Our XL features an extreme oversized streetwear cut, so you'll fit perfectly. Go ahead and rock the XL!";
+                      } else {
+                        note = `This selection offers the perfect ${fitPreference.toLowerCase()} style fit for your dimensions.`;
+                      }
+
+                      setCalcResult({
+                        size: finalSize.split(' ')[0], // Capped strictly to S-XL
+                        note
+                      });
+                    }}
+                    style={{ flex: 1, padding: '12px', background: '#fff', color: '#000', border: 'none', fontWeight: 900, borderRadius: '4px', cursor: 'pointer' }}
+                  >
+                    CALCULATE
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* RESULT VIEW */}
+            {calcResult && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'center', padding: '10px 0' }}>
                 <div>
                   <span style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>RECOMMENDED SIZE</span>
-                  <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--accent)', marginTop: '8px' }}>
+                  <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#fff', marginTop: '8px' }}>
                     {calcResult.size}
                   </div>
                 </div>
@@ -494,19 +596,21 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      const cleanSize = calcResult.size.split(' ')[0]; // Extract S/M/L/XL
-                      setSelectedSize(cleanSize);
+                      setSelectedSize(calcResult.size);
                       setShowCalculator(false);
                       setCalcResult(null);
                     }}
-                    style={{ flex: 1, padding: '12px', background: 'var(--accent)', color: '#000', border: 'none', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}
+                    style={{ flex: 1, padding: '12px', background: '#fff', color: '#000', border: 'none', fontWeight: 900, borderRadius: '4px', cursor: 'pointer' }}
                   >
                     SELECT THIS SIZE
                   </button>
                   <button
                     type="button"
-                    onClick={() => setCalcResult(null)}
-                    style={{ flex: 1, padding: '12px', background: 'transparent', border: '1px solid #333', color: '#888', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}
+                    onClick={() => {
+                      setCalcResult(null);
+                      setCalcStep(1);
+                    }}
+                    style={{ flex: 1, padding: '12px', background: 'transparent', border: '1px solid #333', color: '#888', fontWeight: 700, borderRadius: '4px', cursor: 'pointer' }}
                   >
                     RE-CALCULATE
                   </button>

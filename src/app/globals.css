@@ -368,3 +368,62 @@ button {
     letter-spacing: 0.15em !important;
   }
 }
+
+/* Skeletons image loading placeholder */
+@keyframes skeletonPulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.image-skeleton-loader {
+  background: #111111;
+  background-image: linear-gradient(90deg, #111111 25%, #181818 50%, #111111 75%);
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.8s infinite linear;
+}
+
+/* Light Theme Variables */
+.light-theme {
+  --bg-base: #f7f7f8;
+  --bg-elevated: #ffffff;
+  --bg-elevated-2: #ececef;
+  --text-primary: #0a0a0b;
+  --text-muted: #5c5c64;
+  --accent: #0a0a0b;
+  --accent-glow: rgba(0, 0, 0, 0.08);
+  --border-color: #ececef;
+  --border-highlight: #d1d1d6;
+}
+
+/* Global Theme Transition */
+body, header, footer, div, span, button, a, input, textarea, select {
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes stormPulse {
+  0% {
+    filter: drop-shadow(0 0 2px rgba(255,255,255,0.1));
+  }
+  50% {
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));
+  }
+  100% {
+    filter: drop-shadow(0 0 2px rgba(255,255,255,0.1));
+  }
+}
+
+.storm-logo-hover {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+}
+
+.storm-logo-hover:hover {
+  transform: scale(1.05);
+  animation: stormPulse 2s infinite ease-in-out;
+}

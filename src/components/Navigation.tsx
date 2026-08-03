@@ -9,17 +9,39 @@ import { getCartTotalItems } from '@/lib/cart';
 import { useTranslation } from '@/context/LanguageContext';
 
 import { getSiteConfig } from '@/app/actions/supabaseActions';
+import { DEFAULT_TICKER_TEXT, DEFAULT_TICKER_SPEED } from '@/lib/constants';
 
 export function Navigation() {
   const [cartCount, setCartCount] = useState(0);
   const { t } = useTranslation();
   const pathname = usePathname();
 
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
   const [marquee, setMarquee] = useState<{ text: string; speed: number; visible: boolean }>({
-    text: 'ꜱᴛᴏʀᴍ ɪɴ ʏᴏᴜʀ ꜱᴛʏʟᴇ',
-    speed: 120,
+    text: DEFAULT_TICKER_TEXT,
+    speed: DEFAULT_TICKER_SPEED,
     visible: true
   });
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('aasifa_theme') || 'dark';
+    setTheme(savedTheme as 'dark' | 'light');
+    if (savedTheme === 'light') {
+      document.documentElement.classList.add('light-theme');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    localStorage.setItem('aasifa_theme', nextTheme);
+    if (nextTheme === 'light') {
+      document.documentElement.classList.add('light-theme');
+    } else {
+      document.documentElement.classList.remove('light-theme');
+    }
+  };
 
   useEffect(() => {
     // Set initial cart count
@@ -32,8 +54,8 @@ export function Navigation() {
         if (config && config.description) {
           const parsed = JSON.parse(config.description);
           setMarquee({
-            text: parsed.marquee_text || 'DROP 01 OUT NOW · FAST HOME DELIVERY ALL OVER EGYPT',
-            speed: parsed.marquee_speed || 120,
+            text: parsed.marquee_text || DEFAULT_TICKER_TEXT,
+            speed: parsed.marquee_speed || DEFAULT_TICKER_SPEED,
             visible: parsed.marquee_visibility !== 'Hidden'
           });
         }
@@ -122,8 +144,16 @@ export function Navigation() {
         padding: '0 5%',
         zIndex: 100,
       }}>
-      {/* Brand Logo */}
-      <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+      <Link 
+        href="/" 
+        onClick={(e) => {
+          if (pathname === '/') {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }}
+        style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}
+      >
         <Image
           src="/images/WhiteStorm.png"
           alt="WhiteStorm"
@@ -131,13 +161,58 @@ export function Navigation() {
           height={32}
           priority
           style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
+          className="storm-logo-hover"
         />
       </Link>
 
       {/* Right Nav Icons */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        {/* Theme Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--text-primary)',
+            cursor: 'pointer',
+            padding: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+          }}
+          className="theme-toggle-btn"
+          aria-label="Toggle theme"
+        >
+          {theme === 'dark' ? (
+            <svg 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              style={{ width: '20px', height: '20px', transition: 'transform 0.4s', transform: 'rotate(0deg)' }}
+            >
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor"/>
+            </svg>
+          ) : (
+            <svg 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              style={{ width: '20px', height: '20px', transition: 'transform 0.4s', transform: 'rotate(15deg)' }}
+            >
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          )}
+        </button>
+
         {/* Cart Icon */}
-        <Link href="/cart" style={{ position: 'relative', display: 'flex', alignItems: 'center', color: '#e5e5e5' }} className="cart-nav-hover">
+        <Link href="/cart" style={{ position: 'relative', display: 'flex', alignItems: 'center', color: 'var(--text-primary)' }} className="cart-nav-hover">
           <ShoppingCart size={20} />
           {cartCount > 0 && (
             <span style={{

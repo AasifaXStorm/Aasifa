@@ -33,7 +33,6 @@ export default function EditProductPage() {
   const [stockM, setStockM] = useState('10');
   const [stockL, setStockL] = useState('10');
   const [stockXL, setStockXL] = useState('10');
-  const [stockXXL, setStockXXL] = useState('10');
 
   // Instagram-style Infinite Images list
   const [imagesList, setImagesList] = useState<string[]>([]);
@@ -65,13 +64,11 @@ export default function EditProductPage() {
       const mVar = variants.find((v: any) => v.size === 'M');
       const lVar = variants.find((v: any) => v.size === 'L');
       const xlVar = variants.find((v: any) => v.size === 'XL');
-      const xxlVar = variants.find((v: any) => v.size === 'XXL');
       
       if (sVar) setStockS(sVar.stock_quantity.toString());
       if (mVar) setStockM(mVar.stock_quantity.toString());
       if (lVar) setStockL(lVar.stock_quantity.toString());
       if (xlVar) setStockXL(xlVar.stock_quantity.toString());
-      if (xxlVar) setStockXXL(xxlVar.stock_quantity.toString());
 
       // Parse metadata from description
       let cleanDesc = product.description || '';
@@ -196,8 +193,7 @@ export default function EditProductPage() {
         { size: 'S', stock_quantity: parseInt(stockS) || 0 },
         { size: 'M', stock_quantity: parseInt(stockM) || 0 },
         { size: 'L', stock_quantity: parseInt(stockL) || 0 },
-        { size: 'XL', stock_quantity: parseInt(stockXL) || 0 },
-        { size: 'XXL', stock_quantity: parseInt(stockXXL) || 0 },
+        { size: 'XL', stock_quantity: parseInt(stockXL) || 0 }
       ];
 
       await saveProduct(productData, defaultVariants, false);
@@ -479,13 +475,12 @@ export default function EditProductPage() {
             <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#fff', fontWeight: 900, display: 'block' }}>
               📦 UPDATE INVENTORY QUANTITIES
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
               {[
                 { size: 'S', val: stockS, set: setStockS },
                 { size: 'M', val: stockM, set: setStockM },
                 { size: 'L', val: stockL, set: setStockL },
-                { size: 'XL', val: stockXL, set: setStockXL },
-                { size: 'XXL', val: stockXXL, set: setStockXXL }
+                { size: 'XL', val: stockXL, set: setStockXL }
               ].map(item => (
                 <div key={item.size} style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center', background: '#0d0d0d', border: '1px solid #222', padding: '10px 4px', borderRadius: '4px' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#888' }}>{item.size}</span>

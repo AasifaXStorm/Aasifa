@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getProducts, updateInventory } from '@/app/actions/supabaseActions';
+import { SUPPORTED_SIZES } from '@/lib/constants';
 
 interface Variant {
   id?: string;
@@ -33,11 +34,10 @@ export default function InventoryPage() {
       // Remove configurations/lockouts (which start with '_')
       const filtered = (data || []).filter((p: any) => !p.name.startsWith('_'));
       
-      // Ensure S, M, L, XL, XXL variants exist for every product for UI ease
+      // Ensure S, M, L, XL variants exist for every product for UI ease
       const normalized = filtered.map((p: any) => {
         const variants = p.product_variants || [];
-        const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
-        const fullVariants = sizes.map(size => {
+        const fullVariants = SUPPORTED_SIZES.map(size => {
           const match = variants.find((v: any) => v.size === size);
           return {
             size,

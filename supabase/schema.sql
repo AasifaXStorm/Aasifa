@@ -70,3 +70,30 @@ create policy "Allow admin read/write on orders" on orders for all using (auth.r
 
 create policy "Allow anyone to insert order_items" on order_items for insert with check (true);
 create policy "Allow admin read/write on order_items" on order_items for all using (auth.role() = 'authenticated');
+
+-- Email Logs Table
+create table if not exists email_logs (
+  id uuid default uuid_generate_v4() primary key,
+  recipient_email text not null,
+  email_type text not null,
+  status text not null,
+  error_message text,
+  created_at timestamptz default now()
+);
+
+-- Enable RLS on email_logs
+alter table email_logs enable row level security;
+create policy "Allow admin read/write on email_logs" on email_logs for all using (auth.role() = 'authenticated');
+
+-- Abandoned Carts Table
+create table if not exists abandoned_carts (
+  id uuid default uuid_generate_v4() primary key,
+  customer_email text not null,
+  cart_payload text not null,
+  created_at timestamptz default now()
+);
+
+-- Enable RLS on abandoned_carts
+alter table abandoned_carts enable row level security;
+create policy "Allow public insert on abandoned_carts" on abandoned_carts for insert with check (true);
+create policy "Allow admin read/write on abandoned_carts" on abandoned_carts for all using (auth.role() = 'authenticated');

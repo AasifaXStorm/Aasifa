@@ -11,7 +11,7 @@ import {
   clearCart, 
   CartItem 
 } from '@/lib/cart';
-import { processCheckout } from '../actions/checkout';
+import { processCheckout, saveAbandonedCartAction } from '../actions/checkout';
 import { useTranslation } from '@/context/LanguageContext';
 
 export default function CartPage() {
@@ -42,6 +42,17 @@ export default function CartPage() {
       window.removeEventListener('aasifa_cart_updated', handleCartUpdate);
     };
   }, []);
+
+  // Debounced Cart Abandonment Logging
+  useEffect(() => {
+    if (!email || cart.length === 0) return;
+    const delayDebounce = setTimeout(() => {
+      saveAbandonedCartAction(email, JSON.stringify(cart))
+        .catch(err => console.error('Failed to log abandoned cart:', err));
+    }, 2000); // 2 seconds debounce
+
+    return () => clearTimeout(delayDebounce);
+  }, [email, cart]);
 
   if (!mounted) {
     return (

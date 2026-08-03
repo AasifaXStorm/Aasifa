@@ -350,10 +350,9 @@ export function StormHero() {
             height={180}
             priority
             style={{
-              width: '70%',
-              maxWidth: '420px',
+              width: 'clamp(220px, 85vw, 420px)',
               height: 'auto',
-              maxHeight: 'clamp(60px, 12vh, 110px)',
+              maxHeight: 'clamp(50px, 12vh, 110px)',
               objectFit: 'contain',
               filter: 'drop-shadow(0 0 25px rgba(255,255,255,0.25))'
             }}

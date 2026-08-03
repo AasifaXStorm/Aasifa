@@ -114,6 +114,32 @@ export function StormLoader({ children }: { children: React.ReactNode }) {
             boxShadow: '0 0 8px rgba(255,255,255,0.8)'
           }} />
         </div>
+
+        {/* Context-aware loading message */}
+        {pathname?.startsWith('/stormy') && (
+          <div style={{
+            fontSize: '0.75rem',
+            color: '#888',
+            textTransform: 'uppercase',
+            letterSpacing: '0.15em',
+            fontFamily: 'monospace',
+            fontWeight: 'bold',
+            marginTop: '-10px'
+          }}>
+            {(() => {
+              if (pathname === '/stormy') return 'LOADING METRICS...';
+              if (pathname.includes('/products/new')) return 'PREPARING PRODUCT CREATION...';
+              if (pathname.includes('/products/')) return 'LOADING PRODUCT DETAILS...';
+              if (pathname.includes('/products')) return 'LOADING PRODUCTS...';
+              if (pathname.includes('/inventory')) return 'LOADING INVENTORY...';
+              if (pathname.includes('/orders')) return 'LOADING ORDERS...';
+              if (pathname.includes('/tweaks')) return 'LOADING TWEAKS...';
+              if (pathname.includes('/settings')) return 'LOADING SETTINGS...';
+              if (pathname.includes('/shipping')) return 'LOADING SHIPPING RULES...';
+              return 'LOADING ADMIN PANEL...';
+            })()}
+          </div>
+        )}
       </div>
       
       {/* Hide content visually during initial load to prevent layout shifts */}
