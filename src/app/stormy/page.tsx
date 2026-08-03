@@ -37,7 +37,7 @@ export default function OverviewPage() {
       const lowStock: any[] = [];
       (productsData || []).forEach((prod: any) => {
         (prod.product_variants || []).forEach((variant: any) => {
-          if (variant.stock_quantity <= 5) {
+          if (['S', 'M', 'L', 'XL'].includes(variant.size) && variant.stock_quantity <= 5) {
             lowStock.push({
               productName: prod.name,
               size: variant.size,
@@ -52,7 +52,9 @@ export default function OverviewPage() {
       const sizes: Record<string, number> = {};
       (itemsData || []).forEach((item: any) => {
         const sz = item.product_variants?.size || 'Unknown';
-        sizes[sz] = (sizes[sz] || 0) + (item.quantity || 0);
+        if (['S', 'M', 'L', 'XL'].includes(sz)) {
+          sizes[sz] = (sizes[sz] || 0) + (item.quantity || 0);
+        }
       });
       setSizePopularity(sizes);
 

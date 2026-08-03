@@ -307,19 +307,6 @@ export default function AdminTweaksPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: '#050505', border: '1px solid #1a1a1a', borderRadius: '4px', cursor: 'pointer' }}>
                   <div>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#fff', display: 'block' }}>Testing Mode</span>
-                    <span style={{ fontSize: '0.7rem', color: '#888' }}>When enabled, nothing assumes real orders.</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={testingMode}
-                    onChange={(e) => setTestingMode(e.target.checked)}
-                    style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#fff' }}
-                  />
-                </label>
-
-                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: '#050505', border: '1px solid #1a1a1a', borderRadius: '4px', cursor: 'pointer' }}>
-                  <div>
                     <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#fff', display: 'block' }}>Launching Mode (Countdown Page)</span>
                     <span style={{ fontSize: '0.7rem', color: '#888' }}>Locks storefront behind live countdown screen.</span>
                   </div>

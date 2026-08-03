@@ -33,11 +33,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [calcResult, setCalcResult] = useState<{ size: string; note: string } | null>(null);
 
   // Find active variant
-  const activeVariant = product.product_variants?.find(v => v.size === selectedSize);
+  const activeVariant = product.product_variants?.find(v => v.size === selectedSize && ['S', 'M', 'L', 'XL'].includes(v.size));
   const maxStock = activeVariant ? activeVariant.stock_quantity : 0;
 
   // Calculate total stock across all variants
-  const totalStock = product.product_variants?.reduce((sum, v) => sum + v.stock_quantity, 0) ?? 0;
+  const allowedVariants = product.product_variants?.filter(v => ['S', 'M', 'L', 'XL'].includes(v.size)) || [];
+  const totalStock = allowedVariants.reduce((sum, v) => sum + v.stock_quantity, 0) ?? 0;
   const isFullyOutOfStock = totalStock === 0;
 
   const handleNextImage = () => {
@@ -273,7 +274,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             {/* Sizes Buttons Grid */}
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {((product.product_variants && product.product_variants.length > 0)
-                ? product.product_variants
+                ? product.product_variants.filter(v => ['S', 'M', 'L', 'XL'].includes(v.size))
                 : ['S', 'M', 'L', 'XL'].map((s, idx) => ({ id: `default-${idx}`, size: s, stock_quantity: 0 }))
               ).map((v) => {
                 const isAvailable = v.stock_quantity > 0;
