@@ -72,7 +72,7 @@ export default function ShippingPolicyPage() {
             <p style={{ marginTop: '10px' }}>
               Please note: In accordance with strictly enforced courier guidelines, 
               <strong> packages cannot be opened prior to delivery or courier payment.</strong> 
-              This policy is mandatory to preserve the factory condition of our streetwear garments. 
+              This policy is mandatory to preserve the factory condition of our shirts. 
               If you refuse delivery at the door, the outbound shipping fees will be deducted from your account.
             </p>
           </section>
@@ -84,13 +84,13 @@ export default function ShippingPolicyPage() {
             </h2>
             <p>
               We accept returns or exchanges within <strong>fourteen (14) days from the date of delivery.</strong> 
-              To qualify, items must be in their original, unwashed, and unironed condition, complete with original tags, labels, packaging, invoice, and the shipping label intact.
+              To qualify, shirts must be in their original, unwashed, and unironed condition, complete with original tags, labels, packaging, invoice, and the shipping label intact.
             </p>
             <p style={{ marginTop: '10px' }}>
-              <strong>Non-Returnable Items:</strong> Ironed/washed garments, damaged items, shoes without original packaging, products with removed tags, caps, accessories, wallets, swimwear, watches, and socks.
+              <strong>Non-Returnable Items:</strong> Ironed/washed shirts, damaged shirts, or shirts with removed tags.
             </p>
             <p style={{ marginTop: '10px' }}>
-              <strong>Outfit & Bundle Offers:</strong> Multi-piece promotional outfits or bundle offers must be returned in full. We cannot process partial returns or partial refunds on discounted bundles.
+              <strong>Outfit & Bundle Offers:</strong> Multi-piece promotional shirt outfits or bundle offers must be returned in full. We cannot process partial returns or partial refunds on discounted bundles.
             </p>
           </section>
 
@@ -105,9 +105,9 @@ export default function ShippingPolicyPage() {
             <p style={{ marginTop: '10px' }}>
               <strong>Defective Item Policy:</strong>
               <br />
-              • If the defective garment was the <em>only item</em> in your order, STORM covers all shipping fees to return/exchange the item.
+              • If the defective shirt was the <em>only item</em> in your order, STORM covers all shipping fees to return/exchange the item.
               <br />
-              • If your order included <em>other undamaged items</em> alongside the defective piece, STORM does not cover the initial return courier fee. However, we will cover the shipping fee to resend your replacement item.
+              • If your order included <em>other undamaged shirts</em> alongside the defective piece, STORM does not cover the initial return courier fee. However, we will cover the shipping fee to resend your replacement item.
             </p>
           </section>
 
@@ -123,7 +123,7 @@ export default function ShippingPolicyPage() {
             <p style={{ marginTop: '10px' }}>
               <strong>Refund Channels:</strong>
               <br />
-              • <strong>Store Branch Returns:</strong> Refunded on the spot in cash after our store staff manually inspects and verifies the condition of the garments.
+              • <strong>Store Branch Returns:</strong> Refunded on the spot in cash after our store staff manually inspects and verifies the condition of the shirts.
               <br />
               • <strong>Courier-Based Returns:</strong> Once shipped, items undergo terminal inspection at our fulfillment facility (takes 7 to 10 business days). Approved returns will be refunded via <strong>Vodafone Cash</strong> or <strong>InstaPay</strong>.
             </p>
