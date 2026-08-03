@@ -34,6 +34,10 @@ export default function AdminTweaksPage() {
   const [launchDate, setLaunchDate] = useState('2026-08-15T00:00');
   const [storePassword, setStorePassword] = useState('stormydormy');
 
+  // Test Email State
+  const [testEmail, setTestEmail] = useState('');
+  const [sendingTestEmail, setSendingTestEmail] = useState(false);
+
   useEffect(() => {
     loadTweaks();
   }, []);
@@ -115,6 +119,24 @@ export default function AdminTweaksPage() {
       window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'Failed to save tweaks.', type: 'error' } }));
     } finally {
       setSavingTweaks(false);
+    }
+  };
+
+  const handleTestEmail = async () => {
+    if (!testEmail) {
+      window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'Enter an email first', type: 'error' } }));
+      return;
+    }
+    setSendingTestEmail(true);
+    try {
+      const { sendTestEmailAction } = await import('@/app/actions/supabaseActions');
+      await sendTestEmailAction(testEmail);
+      window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: 'Test email sent successfully!', type: 'success' } }));
+    } catch (e: any) {
+      console.error(e);
+      window.dispatchEvent(new CustomEvent('storm_toast', { detail: { message: e.message || 'Failed to send test email.', type: 'error' } }));
+    } finally {
+      setSendingTestEmail(false);
     }
   };
 
@@ -355,9 +377,59 @@ export default function AdminTweaksPage() {
                 </div>
               </div>
             </div>
+            {/* Panel 4: Email Testing */}
+            <div style={{
+              background: '#0d0d0d',
+              border: '1px solid #222222',
+              borderRadius: '6px',
+              padding: '24px',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px'
+            }}>
+              <h3 style={{ fontSize: '0.9rem', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                ✉️ EMAIL TESTING
+              </h3>
+              <p style={{ color: '#666', fontSize: '0.75rem', margin: 0 }}>
+                Send a test email to verify your Brevo integration is working.
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: '0.7rem', color: '#888', display: 'block', marginBottom: '8px' }}>TEST EMAIL ADDRESS</label>
+                  <input
+                    type="email"
+                    className="form-input"
+                    style={{ width: '100%', padding: '12px', background: '#050505', border: '1px solid #222', color: '#fff', borderRadius: '4px', fontSize: '0.85rem' }}
+                    value={testEmail}
+                    onChange={(e) => setTestEmail(e.target.value)}
+                    placeholder="Enter email to receive test"
+                  />
+                </div>
+                <button
+                  onClick={handleTestEmail}
+                  disabled={sendingTestEmail || !testEmail}
+                  className="btn-secondary"
+                  style={{
+                    padding: '12px',
+                    fontSize: '0.85rem',
+                    background: '#222',
+                    color: '#fff',
+                    border: '1px solid #333',
+                    fontWeight: 700,
+                    cursor: sendingTestEmail || !testEmail ? 'not-allowed' : 'pointer',
+                    borderRadius: '4px',
+                    opacity: (sendingTestEmail || !testEmail) ? 0.5 : 1
+                  }}
+                >
+                  {sendingTestEmail ? 'Sending...' : 'Send Test Email'}
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* Panel 3: Marquee config (Span full width) */}
+          {/* Panel 5: Marquee config (Span full width) */}
           <div style={{
             background: '#0d0d0d',
             border: '1px solid #222222',

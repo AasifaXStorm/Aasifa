@@ -3,6 +3,7 @@
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { verifyAdminSession } from '@/app/actions/auth';
 import { SUPPORTED_SIZES } from '@/lib/constants';
+import { sendEmailViaBrevo } from '@/lib/brevo';
 
 export async function getSiteConfig() {
   const { data, error } = await supabaseAdmin
@@ -314,3 +315,16 @@ export async function updateInventory(productId: string, variants: { size: strin
   return true;
 }
 
+export async function sendTestEmailAction(testEmail: string) {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+  
+  const result = await sendEmailViaBrevo(
+    testEmail,
+    'Test Email from AasifaXStorm',
+    '<h1>Test Email</h1><p>If you are reading this, Brevo is working perfectly!</p>',
+    'order_confirmation'
+  );
+  
+  if (!result.success) throw new Error(result.error || 'Failed to send test email');
+  return true;
+}
