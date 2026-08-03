@@ -77,7 +77,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         display: 'inline-flex',
         alignItems: 'center',
         gap: '8px',
-        color: '#888888',
+        color: 'var(--text-muted)',
         fontSize: '0.85rem',
         marginBottom: '40px',
         letterSpacing: '0.05em',
@@ -179,7 +179,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                     border: activeImgIdx === idx ? '1px solid var(--accent)' : '1px solid #222222',
                     padding: 0,
                     overflow: 'hidden',
-                    background: '#0a0a0a',
+                    background: 'var(--bg-base)',
                   }}
                 >
                   <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -206,20 +206,20 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           gap: '25px',
         }}>
           <div>
-            <span style={{ fontSize: '0.8rem', color: '#666666', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {product.category || 'Apparel'}
             </span>
             <h1 style={{ fontSize: '2.2rem', marginTop: '10px', marginBottom: '15px', fontWeight: 800 }}>
               {product.name}
             </h1>
-            <div style={{ fontSize: '1.4rem', color: '#ffffff', fontWeight: 600 }}>
+            <div style={{ fontSize: '1.4rem', color: 'var(--text-primary)', fontWeight: 600 }}>
               {product.price} EGP
             </div>
           </div>
 
           {/* Description */}
           <div style={{ borderTop: '1px solid #1a1a1a', borderBottom: '1px solid #1a1a1a', padding: '20px 0' }}>
-            <p style={{ color: '#b0b0b0', fontSize: '0.95rem', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
               {product.description || 'No description available for this premium piece.'}
             </p>
           </div>

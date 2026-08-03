@@ -86,20 +86,20 @@ export function ProductCard({ product }: ProductCardProps) {
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
-        borderTop: '1px solid #121212',
+        borderTop: '1px solid var(--border-color)',
       }}>
         {/* Category */}
-        <span style={{ fontSize: '0.75rem', color: '#555555', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           {product.category || 'Apparel'}
         </span>
 
         {/* Title */}
-        <Link href={`/products/${product.id}`} style={{ color: '#ffffff', fontSize: '1rem', fontWeight: 600, letterSpacing: '0.02em' }}>
+        <Link href={`/products/${product.id}`} style={{ color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 600, letterSpacing: '0.02em' }}>
           {product.name}
         </Link>
 
         {/* Price */}
-        <span style={{ color: '#e5e5e5', fontSize: '0.95rem', fontWeight: 500 }}>
+        <span style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 500 }}>
           {product.price} EGP
         </span>
 
@@ -110,10 +110,10 @@ export function ProductCard({ product }: ProductCardProps) {
             gap: '6px',
             marginTop: '8px',
             fontSize: '0.75rem',
-            color: '#666666',
+            color: 'var(--text-muted)',
           }}>
             <span>Sizes:</span>
-            <span style={{ color: '#888888' }}>{sizes.join(', ')}</span>
+            <span style={{ color: 'var(--text-muted)' }}>{sizes.join(', ')}</span>
           </div>
         )}
       </div>

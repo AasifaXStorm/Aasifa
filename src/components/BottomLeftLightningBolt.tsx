@@ -79,9 +79,9 @@ export function BottomLeftLightningBolt() {
       {open && (
         <div style={{
           marginBottom: '15px',
-          background: 'rgba(10, 10, 10, 0.98)',
+          background: 'var(--panel-bg, #0a0a0a)',
           backdropFilter: 'blur(15px)',
-          border: '1px solid #222222',
+          border: '1px solid var(--border-color)',
           borderRadius: '8px',
           padding: '15px',
           display: 'flex',
@@ -91,33 +91,33 @@ export function BottomLeftLightningBolt() {
           boxShadow: '0 15px 35px rgba(0,0,0,0.95)',
           animation: 'fadeInUp 0.2s ease-out'
         }}>
-          <span style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.15em', color: '#666', textTransform: 'uppercase', fontFamily: 'monospace' }}>
+          <span style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.15em', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'monospace' }}>
             Quick Access
           </span>
 
-          <Link href="/#shop" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#f5f5f5', textDecoration: 'none', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+          <Link href="/#shop" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.8rem', fontFamily: 'monospace' }}>
             <ShoppingBag size={14} color="#ffffff" /> Shop Drops
           </Link>
 
-          <Link href="/about" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#f5f5f5', textDecoration: 'none', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+          <Link href="/about" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.8rem', fontFamily: 'monospace' }}>
             <Info size={14} color="#ffffff" /> About AASIFA
           </Link>
 
-          <Link href="/contact" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#f5f5f5', textDecoration: 'none', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+          <Link href="/contact" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.8rem', fontFamily: 'monospace' }}>
             <Mail size={14} color="#ffffff" /> Contact Support
           </Link>
 
-          <div style={{ borderTop: '1px solid #222222', paddingTop: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <button
               onClick={() => { setShowChart(true); setOpen(false); }}
-              style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#f5f5f5', background: 'transparent', border: 'none', fontSize: '0.8rem', cursor: 'pointer', padding: 0, textAlign: 'left', fontFamily: 'monospace' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', background: 'transparent', border: 'none', fontSize: '0.8rem', cursor: 'pointer', padding: 0, textAlign: 'left', fontFamily: 'monospace' }}
             >
               <Ruler size={14} color="#ffffff" /> Size Chart
             </button>
 
             <button
               onClick={() => { setShowCalc(true); setOpen(false); }}
-              style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#f5f5f5', background: 'transparent', border: 'none', fontSize: '0.8rem', cursor: 'pointer', padding: 0, textAlign: 'left', fontFamily: 'monospace' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', background: 'transparent', border: 'none', fontSize: '0.8rem', cursor: 'pointer', padding: 0, textAlign: 'left', fontFamily: 'monospace' }}
             >
               <Calculator size={14} color="#ffffff" /> Size Calculator
             </button>
@@ -141,8 +141,8 @@ export function BottomLeftLightningBolt() {
           padding: '20px'
         }}>
           <div style={{
-            background: '#0a0a0a',
-            border: '1px solid #222222',
+            background: 'var(--bg-base)',
+            border: '1px solid var(--border-color)',
             borderRadius: '6px',
             padding: '30px',
             width: '100%',
@@ -157,11 +157,11 @@ export function BottomLeftLightningBolt() {
               <X size={20} />
             </button>
 
-            <h3 style={{ fontSize: '1.4rem', fontWeight: 900, letterSpacing: '0.05em', color: '#fff', textTransform: 'uppercase', marginBottom: '25px', fontFamily: 'monospace', fontStyle: 'italic' }}>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 900, letterSpacing: '0.05em', color: 'var(--text-primary)', textTransform: 'uppercase', marginBottom: '25px', fontFamily: 'monospace', fontStyle: 'italic' }}>
               SIZE CHART
             </h3>
 
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'center', color: '#fff', border: '1px solid #222', fontFamily: 'monospace' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'center', color: 'var(--text-primary)', border: '1px solid var(--border-color)', fontFamily: 'monospace' }}>
               <thead>
                 <tr style={{ background: '#121212', borderBottom: '1px solid #222' }}>
                   <th style={{ padding: '12px', borderRight: '1px solid #222' }}>SIZE</th>
@@ -205,8 +205,8 @@ export function BottomLeftLightningBolt() {
           padding: '20px'
         }}>
           <div style={{
-            background: '#0a0a0a',
-            border: '1px solid #222222',
+            background: 'var(--bg-base)',
+            border: '1px solid var(--border-color)',
             borderRadius: '6px',
             padding: '30px',
             width: '100%',
@@ -388,9 +388,9 @@ export function BottomLeftLightningBolt() {
           width: '48px',
           height: '48px',
           borderRadius: '50%',
-          background: 'rgba(10, 10, 10, 0.95)',
-          border: '1px solid #ffffff',
-          color: '#ffffff',
+          background: 'var(--panel-bg, rgba(10, 10, 10, 0.95))',
+          border: '1px solid var(--border-color)',
+          color: 'var(--text-primary)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

@@ -8,9 +8,6 @@ import { ShoppingCart } from 'lucide-react';
 import { getCartTotalItems } from '@/lib/cart';
 import { useTranslation } from '@/context/LanguageContext';
 
-import { getSiteConfig } from '@/app/actions/supabaseActions';
-import { DEFAULT_TICKER_TEXT, DEFAULT_TICKER_SPEED } from '@/lib/constants';
-
 export function Navigation() {
   const [cartCount, setCartCount] = useState(0);
   const { t } = useTranslation();
@@ -24,12 +21,6 @@ export function Navigation() {
     document.documentElement.classList.toggle('light-theme', theme === 'light');
   }, [theme]);
 
-  const [marquee, setMarquee] = useState<{ text: string; speed: number; visible: boolean }>({
-    text: DEFAULT_TICKER_TEXT,
-    speed: DEFAULT_TICKER_SPEED,
-    visible: true
-  });
-
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     localStorage.setItem('aasifa_theme', newTheme);
@@ -39,24 +30,6 @@ export function Navigation() {
   useEffect(() => {
     // Set initial cart count
     setCartCount(getCartTotalItems());
-
-    // Fetch site config for marquee
-    const fetchConfig = async () => {
-      try {
-        const config = await getSiteConfig();
-        if (config && config.description) {
-          const parsed = JSON.parse(config.description);
-          setMarquee({
-            text: parsed.marquee_text || DEFAULT_TICKER_TEXT,
-            speed: parsed.marquee_speed || DEFAULT_TICKER_SPEED,
-            visible: parsed.marquee_visibility !== 'Hidden'
-          });
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    fetchConfig();
 
     // Listen for cart update events
     const handleCartUpdate = () => {
@@ -69,64 +42,13 @@ export function Navigation() {
     };
   }, []);
 
-  if (pathname.startsWith('/stormy')) return null; // keep admin routes hidden
+  if (pathname.startsWith('/stormy')) return null;
 
   return (
     <>
-      {marquee.visible && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '32px',
-          background: 'var(--panel-bg, #0a0a0a)',
-          borderBottom: '1px solid #222',
-          overflow: 'hidden',
-          zIndex: 101,
-          display: 'flex',
-          alignItems: 'center'
-        }}>
-          <div style={{
-            display: 'flex',
-            width: 'max-content',
-            animation: `marqueeAnim ${marquee.speed}s linear infinite`,
-          }}>
-            <div style={{
-              display: 'inline-flex',
-              paddingRight: '50px',
-              fontSize: '0.75rem',
-              letterSpacing: '0.15em',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              textTransform: 'uppercase',
-              whiteSpace: 'nowrap'
-            }}>
-              {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp;
-            </div>
-            <div style={{
-              display: 'inline-flex',
-              paddingRight: '50px',
-              fontSize: '0.75rem',
-              letterSpacing: '0.15em',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              textTransform: 'uppercase',
-              whiteSpace: 'nowrap'
-            }}>
-              {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp; {marquee.text} &nbsp; · &nbsp;
-            </div>
-          </div>
-          <style jsx>{`
-            @keyframes marqueeAnim {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
-            }
-          `}</style>
-        </div>
-      )}
       <header className="glass-nav" style={{
         position: 'fixed',
+        top: 0,
         left: 0,
         width: '100%',
         height: '70px',
@@ -139,10 +61,11 @@ export function Navigation() {
       <Link 
         href="/" 
         onClick={(e) => {
+          if (pathname === '/') {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }
-        }
+        }}
         style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}
       >
         <Image
@@ -152,7 +75,7 @@ export function Navigation() {
           height={32}
           priority
           style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
-          className="storm-logo-hover"
+          className={`storm-logo-hover ${theme === 'light' ? 'storm-logo-invert' : ''}`}
         />
       </Link>
 
@@ -164,21 +87,23 @@ export function Navigation() {
             border: 'none',
             color: 'var(--text-primary)',
             cursor: 'pointer',
-            padding: '6px',
+            padding: '8px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+            borderRadius: '50%',
           }}
           className="theme-toggle-btn"
           aria-label="Toggle theme"
         >
           {theme === 'dark' ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', transform: 'rotate(0deg)' }}>
+            /* Moon icon — visible in dark mode, click to go light */
+            <svg className="theme-icon-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '22px', height: '22px' }}>
               <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
             </svg>
           ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', transform: 'rotate(15deg)' }}>
+            /* Sun icon — visible in light mode, click to go dark */
+            <svg className="theme-icon-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '22px', height: '22px' }}>
               <circle cx="12" cy="12" r="5" />
               <line x1="12" y1="1" x2="12" y2="3" />
               <line x1="12" y1="21" x2="12" y2="23" />
@@ -200,7 +125,7 @@ export function Navigation() {
               top: '-8px',
               right: '-8px',
               background: 'var(--accent)',
-              color: '#030303',
+              color: 'var(--bg-base)',
               fontSize: '0.65rem',
               fontWeight: 'bold',
               borderRadius: '50%',
@@ -217,15 +142,15 @@ export function Navigation() {
       </div>
 
       <style jsx>{`
-        .glass-nav {
-          background: var(--nav-bg, rgba(3, 3, 3, 0.8));
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border-bottom: 1px solid var(--border-color);
-        }
         .cart-nav-hover:hover {
           color: var(--accent) !important;
           filter: drop-shadow(0 0 5px var(--accent));
+        }
+        .theme-icon-spin {
+          transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .theme-toggle-btn:hover .theme-icon-spin {
+          transform: rotate(30deg) scale(1.2);
         }
       `}</style>
     </header>

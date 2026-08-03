@@ -23,6 +23,10 @@
   
   --font-inter: 'Inter', sans-serif;
   --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Navigation & Panel backgrounds */
+  --nav-bg: rgba(3, 3, 3, 0.8);
+  --panel-bg: #0a0a0a;
 }
 
 * {
@@ -96,7 +100,7 @@ button {
 }
 
 .glass-nav {
-  background: rgba(3, 3, 3, 0.8);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-color);
@@ -116,7 +120,7 @@ button {
 
 .btn-primary:hover {
   background: var(--text-primary);
-  color: #000000;
+  color: var(--bg-base);
   border-color: var(--text-primary);
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
@@ -232,19 +236,6 @@ button {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
-}
-
-/* ProductCard Hover Animations */
-.product-card-hover {
-  transition: var(--transition-smooth);
-}
-.product-card-hover:hover {
-  border-color: var(--accent) !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(207, 224, 255, 0.05);
-  transform: translateY(-2px);
-}
-.product-card-hover:hover .product-card-img {
-  transform: scale(1.05);
 }
 
 /* Lightning Menu Icon Hover Animations */
@@ -386,17 +377,49 @@ button {
   animation: skeletonPulse 1.8s infinite linear;
 }
 
-/* Light Theme Variables */
+/* Light Theme Skeleton */
+.light-theme .image-skeleton-loader {
+  background: #e8e8ed;
+  background-image: linear-gradient(90deg, #e8e8ed 25%, #f0f0f3 50%, #e8e8ed 75%);
+  background-size: 200% 100%;
+}
+
+/* ===== LIGHT THEME ===== */
 .light-theme {
-  --bg-base: #f7f7f8;
+  --bg-base: #f5f5f7;
   --bg-elevated: #ffffff;
-  --bg-elevated-2: #ececef;
-  --text-primary: #0a0a0b;
-  --text-muted: #5c5c64;
-  --accent: #0a0a0b;
-  --accent-glow: rgba(0, 0, 0, 0.08);
-  --border-color: #ececef;
-  --border-highlight: #d1d1d6;
+  --bg-elevated-2: #e8e8ed;
+  --text-primary: #1a1a1d;
+  --text-muted: #6e6e73;
+  --accent: #1a1a1d;
+  --accent-glow: rgba(0, 0, 0, 0.06);
+  --border-color: #d2d2d7;
+  --border-highlight: #b0b0b5;
+  --nav-bg: rgba(245, 245, 247, 0.88);
+  --panel-bg: #ffffff;
+}
+
+/* Light theme glass panel override */
+.light-theme .glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--border-color);
+}
+
+/* Light theme product card shadow */
+.light-theme .product-card-hover:hover {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12), 0 0 10px rgba(0,0,0,0.04);
+}
+
+/* Light theme brand title shadow flip */
+.light-theme .brand-title {
+  text-shadow: none;
+}
+
+/* Light theme btn-primary hover inversion */
+.light-theme .btn-primary:hover {
+  background: var(--text-primary);
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
 }
 
 /* Global Theme Transition */
@@ -426,4 +449,12 @@ body, header, footer, div, span, button, a, input, textarea, select {
 .storm-logo-hover:hover {
   transform: scale(1.05);
   animation: stormPulse 2s infinite ease-in-out;
+}
+
+/* Invert the white logo for light mode */
+.storm-logo-invert {
+  filter: invert(1) !important;
+}
+.storm-logo-invert:hover {
+  filter: invert(1) drop-shadow(0 0 10px rgba(0,0,0,0.4)) !important;
 }
