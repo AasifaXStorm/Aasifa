@@ -100,14 +100,12 @@ export function Navigation() {
               textTransform: 'uppercase',
               whiteSpace: 'nowrap'
             }}>
-              <span>{marquee.text}</span>
-              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
-              <span>{marquee.text}</span>
-              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
-              <span>{marquee.text}</span>
-              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
-              <span>{marquee.text}</span>
-              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
+              {Array.from({ length: 12 }).map((_, i) => (
+                <React.Fragment key={i}>
+                  <span>{marquee.text}</span>
+                  <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
+                </React.Fragment>
+              ))}
             </div>
             <div style={{
               display: 'inline-flex',
@@ -119,14 +117,12 @@ export function Navigation() {
               textTransform: 'uppercase',
               whiteSpace: 'nowrap'
             }}>
-              <span>{marquee.text}</span>
-              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
-              <span>{marquee.text}</span>
-              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
-              <span>{marquee.text}</span>
-              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
-              <span>{marquee.text}</span>
-              <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
+              {Array.from({ length: 12 }).map((_, i) => (
+                <React.Fragment key={i}>
+                  <span>{marquee.text}</span>
+                  <span style={{ margin: '0 25px', opacity: 0.5 }}>·</span>
+                </React.Fragment>
+              ))}
             </div>
           </div>
           <style jsx>{`
