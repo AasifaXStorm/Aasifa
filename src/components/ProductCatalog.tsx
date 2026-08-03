@@ -128,11 +128,14 @@ export function ProductCatalog({ products, enabledCategories }: ProductCatalogPr
             </div>
           ) : (
             /* Products Grid */
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '40px 30px',
-            }}>
+            <div 
+              className="product-catalog-grid"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: '40px 30px',
+              }}
+            >
               {filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}

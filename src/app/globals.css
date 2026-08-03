@@ -303,20 +303,36 @@ button {
 /* Mobile (max 768px) */
 @media (max-width: 768px) {
   body {
-    font-size: 14px;
+    font-size: 13px;
   }
   
   section {
-    padding: 50px 15px !important;
+    padding: 40px 12px !important;
   }
   
   .glass-panel {
-    padding: 20px 15px !important;
+    padding: 24px 16px !important;
   }
-  
-  /* Scale down massive headers for small viewports */
+
+  /* Compact button styling on mobile */
+  .btn-primary, .btn-secondary {
+    padding: 0.6rem 1.2rem !important;
+    font-size: 0.78rem !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  /* Compact section titles and brand headers */
   .brand-title {
-    font-size: clamp(2rem, 12vw, 3.2rem) !important;
+    font-size: clamp(1.8rem, 8vw, 2.5rem) !important;
+    letter-spacing: 0.25em !important;
+  }
+
+  h1 {
+    font-size: clamp(1.6rem, 6vw, 2.2rem) !important;
+  }
+
+  h2 {
+    font-size: clamp(1.4rem, 5vw, 1.8rem) !important;
   }
   
   /* Admin dashboard tweaks grid spacing */
@@ -342,13 +358,32 @@ button {
   .admin-main {
     padding: 20px 4%;
   }
+
+  /* Compact Product Grid & Cards on mobile */
+  .product-catalog-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px 12px !important;
+  }
+
+  .product-card-info {
+    padding: 12px 10px !important;
+    gap: 4px !important;
+  }
+
+  .product-card-title {
+    font-size: 0.88rem !important;
+  }
+
+  .product-card-price {
+    font-size: 0.85rem !important;
+  }
 }
 
 /* Very small phones (max 400px) */
 @media (max-width: 400px) {
   .brand-title {
-    font-size: clamp(1.5rem, 10vw, 2.5rem) !important;
-    letter-spacing: 0.2em !important;
+    font-size: clamp(1.4rem, 7vw, 2.2rem) !important;
+    letter-spacing: 0.18em !important;
   }
 
   section {
@@ -356,7 +391,12 @@ button {
   }
 
   .glass-panel {
-    padding: 15px 10px !important;
+    padding: 16px 12px !important;
+  }
+
+  .product-catalog-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px 8px !important;
   }
 }
 

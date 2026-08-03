@@ -109,25 +109,28 @@ export function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       {/* Product Info */}
-      <div style={{
-        padding: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-        borderTop: '1px solid var(--border-color)',
-      }}>
+      <div 
+        className="product-card-info"
+        style={{
+          padding: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          borderTop: '1px solid var(--border-color)',
+        }}
+      >
         {/* Category */}
         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           {product.category || 'Apparel'}
         </span>
 
         {/* Title */}
-        <Link href={`/products/${product.id}`} style={{ color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 600, letterSpacing: '0.02em' }}>
+        <Link href={`/products/${product.id}`} className="product-card-title" style={{ color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 600, letterSpacing: '0.02em' }}>
           {product.name}
         </Link>
 
         {/* Price */}
-        <span style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 500 }}>
+        <span className="product-card-price" style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 500 }}>
           {product.price} EGP
         </span>
 
