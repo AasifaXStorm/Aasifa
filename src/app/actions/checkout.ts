@@ -31,6 +31,11 @@ export interface ShippingDetails {
   shippingFee?: number;
 }
 
+function sanitizeText(str: string): string {
+  if (!str) return '';
+  return str.replace(/<[^>]*>?/gm, '').trim();
+}
+
 export async function processCheckout(
   shippingDetails: ShippingDetails,
   items: CheckoutItem[]
@@ -39,20 +44,39 @@ export async function processCheckout(
     return { success: false, error: 'Complete contact, shipping address, and cart items are required.' };
   }
 
-  const customerName = `${shippingDetails.firstName.trim()} ${shippingDetails.lastName ? shippingDetails.lastName.trim() : ''}`.trim();
-  const customerEmail = shippingDetails.email.trim();
-  const shippingFee = shippingDetails.shippingFee || 0;
+  // Email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(shippingDetails.email.trim())) {
+    return { success: false, error: 'Please enter a valid email address.' };
+  }
+
+  // Validate items
+  for (const item of items) {
+    if (!item.variantId || typeof item.quantity !== 'number' || item.quantity <= 0 || item.quantity > 50 || !Number.isInteger(item.quantity)) {
+      return { success: false, error: 'Invalid cart item quantity.' };
+    }
+  }
+
+  const firstName = sanitizeText(shippingDetails.firstName);
+  const lastName = sanitizeText(shippingDetails.lastName || '');
+  const customerName = `${firstName} ${lastName}`.trim();
+  const customerEmail = shippingDetails.email.trim().toLowerCase();
+  const shippingFee = typeof shippingDetails.shippingFee === 'number' && shippingDetails.shippingFee >= 0 ? shippingDetails.shippingFee : 0;
+
+  const detailedAddress = sanitizeText(shippingDetails.detailedAddress);
+  const governorate = sanitizeText(shippingDetails.governorate);
+  const phone = sanitizeText(shippingDetails.phone);
 
   const fullAddress = [
-    shippingDetails.detailedAddress,
-    shippingDetails.building ? `Bldg: ${shippingDetails.building}` : null,
-    shippingDetails.floor ? `Floor: ${shippingDetails.floor}` : null,
-    shippingDetails.apartment ? `Apt: ${shippingDetails.apartment}` : null,
-    shippingDetails.landmark ? `Landmark: ${shippingDetails.landmark}` : null,
-    shippingDetails.governorate,
-    shippingDetails.country || 'Egypt',
-    shippingDetails.postalCode ? `Postal: ${shippingDetails.postalCode}` : null,
-    `Phone: ${shippingDetails.phone}`
+    detailedAddress,
+    shippingDetails.building ? `Bldg: ${sanitizeText(shippingDetails.building)}` : null,
+    shippingDetails.floor ? `Floor: ${sanitizeText(shippingDetails.floor)}` : null,
+    shippingDetails.apartment ? `Apt: ${sanitizeText(shippingDetails.apartment)}` : null,
+    shippingDetails.landmark ? `Landmark: ${sanitizeText(shippingDetails.landmark)}` : null,
+    governorate,
+    shippingDetails.country ? sanitizeText(shippingDetails.country) : 'Egypt',
+    shippingDetails.postalCode ? `Postal: ${sanitizeText(shippingDetails.postalCode)}` : null,
+    `Phone: ${phone}`
   ].filter(Boolean).join(', ');
 
   try {
@@ -181,16 +205,16 @@ export async function processCheckout(
     `).join('');
 
     const formattedAddressLines = [
-      shippingDetails.detailedAddress,
+      detailedAddress,
       [
-        shippingDetails.building ? `Bldg: ${shippingDetails.building}` : null,
-        shippingDetails.floor ? `Floor: ${shippingDetails.floor}` : null,
-        shippingDetails.apartment ? `Apt: ${shippingDetails.apartment}` : null,
+        shippingDetails.building ? `Bldg: ${sanitizeText(shippingDetails.building)}` : null,
+        shippingDetails.floor ? `Floor: ${sanitizeText(shippingDetails.floor)}` : null,
+        shippingDetails.apartment ? `Apt: ${sanitizeText(shippingDetails.apartment)}` : null,
       ].filter(Boolean).join(', '),
       [
-        shippingDetails.landmark ? `Landmark: ${shippingDetails.landmark}` : null,
-        shippingDetails.governorate,
-        shippingDetails.country || 'Egypt'
+        shippingDetails.landmark ? `Landmark: ${sanitizeText(shippingDetails.landmark)}` : null,
+        governorate,
+        shippingDetails.country ? sanitizeText(shippingDetails.country) : 'Egypt'
       ].filter(Boolean).join(', ')
     ].filter(Boolean).join('<br>');
 
@@ -201,15 +225,6 @@ export async function processCheckout(
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>Order Confirmation</title>
-<!--[if mso]>
-<noscript>
-<xml>
-<o:OfficeDocumentSettings>
-<o:PixelsPerInch>96</o:PixelsPerInch>
-</o:OfficeDocumentSettings>
-</xml>
-</noscript>
-<![endif]-->
 <style>
   body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
   table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
@@ -221,7 +236,6 @@ export async function processCheckout(
     .fluid-padding { padding-left: 22px !important; padding-right: 22px !important; }
     .stack-col { display: block !important; width: 100% !important; text-align: left !important; }
     .stack-col-right { text-align: left !important; padding-top: 10px !important; }
-    .side-bolt { display: none !important; }
   }
 </style>
 </head>
@@ -234,18 +248,11 @@ export async function processCheckout(
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#050505;">
     <tr>
       <td align="center" style="padding: 40px 16px;">
-
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px;">
           <tr>
-
-            <!-- Main card -->
             <td width="600" style="width:600px;">
         <table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px; background-color:#141210; border-radius:18px; overflow:hidden; border:1px solid #3a3226; box-shadow: 0 0 0 1px rgba(212,166,74,0.08);">
-
-          <!-- Gold top hairline -->
           <tr><td style="height:3px; background: linear-gradient(90deg, transparent, #D4A64A 20%, #F5C463 50%, #D4A64A 80%, transparent);"></td></tr>
-
-          <!-- Header -->
           <tr>
             <td align="center" class="fluid-padding" style="padding: 44px 40px 26px 40px; background-color:#141210;">
               <div style="font-size:30px; font-weight:800; letter-spacing:6px; color:#f5f0e8; font-family: Georgia, 'Times New Roman', serif;">
@@ -260,10 +267,7 @@ export async function processCheckout(
               </table>
             </td>
           </tr>
-
           <tr><td style="border-top:1px solid #2a251d;"></td></tr>
-
-          <!-- Greeting -->
           <tr>
             <td class="fluid-padding" style="padding: 34px 44px 8px 44px;">
               <p style="margin:0 0 14px 0; font-size:19px; font-weight:700; color:#f5f0e8; font-family: Georgia, 'Times New Roman', serif;">Hi ${customerName},</p>
@@ -273,13 +277,9 @@ export async function processCheckout(
               </p>
             </td>
           </tr>
-
-          <!-- Order Card -->
           <tr>
             <td class="fluid-padding" style="padding: 26px 44px 8px 44px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#1b1712; border-radius:14px; border:1px solid #34291c;">
-
-                <!-- Order # / Payment -->
                 <tr>
                   <td style="padding:26px 26px 18px 26px;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
@@ -296,14 +296,10 @@ export async function processCheckout(
                     </table>
                   </td>
                 </tr>
-
                 <tr><td style="padding:0 26px;"><div style="border-top:1px solid #34291c;"></div></td></tr>
-
-                <!-- Delivery Address -->
                 <tr>
                   <td style="padding:20px 26px;">
                     <div style="font-size:10px; font-weight:700; letter-spacing:1.5px; color:#8a8378; text-transform:uppercase; margin-bottom:14px;">Delivery Address</div>
-
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                       <tr>
                         <td width="30%" valign="top" style="padding-bottom:10px; font-size:12px; color:#6b6459;">Address</td>
@@ -312,20 +308,17 @@ export async function processCheckout(
                       ${shippingDetails.postalCode ? `
                       <tr>
                         <td width="30%" valign="top" style="padding-bottom:10px; font-size:12px; color:#6b6459;">Postal Code</td>
-                        <td valign="top" style="padding-bottom:10px; font-size:14px; color:#d8d0c4;">${shippingDetails.postalCode}</td>
+                        <td valign="top" style="padding-bottom:10px; font-size:14px; color:#d8d0c4;">${sanitizeText(shippingDetails.postalCode)}</td>
                       </tr>
                       ` : ''}
                       <tr>
                         <td width="30%" valign="top" style="font-size:12px; color:#6b6459;">Phone</td>
-                        <td valign="top" style="font-size:14px; color:#d8d0c4;">${shippingDetails.phone}</td>
+                        <td valign="top" style="font-size:14px; color:#d8d0c4;">${phone}</td>
                       </tr>
                     </table>
                   </td>
                 </tr>
-
                 <tr><td style="padding:0 26px;"><div style="border-top:1px solid #34291c;"></div></td></tr>
-
-                <!-- Line Items Header -->
                 <tr>
                   <td style="padding:18px 26px 10px 26px;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
@@ -337,29 +330,21 @@ export async function processCheckout(
                     </table>
                   </td>
                 </tr>
-
-                <!-- Line Item Rows -->
                 ${orderItemsHtml}
-
                 <tr><td style="padding:0 26px;"><div style="border-top:1px solid #34291c;"></div></td></tr>
-
-                <!-- Total -->
                 <tr>
                   <td style="padding:22px 26px 26px 26px;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="font-size:12px; font-weight:700; letter-spacing:1px; color:#a8a096; text-transform:uppercase; vertical-align:middle;">Total Amount</td>
-                        <td align="right" style="font-size:27px; font-weight:800; color:#F5C463; vertical-align:middle; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">${totalAmount} EGP</td>
+                        <td align="right" style="font-size:27px; font-weight:800; color:#F5C463; vertical-align:middle;">${totalAmount} EGP</td>
                       </tr>
                     </table>
                   </td>
                 </tr>
-
               </table>
             </td>
           </tr>
-
-          <!-- Support callout -->
           <tr>
             <td class="fluid-padding" style="padding: 22px 44px 8px 44px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:rgba(212,166,74,0.07); border:1px solid rgba(212,166,74,0.28); border-radius:12px;">
@@ -371,23 +356,7 @@ export async function processCheckout(
               </table>
             </td>
           </tr>
-
-          <!-- CTA button -->
-          <tr>
-            <td align="center" class="fluid-padding" style="padding: 26px 44px 10px 44px;">
-              <table role="presentation" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td align="center" style="border-radius:8px; background: linear-gradient(90deg, #D4A64A, #F5C463);">
-                    <a href="https://aasifastreetwear.com/stormy" style="display:inline-block; padding:15px 36px; font-size:13px; font-weight:700; letter-spacing:1px; color:#141210; text-decoration:none; text-transform:uppercase;">Track Your Order</a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
           <tr><td style="padding-top:34px; border-top:1px solid #2a251d;"></td></tr>
-
-          <!-- Footer -->
           <tr>
             <td align="center" style="padding: 26px 40px 42px 40px;">
               <div style="font-size:12px; font-weight:700; letter-spacing:3px; color:#8a8378;">AASIFA STREETWEAR</div>
@@ -396,20 +365,14 @@ export async function processCheckout(
               </p>
             </td>
           </tr>
-
-          <!-- Gold bottom hairline -->
           <tr><td style="height:3px; background: linear-gradient(90deg, transparent, #D4A64A 20%, #F5C463 50%, #D4A64A 80%, transparent);"></td></tr>
-
         </table>
             </td>
-
           </tr>
         </table>
-
       </td>
     </tr>
   </table>
-
 </body>
 </html>`;
 
@@ -419,13 +382,14 @@ export async function processCheckout(
     return { success: true, orderId: order.id, shortId: shortOrderId };
   } catch (err: any) {
     console.error('Checkout processing exception:', err);
-    return { success: false, error: err.message || 'An unexpected error occurred.' };
+    return { success: false, error: 'An error occurred while processing your checkout. Please try again.' };
   }
 }
 
 export async function saveAbandonedCartAction(email: string, cartPayload: string) {
   const { trackAbandonedCart } = await import('@/lib/brevo');
-  return trackAbandonedCart(email, cartPayload);
+  const sanitizedEmail = sanitizeText(email).toLowerCase();
+  return trackAbandonedCart(sanitizedEmail, cartPayload);
 }
 
 export async function trackOrdersByEmail(email: string) {
@@ -433,11 +397,13 @@ export async function trackOrdersByEmail(email: string) {
     return { success: false, error: 'Please enter a valid email address.' };
   }
 
+  const cleanEmail = sanitizeText(email).toLowerCase();
+
   try {
     const { data: orders, error } = await supabaseAdmin
       .from('orders')
       .select('id, created_at, status, total_amount')
-      .eq('customer_email', email.trim())
+      .eq('customer_email', cleanEmail)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -453,7 +419,7 @@ export async function trackOrdersByEmail(email: string) {
     return { success: true, orders: formattedOrders };
   } catch (err: any) {
     console.error('Error tracking order by email:', err);
-    return { success: false, error: err.message || 'Failed to retrieve order history.' };
+    return { success: false, error: 'Failed to retrieve order history.' };
   }
 }
 

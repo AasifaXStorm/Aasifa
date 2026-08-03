@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { Lock, Zap, KeyRound, AlertTriangle } from 'lucide-react';
-import { getSiteConfig } from '@/app/actions/supabaseActions';
+import { getPublicSiteConfig, verifyStorePasswordAction, isStoreUnlockedAction } from '@/app/actions/supabaseActions';
 
 interface StoreLaunchGuardProps {
   children: React.ReactNode;
@@ -20,12 +20,12 @@ export function StoreLaunchGuard({ children }: StoreLaunchGuardProps) {
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [testingMode, setTestingMode] = useState(false);
   const [launchDateStr, setLaunchDateStr] = useState('2026-08-15T00:00:00.000Z');
-  const [storePassword, setStorePassword] = useState('stormydormy');
 
   // Password Modal State
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [inputPassword, setInputPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [verifying, setVerifying] = useState(false);
 
   // Countdown state
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({
@@ -33,23 +33,19 @@ export function StoreLaunchGuard({ children }: StoreLaunchGuardProps) {
   });
 
   useEffect(() => {
-    // Check local storage for existing unlock session
-    const unlockedStored = typeof window !== 'undefined' ? localStorage.getItem('aasifa_store_unlocked') : null;
-    if (unlockedStored === 'true') {
-      setIsUnlocked(true);
-    }
-
-    // Load dynamic site config
-    const fetchConfig = async () => {
+    const initGuard = async () => {
       try {
-        const configItem = await getSiteConfig();
-        if (configItem?.description) {
-          const parsed = JSON.parse(configItem.description);
-          if (parsed.launching_mode !== undefined) setLaunchingMode(!!parsed.launching_mode);
-          if (parsed.maintenance_mode !== undefined) setMaintenanceMode(!!parsed.maintenance_mode);
-          if (parsed.testing_mode !== undefined) setTestingMode(!!parsed.testing_mode);
-          if (parsed.launch_date) setLaunchDateStr(parsed.launch_date);
-          if (parsed.store_password) setStorePassword(parsed.store_password);
+        // Check server-side signed session cookie for unlock state
+        const unlocked = await isStoreUnlockedAction();
+        setIsUnlocked(unlocked);
+
+        // Fetch non-sensitive public site config
+        const config = await getPublicSiteConfig();
+        if (config) {
+          setLaunchingMode(config.launching_mode);
+          setMaintenanceMode(config.maintenance_mode);
+          setTestingMode(config.testing_mode);
+          if (config.launch_date) setLaunchDateStr(config.launch_date);
         }
       } catch (e) {
         console.error('Error fetching launch config:', e);
@@ -58,7 +54,7 @@ export function StoreLaunchGuard({ children }: StoreLaunchGuardProps) {
       }
     };
 
-    fetchConfig();
+    initGuard();
   }, []);
 
   // Ticking countdown timer logic
@@ -90,20 +86,24 @@ export function StoreLaunchGuard({ children }: StoreLaunchGuardProps) {
     return <>{children}</>;
   }
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError('');
+    setVerifying(true);
 
-    const targetPassword = storePassword || 'stormydormy';
-
-    if (inputPassword === targetPassword) {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('aasifa_store_unlocked', 'true');
+    try {
+      const res = await verifyStorePasswordAction(inputPassword);
+      if (res.success) {
+        setIsUnlocked(true);
+        setShowPasswordModal(false);
+        setInputPassword('');
+      } else {
+        setPasswordError(res.error || 'Incorrect store password. Try again.');
       }
-      setIsUnlocked(true);
-      setShowPasswordModal(false);
-    } else {
-      setPasswordError('Incorrect store password. Try again.');
+    } catch (err: any) {
+      setPasswordError('Verification failed.');
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -321,6 +321,7 @@ export function StoreLaunchGuard({ children }: StoreLaunchGuardProps) {
                 </button>
                 <button
                   type="submit"
+                  disabled={verifying}
                   style={{
                     flex: 1,
                     padding: '12px',
@@ -331,10 +332,11 @@ export function StoreLaunchGuard({ children }: StoreLaunchGuardProps) {
                     fontSize: '0.8rem',
                     letterSpacing: '0.08em',
                     borderRadius: '4px',
-                    cursor: 'pointer'
+                    cursor: verifying ? 'wait' : 'pointer',
+                    opacity: verifying ? 0.7 : 1
                   }}
                 >
-                  UNLOCK
+                  {verifying ? 'VERIFYING...' : 'UNLOCK'}
                 </button>
               </div>
             </form>

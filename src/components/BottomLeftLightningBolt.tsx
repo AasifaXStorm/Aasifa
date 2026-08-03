@@ -52,7 +52,11 @@ export function BottomLeftLightningBolt() {
     }
   };
 
-  const handleLockStore = () => {
+  const handleLockStore = async () => {
+    try {
+      const { lockStoreAction } = await import('@/app/actions/supabaseActions');
+      await lockStoreAction();
+    } catch (e) {}
     if (typeof window !== 'undefined') {
       localStorage.removeItem('aasifa_store_unlocked');
       window.location.reload();

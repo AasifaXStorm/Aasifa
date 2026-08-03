@@ -5,7 +5,12 @@ import { verifyAdminSession } from '@/app/actions/auth';
 import { SUPPORTED_SIZES } from '@/lib/constants';
 import { sendEmailViaBrevo } from '@/lib/brevo';
 
+import { cookies } from 'next/headers';
+import { createSignedToken, verifySignedToken } from '@/lib/sessionToken';
+
 export async function getSiteConfig() {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
   const { data, error } = await supabaseAdmin
     .from('products')
     .select('*')
@@ -14,6 +19,108 @@ export async function getSiteConfig() {
 
   if (error && error.code !== 'PGRST116') throw error;
   return data;
+}
+
+/**
+ * Public server action returning non-sensitive site configuration fields only.
+ * Strips out store passwords, API keys, and sensitive admin settings.
+ */
+export async function getPublicSiteConfig() {
+  try {
+    const { data } = await supabaseAdmin
+      .from('products')
+      .select('description')
+      .eq('name', '_SITE_CONFIG_')
+      .maybeSingle();
+
+    if (data?.description) {
+      const parsed = JSON.parse(data.description);
+      return {
+        launching_mode: parsed.launching_mode !== undefined ? !!parsed.launching_mode : true,
+        maintenance_mode: parsed.maintenance_mode !== undefined ? !!parsed.maintenance_mode : false,
+        testing_mode: parsed.testing_mode !== undefined ? !!parsed.testing_mode : false,
+        launch_date: parsed.launch_date || '2026-08-15T00:00:00.000Z',
+        show_footer_links: parsed.show_footer_links !== undefined ? !!parsed.show_footer_links : true,
+      };
+    }
+  } catch (e) {
+    console.error('Failed to load public config:', e);
+  }
+
+  return {
+    launching_mode: true,
+    maintenance_mode: false,
+    testing_mode: false,
+    launch_date: '2026-08-15T00:00:00.000Z',
+    show_footer_links: true,
+  };
+}
+
+/**
+ * Server action to verify storefront unlock password and issue an HTTP-only signed session cookie.
+ */
+export async function verifyStorePasswordAction(inputPassword: string): Promise<{ success: boolean; error?: string }> {
+  if (!inputPassword || !inputPassword.trim()) {
+    return { success: false, error: 'Password required.' };
+  }
+
+  try {
+    let targetPassword = 'stormydormy';
+
+    const { data } = await supabaseAdmin
+      .from('products')
+      .select('description')
+      .eq('name', '_SITE_CONFIG_')
+      .maybeSingle();
+
+    if (data?.description) {
+      const parsed = JSON.parse(data.description);
+      if (parsed.store_password) {
+        targetPassword = parsed.store_password;
+      }
+    }
+
+    if (inputPassword.trim() === targetPassword) {
+      const signedToken = await createSignedToken({ userId: 'store_visitor', role: 'store_user' }, 86400 * 7); // 7 days
+      const cookieStore = await cookies();
+      cookieStore.set('aasifa_store_unlocked_session', signedToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 86400 * 7,
+        path: '/',
+        sameSite: 'strict',
+      });
+
+      return { success: true };
+    }
+
+    return { success: false, error: 'Incorrect store password. Try again.' };
+  } catch (err: any) {
+    console.error('Store password verification error:', err);
+    return { success: false, error: 'Verification error.' };
+  }
+}
+
+/**
+ * Server action to check if the store unlock session is active and valid.
+ */
+export async function isStoreUnlockedAction(): Promise<boolean> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('aasifa_store_unlocked_session')?.value;
+    const verified = await verifySignedToken(token);
+    return verified?.role === 'store_user';
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * Server action to re-lock the storefront
+ */
+export async function lockStoreAction(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete('aasifa_store_unlocked_session');
 }
 
 export async function updateSiteConfig(configJson: string) {

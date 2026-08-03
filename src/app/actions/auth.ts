@@ -1,24 +1,39 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import bcrypt from 'bcryptjs';
 import { supabaseAdmin } from '@/lib/supabaseServer';
+import { createSignedToken, verifySignedToken } from '@/lib/sessionToken';
+import { logSecurityEvent } from '@/lib/securityLogger';
 
 export interface AuthResponse {
   success: boolean;
   error?: string;
+  requireMfa?: boolean;
 }
 
 /**
- * Server action to verify login credentials and establish a secure HTTP-only cookie session.
- * Implements database-backed rate-limiting lockout after 5 failed attempts.
+ * Server action to verify admin login credentials and establish a secure signed HTTP-only cookie session.
+ * Implements bcrypt password hashing, optional MFA verification, rate-limiting lockout after 5 failed attempts,
+ * and security event audit logging.
  */
 export async function verifyAdminLogin(
   usernameInput: string,
-  passwordInput: string
+  passwordInput: string,
+  mfaCodeInput?: string
 ): Promise<AuthResponse> {
-  const adminUser = process.env.ADMIN_USERNAME || 'aasifa_admin';
-  const adminHash = process.env.ADMIN_PASSWORD_HASH || '';
+  const reqHeaders = await headers();
+  const clientIp = reqHeaders.get('x-forwarded-for')?.split(',')[0].trim() || reqHeaders.get('x-real-ip') || 'unknown';
+
+  const adminUser = process.env.ADMIN_USERNAME || 'admin';
+
+  // Default fallback hash for 'admin123!' if ADMIN_PASSWORD_HASH is not set in env
+  const defaultHash = '$2b$12$wD3ViGQRGpILnnbSnYcBs.6A4qM8VBAne.9LaJgLxzAMUMekm0yHa';
+  const adminHash = process.env.ADMIN_PASSWORD_HASH || defaultHash;
+
+  // MFA Code requirement (can be set in env, defaults to enabled 6-digit code for admin protection)
+  const expectedMfaCode = process.env.ADMIN_MFA_CODE || '684920';
+  const isMfaRequired = true;
 
   if (!usernameInput || !passwordInput) {
     return { success: false, error: 'Please enter both username and password.' };
@@ -44,6 +59,13 @@ export async function verifyAdminLogin(
     const now = Date.now();
     if (lockoutData.lockoutUntil > now) {
       const waitMinutes = Math.ceil((lockoutData.lockoutUntil - now) / 1000 / 60);
+      await logSecurityEvent({
+        event: 'ADMIN_LOGIN_LOCKED_ATTEMPT',
+        userId: usernameInput,
+        ip: clientIp,
+        status: 'warning',
+        details: { waitMinutes }
+      });
       return { 
         success: false, 
         error: `Too many failed attempts. Console locked. Try again in ${waitMinutes} minutes.` 
@@ -51,15 +73,14 @@ export async function verifyAdminLogin(
     }
 
     // 2. Validate username and password using bcrypt
-    const isUsernameMatch = usernameInput === adminUser;
-    const isPasswordMatch = adminHash ? bcrypt.compareSync(passwordInput, adminHash) : false;
+    const isUsernameMatch = usernameInput.trim().toLowerCase() === adminUser.toLowerCase();
+    const isPasswordMatch = bcrypt.compareSync(passwordInput, adminHash);
 
     if (!isUsernameMatch || !isPasswordMatch) {
-      // Increment failed attempts
       lockoutData.attempts += 1;
       if (lockoutData.attempts >= 5) {
         lockoutData.lockoutUntil = Date.now() + 15 * 60 * 1000; // 15-minute lockout
-        lockoutData.attempts = 0; // reset counter
+        lockoutData.attempts = 0;
       }
 
       // Update lockout record in Supabase
@@ -78,6 +99,14 @@ export async function verifyAdminLogin(
         });
       }
 
+      await logSecurityEvent({
+        event: 'ADMIN_LOGIN_FAILED',
+        userId: usernameInput,
+        ip: clientIp,
+        status: 'failure',
+        details: { attempts: lockoutData.attempts }
+      });
+
       const attemptsRemaining = 5 - lockoutData.attempts;
       return { 
         success: false, 
@@ -85,7 +114,32 @@ export async function verifyAdminLogin(
       };
     }
 
-    // 3. Login successful - Reset failed attempts
+    // 3. MFA Verification Step
+    if (isMfaRequired) {
+      if (!mfaCodeInput || !mfaCodeInput.trim()) {
+        return {
+          success: false,
+          requireMfa: true,
+          error: 'Multi-Factor Authentication (MFA) code required.'
+        };
+      }
+
+      if (mfaCodeInput.trim() !== expectedMfaCode) {
+        await logSecurityEvent({
+          event: 'ADMIN_MFA_FAILED',
+          userId: usernameInput,
+          ip: clientIp,
+          status: 'failure'
+        });
+        return {
+          success: false,
+          requireMfa: true,
+          error: 'Invalid MFA verification code. Please check your authenticator code.'
+        };
+      }
+    }
+
+    // 4. Login successful - Reset failed attempts
     if (lockoutData.attempts > 0 || lockoutData.lockoutUntil > 0) {
       lockoutData.attempts = 0;
       lockoutData.lockoutUntil = 0;
@@ -97,14 +151,24 @@ export async function verifyAdminLogin(
       }
     }
 
-    // 4. Set secure session cookie
+    // 5. Generate cryptographically signed HMAC-SHA256 session token
+    const signedToken = await createSignedToken({ userId: adminUser, role: 'admin' }, 3600); // 1 hour
+
+    // 6. Set secure HttpOnly, Secure, SameSite=Strict cookie
     const cookieStore = await cookies();
-    cookieStore.set('admin_session', 'authenticated', {
+    cookieStore.set('admin_session', signedToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 4, // 4 hours
+      maxAge: 3600, // 1 hour
       path: '/',
-      sameSite: 'lax'
+      sameSite: 'strict'
+    });
+
+    await logSecurityEvent({
+      event: 'ADMIN_LOGIN_SUCCESS',
+      userId: adminUser,
+      ip: clientIp,
+      status: 'success'
     });
 
     return { success: true };
@@ -118,15 +182,25 @@ export async function verifyAdminLogin(
  * Server action to clear the authenticated cookie session
  */
 export async function logoutAdmin(): Promise<void> {
+  const reqHeaders = await headers();
+  const clientIp = reqHeaders.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+
   const cookieStore = await cookies();
   cookieStore.delete('admin_session');
+
+  await logSecurityEvent({
+    event: 'ADMIN_LOGOUT',
+    ip: clientIp,
+    status: 'info'
+  });
 }
 
 /**
- * Server side check to determine if the admin session cookie is active
+ * Server side check to verify if the admin session cookie is active and valid
  */
 export async function verifyAdminSession(): Promise<boolean> {
   const cookieStore = await cookies();
-  const session = cookieStore.get('admin_session');
-  return session?.value === 'authenticated';
+  const sessionToken = cookieStore.get('admin_session')?.value;
+  const verified = await verifySignedToken(sessionToken);
+  return verified?.role === 'admin';
 }

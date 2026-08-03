@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import { BottomLeftLightningBolt } from "@/components/BottomLeftLightningBolt";
 import { StormLoader } from "@/components/StormLoader";
 import { StoreLaunchGuard } from "@/components/StoreLaunchGuard";
+import { FrontendSecurityGuard } from "@/components/FrontendSecurityGuard";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -41,6 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative", background: 'var(--bg-base)' }}>
+        <FrontendSecurityGuard />
         <StormLoader>
           <StoreLaunchGuard>
             <LanguageProvider>
