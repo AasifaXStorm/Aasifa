@@ -15,7 +15,7 @@ export async function sendEmailViaBrevo(
   htmlContent: string,
   emailType: 'order_confirmation' | 'abandoned_cart'
 ): Promise<BrevoSendResult> {
-  let apiKey = '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';
+  let apiKey = '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';
   let senderEmail = 'aasifa.storm.eg@gmail.com';
   let senderName = 'Storm';
 
