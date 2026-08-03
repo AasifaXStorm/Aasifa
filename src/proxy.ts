@@ -42,8 +42,7 @@ export default async function proxy(request: NextRequest) {
     const verifiedPayload = await verifySignedToken(sessionCookie);
 
     if (!verifiedPayload || verifiedPayload.role !== 'admin') {
-      // Return identical 404 response so unlisted/hidden path existence is never revealed
-      return NextResponse.rewrite(new URL('/404', request.url), { status: 404 });
+      return NextResponse.redirect(new URL('/stormy/login', request.url));
     }
   }
 
