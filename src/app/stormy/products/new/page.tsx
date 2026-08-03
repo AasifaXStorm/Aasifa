@@ -24,6 +24,13 @@ export default function NewProductPage() {
   const [category, setCategory] = useState('Shirts');
   const [status, setStatus] = useState('Active');
 
+  // Stock Fields
+  const [stockS, setStockS] = useState('10');
+  const [stockM, setStockM] = useState('10');
+  const [stockL, setStockL] = useState('10');
+  const [stockXL, setStockXL] = useState('10');
+  const [stockXXL, setStockXXL] = useState('10');
+
   // Instagram-style Infinite Images list
   const [imagesList, setImagesList] = useState<string[]>([]);
   const [manualImageUrl, setManualImageUrl] = useState('');
@@ -106,11 +113,11 @@ export default function NewProductPage() {
       };
 
       const defaultVariants = [
-        { size: 'S', stock_quantity: 10 },
-        { size: 'M', stock_quantity: 10 },
-        { size: 'L', stock_quantity: 10 },
-        { size: 'XL', stock_quantity: 10 },
-        { size: 'XXL', stock_quantity: 10 },
+        { size: 'S', stock_quantity: parseInt(stockS) || 0 },
+        { size: 'M', stock_quantity: parseInt(stockM) || 0 },
+        { size: 'L', stock_quantity: parseInt(stockL) || 0 },
+        { size: 'XL', stock_quantity: parseInt(stockXL) || 0 },
+        { size: 'XXL', stock_quantity: parseInt(stockXXL) || 0 },
       ];
 
       await saveProduct(productData, defaultVariants, true);
@@ -362,6 +369,33 @@ export default function NewProductPage() {
                   />
                 </label>
               </div>
+            </div>
+          </div>
+
+          {/* SIZES INVENTORY CONFIGURATION */}
+          <div style={{ border: '1px solid #222', padding: '20px', borderRadius: '6px', background: '#050505', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#fff', fontWeight: 900, display: 'block' }}>
+              📦 INITIAL INVENTORY QUANTITIES
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
+              {[
+                { size: 'S', val: stockS, set: setStockS },
+                { size: 'M', val: stockM, set: setStockM },
+                { size: 'L', val: stockL, set: setStockL },
+                { size: 'XL', val: stockXL, set: setStockXL },
+                { size: 'XXL', val: stockXXL, set: setStockXXL }
+              ].map(item => (
+                <div key={item.size} style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center', background: '#0d0d0d', border: '1px solid #222', padding: '10px 4px', borderRadius: '4px' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#888' }}>{item.size}</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={item.val}
+                    onChange={(e) => item.set(e.target.value)}
+                    style={{ width: '45px', background: 'transparent', border: 'none', color: '#fff', textAlign: 'center', fontWeight: 'bold', fontSize: '0.9rem', outline: 'none' }}
+                  />
+                </div>
+              ))}
             </div>
           </div>
 

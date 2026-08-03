@@ -23,6 +23,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [quantity, setQuantity] = useState(1);
   const [feedback, setFeedback] = useState(false);
 
+  // Size Calculator states
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [calcHeight, setCalcHeight] = useState('');
+  const [calcWeight, setCalcWeight] = useState('');
+  const [calcResult, setCalcResult] = useState<{ size: string; note: string } | null>(null);
+
   // Find active variant
   const activeVariant = product.product_variants?.find(v => v.size === selectedSize);
   const maxStock = activeVariant ? activeVariant.stock_quantity : 0;
@@ -218,10 +224,28 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
           {/* Size Selector */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#888' }}>
-                {t('product.select_size')}
-              </span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#888' }}>
+                  {t('product.select_size')}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowCalculator(true)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--accent)',
+                    fontSize: '0.8rem',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    padding: 0,
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Find your size (Calculator)
+                </button>
+              </div>
               {selectedSize && (
                 <span style={{ fontSize: '0.85rem', color: maxStock > 0 ? '#888' : '#ff4444' }}>
                   {maxStock > 0 ? t('product.only_left').replace('{qty}', String(maxStock)) : t('product.out_of_stock')}
@@ -342,6 +366,156 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           )}
         </div>
       </div>
+
+      {/* SIZING CALCULATOR MODAL */}
+      {showCalculator && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.85)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#0d0d0d',
+            border: '1px solid #222',
+            padding: '30px',
+            borderRadius: '8px',
+            maxWidth: '450px',
+            width: '100%',
+            color: '#fff',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.8)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #222', paddingBottom: '12px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                📏 STORM SIZE RECOMMENDER
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCalculator(false);
+                  setCalcResult(null);
+                }}
+                style={{ background: 'transparent', border: 'none', color: '#888', fontSize: '1.2rem', cursor: 'pointer' }}
+              >
+                &times;
+              </button>
+            </div>
+
+            {!calcResult ? (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const h = parseFloat(calcHeight);
+                const w = parseFloat(calcWeight);
+                if (isNaN(h) || isNaN(w)) return;
+
+                if (h > 185 || w > 95) {
+                  setCalcResult({
+                    size: 'XL (Over Limit)',
+                    note: "You are above our standard size guide. Don't worry! Our XL features an extreme oversized streetwear cut, so you'll fit perfectly. Go ahead and rock the XL!"
+                  });
+                } else if (h > 175 || w > 78) {
+                  setCalcResult({
+                    size: 'XL',
+                    note: 'Oversized aesthetic fit. Fits perfectly.'
+                  });
+                } else if (h > 168 || w > 65) {
+                  setCalcResult({
+                    size: 'L',
+                    note: 'Streetwear slouchy fit.'
+                  });
+                } else if (h > 158 || w > 52) {
+                  setCalcResult({
+                    size: 'M',
+                    note: 'Relaxed standard fit.'
+                  });
+                } else {
+                  setCalcResult({
+                    size: 'S',
+                    note: 'Perfect casual fit.'
+                  });
+                }
+              }} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#888', letterSpacing: '0.05em' }}>YOUR HEIGHT (CM)</label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="e.g. 180"
+                    value={calcHeight}
+                    onChange={(e) => setCalcHeight(e.target.value)}
+                    style={{ padding: '12px', background: '#050505', border: '1px solid #222', color: '#fff', borderRadius: '4px' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#888', letterSpacing: '0.05em' }}>YOUR WEIGHT (KG)</label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="e.g. 80"
+                    value={calcWeight}
+                    onChange={(e) => setCalcWeight(e.target.value)}
+                    style={{ padding: '12px', background: '#050505', border: '1px solid #222', color: '#fff', borderRadius: '4px' }}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  style={{
+                    background: '#ffffff',
+                    color: '#000',
+                    padding: '14px',
+                    border: 'none',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                    marginTop: '10px'
+                  }}
+                >
+                  CALCULATE RECOMMENDED SIZE
+                </button>
+              </form>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'center', padding: '10px 0' }}>
+                <div>
+                  <span style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>RECOMMENDED SIZE</span>
+                  <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--accent)', marginTop: '8px' }}>
+                    {calcResult.size}
+                  </div>
+                </div>
+                <p style={{ color: '#ccc', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>
+                  {calcResult.note}
+                </p>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const cleanSize = calcResult.size.split(' ')[0]; // Extract S/M/L/XL
+                      setSelectedSize(cleanSize);
+                      setShowCalculator(false);
+                      setCalcResult(null);
+                    }}
+                    style={{ flex: 1, padding: '12px', background: 'var(--accent)', color: '#000', border: 'none', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}
+                  >
+                    SELECT THIS SIZE
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCalcResult(null)}
+                    style={{ flex: 1, padding: '12px', background: 'transparent', border: '1px solid #333', color: '#888', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}
+                  >
+                    RE-CALCULATE
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

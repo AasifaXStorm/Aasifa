@@ -242,3 +242,21 @@ async function uploadImageActionSingle(formData: FormData): Promise<string> {
 
   return data.publicUrl;
 }
+
+export async function updateInventory(productId: string, variants: { size: string, stock_quantity: number }[]) {
+  if (!(await verifyAdminSession())) throw new Error('Unauthorized');
+
+  const variantsToUpsert = variants.map(v => ({
+    product_id: productId,
+    size: v.size,
+    stock_quantity: v.stock_quantity
+  }));
+
+  const { error } = await supabaseAdmin
+    .from('product_variants')
+    .upsert(variantsToUpsert, { onConflict: 'product_id, size' });
+
+  if (error) throw error;
+  return true;
+}
+
