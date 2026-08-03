@@ -159,6 +159,20 @@ export default function CartPage() {
       padding: '60px 5%',
     }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        {/* Back Link */}
+        <Link href="/#shop" style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          color: 'var(--text-muted)',
+          fontSize: '0.85rem',
+          marginBottom: '30px',
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+        }}>
+          <ChevronLeft size={16} /> Back to Shop
+        </Link>
+
         <h1 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '40px' }}>
           {t('cart.title')}
         </h1>

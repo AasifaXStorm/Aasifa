@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Mail, Clock } from 'lucide-react';
+import Link from 'next/link';
+import { Mail, Clock, ChevronLeft } from 'lucide-react';
 import { useTranslation } from '@/context/LanguageContext';
 
 export default function ContactPage() {
@@ -23,6 +24,20 @@ export default function ContactPage() {
         flexDirection: 'column',
         gap: '40px',
       }}>
+        {/* Back Link */}
+        <Link href="/" style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          color: 'var(--text-muted)',
+          fontSize: '0.85rem',
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+          alignSelf: 'flex-start'
+        }}>
+          <ChevronLeft size={16} /> Back to Home
+        </Link>
+
         {/* Header */}
         <div style={{ textAlign: 'center' }}>
           <span style={{ fontSize: '0.8rem', color: '#555555', letterSpacing: '0.2em', textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>

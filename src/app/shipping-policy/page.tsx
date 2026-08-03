@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
 
 export const metadata = {
   title: 'Shipping & Returns | STORM',
@@ -17,6 +18,20 @@ export default function ShippingPolicyPage() {
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         
+        {/* Back Link */}
+        <Link href="/" style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          color: 'var(--text-muted)',
+          fontSize: '0.85rem',
+          marginBottom: '30px',
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+        }}>
+          <ChevronLeft size={16} /> Back to Home
+        </Link>
+
         {/* Title */}
         <h1 style={{
           fontSize: '2.5rem',

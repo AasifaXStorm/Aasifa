@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from '@/context/LanguageContext';
 
 export default function AboutPage() {
@@ -40,6 +41,20 @@ export default function AboutPage() {
         flexDirection: 'column',
         gap: '40px',
       }}>
+        {/* Back Link */}
+        <Link href="/" style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          color: 'var(--text-muted)',
+          fontSize: '0.85rem',
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+          alignSelf: 'flex-start'
+        }}>
+          <ChevronLeft size={16} /> {language === 'ar' ? 'الرجوع للرئيسية' : 'Back to Home'}
+        </Link>
+
         {/* Header */}
         <div style={{ textAlign: 'center' }}>
           <h1 className="brand-title" style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '20px', letterSpacing: '0.2em' }}>
