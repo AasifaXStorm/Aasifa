@@ -3,7 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Trash2, ShoppingBag, CheckCircle } from 'lucide-react';
+import { 
+  Trash2, 
+  ShoppingBag, 
+  CheckCircle, 
+  ChevronLeft, 
+  ArrowRight, 
+  ShieldCheck, 
+  Truck, 
+  Tag, 
+  Lock 
+} from 'lucide-react';
 import { 
   getCart, 
   removeFromCart, 
@@ -80,8 +90,8 @@ export default function CartPage() {
 
   if (!mounted) {
     return (
-      <div style={{ background: '#000000', minHeight: 'calc(100vh - 70px)', padding: '100px 5%' }}>
-        <p style={{ color: '#888', textAlign: 'center' }}>Loading Checkout...</p>
+      <div style={{ background: '#050505', minHeight: 'calc(100vh - 70px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 5%' }}>
+        <p style={{ color: '#888', fontFamily: 'monospace', letterSpacing: '0.1em' }}>LOADING CART...</p>
       </div>
     );
   }
@@ -97,7 +107,7 @@ export default function CartPage() {
   const subtotal = getCartTotalPrice();
   const shippingFee = governorate ? 60 : 0;
   const discountAmount = appliedPromo ? subtotal * (discountPercentage / 100) : 0;
-  const grandTotal = subtotal - discountAmount + shippingFee;
+  const grandTotal = Math.max(0, subtotal - discountAmount + shippingFee);
 
   const handleApplyPromo = async () => {
     if (!promoCodeInput.trim()) return;
@@ -105,7 +115,7 @@ export default function CartPage() {
     if (valid) {
       setAppliedPromo(promoCodeInput.trim().toUpperCase());
       setDiscountPercentage(discountPercentage);
-      setPromoMessage({ text: `${discountPercentage}% discount applied!`, type: 'success' });
+      setPromoMessage({ text: `${discountPercentage}% DISCOUNT APPLIED`, type: 'success' });
     } else {
       setAppliedPromo(null);
       setDiscountPercentage(0);
@@ -162,50 +172,94 @@ export default function CartPage() {
     }
   };
 
-  // Success view
+  // SUCCESS SCREEN
   if (successOrder) {
     return (
       <div style={{
-        background: '#000000',
+        background: '#050505',
         minHeight: 'calc(100vh - 70px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '80px 20px',
+        padding: '60px 5%',
       }}>
-        <div style={{
-          maxWidth: '550px',
+        <div className="glass-panel" style={{
+          maxWidth: '580px',
           width: '100%',
-          padding: '50px 30px',
+          padding: 'clamp(30px, 6vw, 50px)',
           textAlign: 'center',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '20px',
-          background: '#090909',
-          border: '1px solid #1c1c1c',
+          gap: '24px',
+          borderRadius: '12px',
+          border: '1px solid rgba(255,255,255,0.12)',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.9)',
         }}>
-          <CheckCircle size={60} color="#ffffff" />
-          <h1 style={{ fontSize: 'clamp(1.3rem, 5vw, 1.8rem)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#ffffff' }}>
-            ORDER CONFIRMED
-          </h1>
-          <p style={{ color: '#aaaaaa', fontSize: '0.9rem', lineHeight: '1.6' }}>
-            Thank you for shopping with AASIFA. We have received your order and our sales team will call you within 2 business days to confirm your order by phone.
-          </p>
           <div style={{
-            background: '#000000',
-            border: '1px solid #1a1a1a',
-            padding: '15px',
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto',
+          }}>
+            <CheckCircle size={42} style={{ color: '#ffffff' }} />
+          </div>
+
+          <div>
+            <span style={{ fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#888888', display: 'block', marginBottom: '8px' }}>
+              TRANSACTION CONFIRMED
+            </span>
+            <h1 className="brand-title" style={{ fontSize: 'clamp(1.4rem, 5vw, 2.2rem)', fontWeight: 900, color: '#ffffff', margin: 0 }}>
+              ORDER RECEIVED
+            </h1>
+          </div>
+
+          <p style={{ color: '#aaaaaa', fontSize: '0.92rem', lineHeight: '1.7', margin: 0 }}>
+            Thank you for selecting <strong style={{ color: '#ffffff' }}>AASIFA</strong>. Your order has been registered in our system. Our customer support team will contact you within <strong style={{ color: '#ffffff' }}>2 business days</strong> to confirm delivery details.
+          </p>
+
+          <div style={{
+            background: '#0d0d0d',
+            border: '1px solid #222222',
+            padding: '16px 24px',
             width: '100%',
+            borderRadius: '6px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             fontSize: '0.85rem',
             fontFamily: 'monospace',
-            color: '#e5e5e5',
-            margin: '10px 0',
           }}>
-            Order #{successOrder.split('-')[0].toUpperCase()}
+            <span style={{ color: '#888888' }}>ORDER REFERENCE:</span>
+            <span style={{ color: '#ffffff', fontWeight: 'bold', letterSpacing: '0.05em' }}>
+              #{successOrder.split('-')[0].toUpperCase()}
+            </span>
           </div>
-          <Link href="/#shop" className="btn-primary" style={{ marginTop: '10px', display: 'inline-block', background: '#fff', color: '#000', padding: '12px 24px', fontWeight: 800 }}>
-            {t('explore.collection')}
+
+          <Link 
+            href="/" 
+            className="btn-primary" 
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              background: '#ffffff',
+              color: '#000000',
+              padding: '16px 32px',
+              fontWeight: 900,
+              fontSize: '0.85rem',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              borderRadius: '4px',
+              marginTop: '10px',
+            }}
+          >
+            {t('explore.collection')} <ArrowRight size={16} />
           </Link>
         </div>
       </div>
@@ -214,449 +268,583 @@ export default function CartPage() {
 
   return (
     <div style={{
-      background: '#000000',
+      background: '#050505',
       color: '#ffffff',
       minHeight: 'calc(100vh - 60px)',
-      padding: '40px 5% 80px 5%',
+      padding: 'clamp(20px, 4vw, 50px) 5% 100px 5%',
       fontFamily: 'var(--font-inter)',
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         
+        {/* PROMINENT TOP BAR: BACK TO SHOP LINK */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 'clamp(24px, 4vw, 40px)',
+          borderBottom: '1px solid #1a1a1a',
+          paddingBottom: '18px'
+        }}>
+          <Link 
+            href="/" 
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              color: '#ffffff',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              padding: '8px 16px',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              borderRadius: '6px',
+              transition: 'var(--transition-smooth)'
+            }}
+            className="back-btn-hover"
+          >
+            <ChevronLeft size={18} /> BACK TO SHOP
+          </Link>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#888888', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <ShoppingBag size={16} style={{ color: '#fff' }} />
+            <span>{cart.reduce((sum, item) => sum + item.quantity, 0)} ITEMS IN BAG</span>
+          </div>
+        </div>
+
         {cart.length === 0 ? (
-          /* Empty state */
-          <div style={{
-            padding: '80px 20px',
+          /* EMPTY CART STATE */
+          <div className="glass-panel" style={{
+            padding: 'clamp(60px, 10vw, 100px) 20px',
             textAlign: 'center',
-            border: '1px dashed #222222',
-            background: '#050505',
-            maxWidth: '600px',
-            margin: '60px auto',
+            borderRadius: '12px',
+            border: '1px dashed rgba(255,255,255,0.15)',
+            maxWidth: '650px',
+            margin: '40px auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '20px'
           }}>
-            <ShoppingBag size={48} style={{ color: '#444', marginBottom: '20px' }} />
-            <span style={{ fontSize: '1.2rem', color: '#888', display: 'block', marginBottom: '20px', letterSpacing: '0.05em' }}>
-              {t('cart.empty')}
-            </span>
-            <Link href="/#shop" className="btn-primary" style={{ display: 'inline-block', background: '#fff', color: '#000', padding: '12px 24px', fontWeight: 800 }}>
-              {t('explore.collection')}
+            <div style={{
+              width: '90px',
+              height: '90px',
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <ShoppingBag size={40} style={{ color: '#666666' }} />
+            </div>
+
+            <div>
+              <h2 style={{ fontSize: 'clamp(1.2rem, 4vw, 1.8rem)', fontWeight: 900, letterSpacing: '0.1em', margin: '0 0 10px 0', textTransform: 'uppercase' }}>
+                YOUR BAG IS EMPTY
+              </h2>
+              <p style={{ color: '#888888', fontSize: '0.9rem', maxWidth: '400px', margin: '0 auto', lineHeight: '1.6' }}>
+                Explore our latest streetwear collection and select your signature pieces.
+              </p>
+            </div>
+
+            <Link 
+              href="/" 
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                background: '#ffffff',
+                color: '#000000',
+                padding: '16px 36px',
+                fontWeight: 900,
+                fontSize: '0.85rem',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                borderRadius: '4px',
+                marginTop: '10px'
+              }}
+            >
+              {t('explore.collection')} <ArrowRight size={16} />
             </Link>
           </div>
         ) : (
-          /* Split 2-Column Luxury Checkout Layout */
+          /* SPLIT 2-COLUMN LUXURY CHECKOUT GRID */
           <form onSubmit={handleCheckoutSubmit} style={{
             display: 'grid',
-            gridTemplateColumns: '1.2fr 0.8fr',
-            gap: 'clamp(20px, 5vw, 60px)',
+            gridTemplateColumns: '1.15fr 0.85fr',
+            gap: 'clamp(24px, 5vw, 60px)',
             alignItems: 'start',
-          }} className="checkout-responsive-grid">
+          }} className="cart-grid-layout">
             
-            {/* LEFT COLUMN: Contact, Address, Payment */}
+            {/* LEFT COLUMN: Customer & Delivery Details */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
               
-              {/* Header: Title + Cancel Link */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #151515', paddingBottom: '20px' }}>
-                <h1 className="brand-title" style={{ fontSize: 'clamp(1.2rem, 4vw, 1.6rem)', fontWeight: 900, letterSpacing: '0.25em', color: '#ffffff' }}>
-                  AASIFA
-                </h1>
-                <Link href="/#shop" style={{ fontSize: '0.75rem', color: '#666666', letterSpacing: '0.1em', textTransform: 'uppercase', transition: 'color 0.2s' }} className="cancel-link">
-                  CANCEL
-                </Link>
-              </div>
-
               {errorMessage && (
                 <div style={{
-                  padding: '12px 16px',
-                  border: '1px solid #ff3333',
-                  background: 'rgba(255,51,51,0.05)',
-                  color: '#ffaaaa',
-                  fontSize: '0.8rem',
+                  padding: '14px 18px',
+                  border: '1px solid #ef4444',
+                  background: 'rgba(239, 68, 68, 0.08)',
+                  color: '#f87171',
+                  fontSize: '0.82rem',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px'
                 }}>
-                  {errorMessage}
+                  <span>⚠️</span> {errorMessage}
                 </div>
               )}
 
-              {/* 1. CONTACT SECTION */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <h2 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#ffffff', margin: 0 }}>
-                  CONTACT
-                </h2>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="grid-2col-mobile">
-                  <input
-                    type="tel"
-                    required
-                    placeholder="MOBILE PHONE (01XXXXXXXXX)"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="checkout-input"
-                  />
-                  <input
-                    type="email"
-                    required
-                    placeholder="EMAIL ADDRESS (FOR RECEIPT)"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="checkout-input"
-                  />
+              {/* SECTION 1: CONTACT */}
+              <div className="glass-panel" style={{ padding: '24px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#ffffff', color: '#000000', fontSize: '0.75rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    1
+                  </span>
+                  <h2 style={{ fontSize: '0.9rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>
+                    CONTACT INFORMATION
+                  </h2>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }} className="grid-responsive-2col">
+                  <div>
+                    <label className="input-label">PHONE NUMBER (EGYPT 01XXXXXXXXX) *</label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="01XXXXXXXXX"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="styled-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="input-label">EMAIL ADDRESS (FOR RECEIPT) *</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="your.email@gmail.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="styled-input"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* 2. DELIVERY ADDRESS SECTION */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <h2 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#ffffff', margin: 0 }}>
-                  DELIVERY ADDRESS
-                </h2>
-
-                {/* Country */}
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="checkout-input"
-                >
-                  <option value="Egypt">EGYPT</option>
-                </select>
-
-                {/* First Name / Last Name */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="grid-2col-mobile">
-                  <input
-                    type="text"
-                    required
-                    placeholder="FIRST NAME"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="checkout-input"
-                  />
-                  <input
-                    type="text"
-                    placeholder="LAST NAME"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="checkout-input"
-                  />
+              {/* SECTION 2: DELIVERY ADDRESS */}
+              <div className="glass-panel" style={{ padding: '24px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#ffffff', color: '#000000', fontSize: '0.75rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    2
+                  </span>
+                  <h2 style={{ fontSize: '0.9rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>
+                    DELIVERY ADDRESS
+                  </h2>
                 </div>
 
-                {/* Detailed Address */}
-                <input
-                  type="text"
-                  required
-                  placeholder="DETAILED ADDRESS (STREET NAME / NUMBER)"
-                  value={detailedAddress}
-                  onChange={(e) => setDetailedAddress(e.target.value)}
-                  className="checkout-input"
-                />
-
-                {/* Building / Floor */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="grid-2col-mobile">
-                  <input
-                    type="text"
-                    placeholder="BUILDING NAME/NO"
-                    value={building}
-                    onChange={(e) => setBuilding(e.target.value)}
-                    className="checkout-input"
-                  />
-                  <input
-                    type="text"
-                    placeholder="FLOOR NO (OPTIONAL)"
-                    value={floor}
-                    onChange={(e) => setFloor(e.target.value)}
-                    className="checkout-input"
-                  />
-                </div>
-
-                {/* Apartment / Landmark */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="grid-2col-mobile">
-                  <input
-                    type="text"
-                    placeholder="APARTMENT NO (OPTIONAL)"
-                    value={apartment}
-                    onChange={(e) => setApartment(e.target.value)}
-                    className="checkout-input"
-                  />
-                  <input
-                    type="text"
-                    placeholder="LANDMARK (OPTIONAL)"
-                    value={landmark}
-                    onChange={(e) => setLandmark(e.target.value)}
-                    className="checkout-input"
-                  />
-                </div>
-
-                {/* Governorate / Postal Code */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="grid-2col-mobile">
+                {/* Country Selection */}
+                <div>
+                  <label className="input-label">COUNTRY</label>
                   <select
-                    required
-                    value={governorate}
-                    onChange={(e) => setGovernorate(e.target.value)}
-                    className="checkout-input"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className="styled-input"
                   >
-                    <option value="">SELECT GOVERNORATE / CITY</option>
-                    {EGYPT_GOVERNORATES.map(g => (
-                      <option key={g} value={g}>{g.toUpperCase()}</option>
-                    ))}
+                    <option value="Egypt">EGYPT 🇪🇬</option>
                   </select>
+                </div>
+
+                {/* Name */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }} className="grid-responsive-2col">
+                  <div>
+                    <label className="input-label">FIRST NAME *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="First Name"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="styled-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="input-label">LAST NAME</label>
+                    <input
+                      type="text"
+                      placeholder="Last Name"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="styled-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Detailed Street Address */}
+                <div>
+                  <label className="input-label">DETAILED STREET ADDRESS *</label>
                   <input
                     type="text"
-                    placeholder="POSTAL CODE (OPTIONAL)"
-                    value={postalCode}
-                    onChange={(e) => setPostalCode(e.target.value)}
-                    className="checkout-input"
+                    required
+                    placeholder="Street name, building number, district..."
+                    value={detailedAddress}
+                    onChange={(e) => setDetailedAddress(e.target.value)}
+                    className="styled-input"
                   />
                 </div>
 
-                {/* Checkbox: Save Address */}
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.75rem', color: '#888888', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '5px' }}>
+                {/* Building & Floor */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }} className="grid-responsive-2col">
+                  <div>
+                    <label className="input-label">BUILDING NAME / NO</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Bldg 42"
+                      value={building}
+                      onChange={(e) => setBuilding(e.target.value)}
+                      className="styled-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="input-label">FLOOR NO</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Floor 3"
+                      value={floor}
+                      onChange={(e) => setFloor(e.target.value)}
+                      className="styled-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Apt & Landmark */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }} className="grid-responsive-2col">
+                  <div>
+                    <label className="input-label">APARTMENT NO</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Apt 12"
+                      value={apartment}
+                      onChange={(e) => setApartment(e.target.value)}
+                      className="styled-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="input-label">LANDMARK</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Near Mall / Station"
+                      value={landmark}
+                      onChange={(e) => setLandmark(e.target.value)}
+                      className="styled-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Governorate & Postal Code */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '14px' }} className="grid-responsive-2col">
+                  <div>
+                    <label className="input-label">GOVERNORATE / CITY *</label>
+                    <select
+                      required
+                      value={governorate}
+                      onChange={(e) => setGovernorate(e.target.value)}
+                      className="styled-input"
+                    >
+                      <option value="">-- SELECT GOVERNORATE --</option>
+                      {EGYPT_GOVERNORATES.map(g => (
+                        <option key={g} value={g}>{g.toUpperCase()}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="input-label">POSTAL CODE</label>
+                    <input
+                      type="text"
+                      placeholder="Optional"
+                      value={postalCode}
+                      onChange={(e) => setPostalCode(e.target.value)}
+                      className="styled-input"
+                    />
+                  </div>
+                </div>
+
+                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.78rem', color: '#888888', cursor: 'pointer', marginTop: '6px' }}>
                   <input
                     type="checkbox"
                     checked={saveAddress}
                     onChange={(e) => setSaveAddress(e.target.checked)}
-                    style={{ accentColor: '#ffffff' }}
+                    style={{ accentColor: '#ffffff', width: '16px', height: '16px' }}
                   />
-                  SAVE ADDRESS FOR FUTURE ORDERS
+                  Save address details for future orders
                 </label>
               </div>
 
-              {/* 3. PAYMENT METHOD SECTION */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <h2 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#ffffff', margin: 0 }}>
-                  PAYMENT METHOD
-                </h2>
+              {/* SECTION 3: PAYMENT METHOD */}
+              <div className="glass-panel" style={{ padding: '24px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#ffffff', color: '#000000', fontSize: '0.75rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    3
+                  </span>
+                  <h2 style={{ fontSize: '0.9rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>
+                    PAYMENT METHOD
+                  </h2>
+                </div>
 
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  background: '#090909',
-                  border: '1px solid #222222',
-                  padding: '16px 20px',
-                  borderRadius: '2px',
+                  background: '#0a0a0a',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  padding: '18px 20px',
+                  borderRadius: '6px',
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                     <input
                       type="radio"
                       readOnly
                       checked
-                      style={{ accentColor: '#ffffff' }}
+                      style={{ accentColor: '#ffffff', width: '18px', height: '18px' }}
                     />
-                    <span style={{ fontSize: '0.82rem', fontWeight: 700, letterSpacing: '0.08em', color: '#ffffff', textTransform: 'uppercase' }}>
-                      CASH ON DELIVERY (COD)
-                    </span>
+                    <div>
+                      <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#ffffff', display: 'block', letterSpacing: '0.05em' }}>
+                        CASH ON DELIVERY (COD)
+                      </span>
+                      <span style={{ fontSize: '0.75rem', color: '#888888' }}>
+                        Pay cash directly to courier upon package arrival.
+                      </span>
+                    </div>
                   </div>
-                  <span style={{
-                    fontSize: '0.65rem',
-                    fontWeight: 800,
-                    letterSpacing: '0.1em',
-                    background: '#151515',
-                    color: '#888888',
-                    border: '1px solid #252525',
-                    padding: '3px 8px',
-                    borderRadius: '2px',
-                    textTransform: 'uppercase',
-                  }}>
-                    LOCAL
-                  </span>
+                  <ShieldCheck size={20} style={{ color: '#ffffff' }} />
                 </div>
               </div>
 
-              {/* 4. SUBMIT BUTTON */}
+              {/* SUBMIT BUTTON (DESKTOP) */}
               <button
                 type="submit"
                 disabled={loading}
+                className="desktop-submit-btn"
                 style={{
                   width: '100%',
-                  padding: '18px',
+                  padding: '20px',
                   background: '#ffffff',
                   color: '#000000',
                   border: 'none',
-                  fontSize: '0.9rem',
+                  fontSize: '0.95rem',
                   fontWeight: 900,
                   letterSpacing: '0.15em',
                   textTransform: 'uppercase',
                   cursor: loading ? 'not-allowed' : 'pointer',
-                  marginTop: '10px',
-                  transition: 'opacity 0.2s',
-                  opacity: loading ? 0.6 : 1,
+                  borderRadius: '6px',
+                  transition: 'all 0.2s ease',
+                  opacity: loading ? 0.7 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '12px'
                 }}
               >
-                {loading ? 'PROCESSING ORDER...' : 'COMPLETE ORDER'}
+                <Lock size={18} />
+                {loading ? 'PROCESSING ORDER...' : `COMPLETE ORDER (${grandTotal.toFixed(2)} EGP)`}
               </button>
 
             </div>
 
-            {/* RIGHT COLUMN: Order Summary */}
-            <div style={{
-              background: '#040404',
-              border: '1px solid #141414',
-              padding: '30px 24px',
+            {/* RIGHT COLUMN: ORDER SUMMARY & ITEM LIST */}
+            <div className="glass-panel" style={{
+              padding: '28px',
+              borderRadius: '12px',
               display: 'flex',
               flexDirection: 'column',
               gap: '24px',
               position: 'sticky',
               top: '90px',
+              border: '1px solid rgba(255,255,255,0.12)',
             }}>
               
-              {/* Product Items List */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              <h3 style={{ fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', margin: 0, borderBottom: '1px solid #1c1c1c', paddingBottom: '16px' }}>
+                ORDER SUMMARY
+              </h3>
+
+              {/* Items List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: '360px', overflowY: 'auto', paddingRight: '4px' }}>
                 {cart.map((item) => (
                   <div key={item.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '15px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                      {/* Image Thumbnail with Badge */}
-                      <div style={{ position: 'relative', width: '56px', height: '68px', background: '#111', border: '1px solid #222', flexShrink: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      {/* Image Thumbnail */}
+                      <div style={{ position: 'relative', width: '60px', height: '75px', background: '#111111', borderRadius: '4px', overflow: 'hidden', border: '1px solid #222222', flexShrink: 0 }}>
                         <Image
                           src={item.image}
                           alt={item.name}
                           fill
-                          sizes="56px"
+                          sizes="60px"
                           style={{ objectFit: 'cover' }}
                         />
-                        {/* Quantity Badge */}
-                        <span style={{
-                          position: 'absolute',
-                          top: '-7px',
-                          left: '-7px',
-                          background: '#333333',
-                          color: '#ffffff',
-                          borderRadius: '50%',
-                          width: '20px',
-                          height: '20px',
-                          fontSize: '0.7rem',
-                          fontWeight: 700,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: '1px solid #000',
-                          zIndex: 2,
-                        }}>
-                          {item.quantity}
-                        </span>
                       </div>
 
                       {/* Info */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em', color: '#ffffff', textTransform: 'uppercase' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#ffffff', letterSpacing: '0.02em' }}>
                           {item.name}
                         </span>
-                        <span style={{ fontSize: '0.75rem', color: '#666666' }}>
-                          SIZE: {item.size}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '0.7rem', background: '#222222', color: '#ffffff', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold' }}>
+                            {item.size}
+                          </span>
+                          <span style={{ fontSize: '0.78rem', color: '#888888' }}>
+                            {item.price} EGP / item
+                          </span>
+                        </div>
                         
-                        {/* Remove / quantity controls */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #222', background: '#000' }}>
+                        {/* Stepper & Trash */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #333333', background: '#0a0a0a', borderRadius: '4px' }}>
                             <button
                               type="button"
                               onClick={() => handleQuantityChange(item, item.quantity - 1)}
                               disabled={item.quantity <= 1}
-                              style={{ width: '22px', height: '22px', fontSize: '0.75rem', cursor: item.quantity <= 1 ? 'not-allowed' : 'pointer', color: '#888' }}
+                              style={{ width: '26px', height: '24px', fontSize: '0.8rem', cursor: item.quantity <= 1 ? 'not-allowed' : 'pointer', color: '#aaaaaa' }}
                             >
                               -
                             </button>
-                            <span style={{ width: '24px', textAlign: 'center', fontSize: '0.75rem', color: '#fff' }}>
+                            <span style={{ width: '28px', textAlign: 'center', fontSize: '0.8rem', fontWeight: 'bold', color: '#ffffff' }}>
                               {item.quantity}
                             </span>
                             <button
                               type="button"
                               onClick={() => handleQuantityChange(item, item.quantity + 1)}
                               disabled={item.quantity >= item.maxStock}
-                              style={{ width: '22px', height: '22px', fontSize: '0.75rem', cursor: item.quantity >= item.maxStock ? 'not-allowed' : 'pointer', color: '#888' }}
+                              style={{ width: '26px', height: '24px', fontSize: '0.8rem', cursor: item.quantity >= item.maxStock ? 'not-allowed' : 'pointer', color: '#aaaaaa' }}
                             >
                               +
                             </button>
                           </div>
+                          
                           <button
                             type="button"
                             onClick={() => handleRemoveItem(item)}
-                            style={{ color: '#555555', cursor: 'pointer' }}
-                            title="Remove"
+                            style={{ color: '#666666', cursor: 'pointer', transition: 'color 0.2s' }}
+                            className="trash-btn-hover"
+                            title="Remove item"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={15} />
                           </button>
                         </div>
                       </div>
                     </div>
 
-                    {/* Price */}
-                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', whiteSpace: 'nowrap' }}>
-                      EGP {(item.price * item.quantity).toFixed(2)}
+                    {/* Total item price */}
+                    <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff', whiteSpace: 'nowrap' }}>
+                      {(item.price * item.quantity).toFixed(2)} EGP
                     </span>
                   </div>
                 ))}
               </div>
 
-              <div style={{ width: '100%', height: '1px', background: '#151515' }} />
+              <div style={{ width: '100%', height: '1px', background: '#1c1c1c' }} />
 
-              {/* Promo Code Input */}
+              {/* Promo Code Section */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em' }}>PROMO CODE</span>
+                <label className="input-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Tag size={12} /> PROMO CODE
+                </label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
                     type="text"
                     value={promoCodeInput}
                     onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
-                    placeholder="ENTER CODE"
-                    className="checkout-input"
-                    style={{ flex: 1, padding: '10px 14px' }}
+                    placeholder="ENTER DISCOUNT CODE"
+                    className="styled-input"
+                    style={{ flex: 1, textTransform: 'uppercase' }}
                   />
                   <button
                     type="button"
                     onClick={handleApplyPromo}
                     style={{
-                      background: '#1a1a1a',
-                      color: '#fff',
-                      border: '1px solid #333',
-                      padding: '0 16px',
-                      fontSize: '0.7rem',
-                      fontWeight: 800,
-                      cursor: 'pointer'
+                      background: '#ffffff',
+                      color: '#000000',
+                      border: 'none',
+                      padding: '0 18px',
+                      fontSize: '0.75rem',
+                      fontWeight: 900,
+                      letterSpacing: '0.05em',
+                      cursor: 'pointer',
+                      borderRadius: '4px'
                     }}
                   >
                     APPLY
                   </button>
                 </div>
                 {promoMessage && (
-                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: promoMessage.type === 'success' ? '#3DDC84' : '#ff4444' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: promoMessage.type === 'success' ? '#4ade80' : '#f87171', marginTop: '4px' }}>
                     {promoMessage.text}
                   </span>
                 )}
               </div>
 
-              <div style={{ width: '100%', height: '1px', background: '#151515' }} />
+              <div style={{ width: '100%', height: '1px', background: '#1c1c1c' }} />
 
-              {/* Totals Breakdown */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.8rem', color: '#888888', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                
-                {/* Subtotal */}
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              {/* Breakdown */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '0.85rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#888888' }}>
                   <span>SUBTOTAL</span>
-                  <span style={{ color: '#ffffff', fontWeight: 600 }}>EGP {subtotal.toFixed(2)}</span>
+                  <span style={{ color: '#ffffff', fontWeight: 600 }}>{subtotal.toFixed(2)} EGP</span>
                 </div>
 
-                {/* Discount */}
                 {appliedPromo && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#3DDC84' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#4ade80', fontWeight: 600 }}>
                     <span>DISCOUNT ({discountPercentage}%)</span>
-                    <span style={{ fontWeight: 600 }}>- EGP {discountAmount.toFixed(2)}</span>
+                    <span>- {discountAmount.toFixed(2)} EGP</span>
                   </div>
                 )}
 
-                {/* Shipping */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>SHIPPING</span>
-                  <span style={{ color: governorate ? '#ffffff' : '#666666', fontWeight: 600 }}>
-                    {governorate ? `EGP ${shippingFee.toFixed(2)}` : 'SELECT CITY'}
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#888888' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Truck size={14} /> SHIPPING
+                  </span>
+                  <span style={{ color: governorate ? '#ffffff' : '#888888', fontWeight: 600 }}>
+                    {governorate ? `${shippingFee.toFixed(2)} EGP` : 'SELECT GOVERNORATE'}
                   </span>
                 </div>
-                <span style={{ fontSize: '0.7rem', color: '#555555', textTransform: 'none', letterSpacing: '0.02em', marginTop: '-4px' }}>
-                  2 - 5 business days after confirmation
-                </span>
 
-                <div style={{ width: '100%', height: '1px', background: '#151515', margin: '8px 0' }} />
+                <div style={{ width: '100%', height: '1px', background: '#1c1c1c', margin: '4px 0' }} />
 
-                {/* Grand Total */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1rem', fontWeight: 900, color: '#ffffff' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.15rem', fontWeight: 900, color: '#ffffff' }}>
                   <span>TOTAL</span>
-                  <span>EGP {grandTotal.toFixed(2)}</span>
+                  <span>{grandTotal.toFixed(2)} EGP</span>
                 </div>
-
               </div>
 
+            </div>
+
+            {/* MOBILE FLOATING STICKY BOTTOM BAR */}
+            <div className="mobile-sticky-bar">
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '0.7rem', color: '#888888', textTransform: 'uppercase' }}>TOTAL DUE</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#ffffff' }}>{grandTotal.toFixed(2)} EGP</span>
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  background: '#ffffff',
+                  color: '#000000',
+                  padding: '14px 24px',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontWeight: 900,
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  cursor: loading ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {loading ? 'PROCESSING...' : 'COMPLETE ORDER'}
+              </button>
             </div>
 
           </form>
@@ -665,36 +853,75 @@ export default function CartPage() {
       </div>
 
       <style jsx>{`
-        .checkout-input {
+        .input-label {
+          display: block;
+          font-size: 0.72rem;
+          font-weight: 800;
+          color: #888888;
+          letter-spacing: 0.08em;
+          margin-bottom: 6px;
+          text-transform: uppercase;
+        }
+
+        .styled-input {
           width: 100%;
           padding: 14px 16px;
-          background: #090909;
-          border: 1px solid #1a1a1a;
+          background: #0a0a0a;
+          border: 1px solid rgba(255, 255, 255, 0.12);
           color: #ffffff;
-          font-size: 0.78rem;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          border-radius: 2px;
+          font-size: 0.85rem;
+          border-radius: 6px;
           font-family: inherit;
-          transition: border-color 0.2s;
-        }
-        .checkout-input:focus {
+          transition: border-color 0.2s ease, background 0.2s ease;
           outline: none;
-          border-color: #555555;
         }
-        .checkout-input::placeholder {
+
+        .styled-input:focus {
+          border-color: #ffffff;
+          background: #0f0f0f;
+        }
+
+        .styled-input::placeholder {
           color: #444444;
         }
-        .cancel-link:hover {
-          color: #ffffff !important;
+
+        .back-btn-hover:hover {
+          background: rgba(255, 255, 255, 0.15) !important;
+          border-color: #ffffff !important;
         }
+
+        .trash-btn-hover:hover {
+          color: #ef4444 !important;
+        }
+
+        .mobile-sticky-bar {
+          display: none;
+        }
+
         @media (max-width: 900px) {
-          .checkout-responsive-grid {
+          .cart-grid-layout {
             grid-template-columns: 1fr !important;
-            gap: 40px !important;
+            gap: 30px !important;
           }
-          .grid-2col-mobile {
+          .grid-responsive-2col {
             grid-template-columns: 1fr !important;
+          }
+          .desktop-submit-btn {
+            display: none !important;
+          }
+          .mobile-sticky-bar {
+            display: flex !important;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #0a0a0a;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            padding: 16px 5%;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 99;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
           }
         }
       `}</style>
