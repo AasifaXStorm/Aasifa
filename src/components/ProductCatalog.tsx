@@ -83,9 +83,15 @@ export function ProductCatalog({ products, enabledCategories }: ProductCatalogPr
           <div style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: '15px',
+            gap: '10px',
             flexWrap: 'wrap',
-            marginBottom: '20px',
+            marginBottom: '30px',
+            background: 'rgba(255,255,255,0.03)',
+            padding: '8px 12px',
+            borderRadius: '40px',
+            border: '1px solid rgba(255,255,255,0.08)',
+            maxWidth: 'max-content',
+            margin: '0 auto 30px auto',
           }}>
             {allowedCategories.map((cat) => {
               const isActive = activeCategory === cat;
@@ -96,16 +102,18 @@ export function ProductCatalog({ products, enabledCategories }: ProductCatalogPr
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
                   style={{
-                    padding: '8px 16px',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    letterSpacing: '0.1em',
+                    padding: '8px 18px',
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.12em',
                     textTransform: 'uppercase',
                     border: '1px solid',
-                    borderColor: isActive ? 'var(--accent)' : '#222222',
+                    borderColor: isActive ? 'var(--accent)' : 'transparent',
                     background: isActive ? 'var(--accent)' : 'transparent',
-                    color: isActive ? '#030303' : '#888888',
-                    transition: 'var(--transition-smooth)',
+                    color: isActive ? '#030303' : 'var(--text-muted)',
+                    borderRadius: '20px',
+                    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                    cursor: 'pointer',
                   }}
                   className="category-tab-btn"
                 >

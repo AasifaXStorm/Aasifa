@@ -228,12 +228,14 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               position: 'relative',
               width: '100%',
               aspectRatio: '3/4',
-              border: '1px solid #1a1a1a',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '10px',
               overflow: 'hidden',
               cursor: isDragging ? 'grabbing' : 'grab',
               touchAction: 'pan-y',
               userSelect: 'none',
               WebkitUserSelect: 'none',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
             }}
           >
             {/* GPU Hardware-accelerated sliding track containing pre-loaded images */}
@@ -281,15 +283,15 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 position: 'absolute',
                 top: '15px',
                 right: '15px',
-                background: 'rgba(0,0,0,0.7)',
-                backdropFilter: 'blur(6px)',
+                background: 'rgba(0,0,0,0.75)',
+                backdropFilter: 'blur(8px)',
                 color: 'rgba(255,255,255,0.9)',
                 fontSize: '0.75rem',
-                fontWeight: 600,
+                fontWeight: 700,
                 letterSpacing: '0.08em',
-                padding: '4px 10px',
-                borderRadius: '12px',
-                border: '1px solid rgba(255,255,255,0.12)',
+                padding: '5px 12px',
+                borderRadius: '20px',
+                border: '1px solid rgba(255,255,255,0.15)',
                 zIndex: 10,
                 pointerEvents: 'none',
               }}>
@@ -306,11 +308,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 transform: 'translateX(-50%)',
                 display: 'flex',
                 gap: '8px',
-                background: 'rgba(0,0,0,0.5)',
-                backdropFilter: 'blur(6px)',
-                padding: '6px 12px',
+                background: 'rgba(0,0,0,0.6)',
+                backdropFilter: 'blur(8px)',
+                padding: '6px 14px',
                 borderRadius: '20px',
-                border: '1px solid rgba(255,255,255,0.12)',
+                border: '1px solid rgba(255,255,255,0.15)',
                 zIndex: 10,
               }}>
                 {images.map((_, idx) => (
@@ -323,7 +325,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                     }}
                     aria-label={`View slide ${idx + 1}`}
                     style={{
-                      width: activeImgIdx === idx ? '20px' : '7px',
+                      width: activeImgIdx === idx ? '22px' : '7px',
                       height: '7px',
                       borderRadius: '4px',
                       background: activeImgIdx === idx ? '#ffffff' : 'rgba(255,255,255,0.35)',
@@ -348,13 +350,14 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   style={{
                     width: '70px',
                     height: '90px',
-                    border: activeImgIdx === idx ? '1px solid var(--accent)' : '1px solid #222222',
+                    border: activeImgIdx === idx ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '6px',
                     padding: 0,
                     overflow: 'hidden',
                     background: 'var(--bg-base)',
                     cursor: 'pointer',
-                    opacity: activeImgIdx === idx ? 1 : 0.6,
-                    transition: 'opacity 0.2s ease, border 0.2s ease',
+                    opacity: activeImgIdx === idx ? 1 : 0.5,
+                    transition: 'all 0.25s ease',
                   }}
                 >
                   <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -393,7 +396,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </div>
 
           {/* Description */}
-          <div style={{ borderTop: '1px solid #1a1a1a', borderBottom: '1px solid #1a1a1a', padding: 'clamp(12px, 3vw, 20px) 0' }}>
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.08)', padding: 'clamp(12px, 3vw, 20px) 0' }}>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
               {product.description || 'No description available for this premium piece.'}
             </p>
@@ -432,7 +435,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               {selectedSize && (
                 <span style={{ 
                   fontSize: '0.85rem', 
-                  color: maxStock === 0 ? '#ff4444' : maxStock <= LOW_STOCK_THRESHOLD ? '#ffaa00' : '#888',
+                  color: maxStock === 0 ? '#ef4444' : maxStock <= LOW_STOCK_THRESHOLD ? '#ffaa00' : '#888',
                   fontWeight: maxStock <= LOW_STOCK_THRESHOLD ? 'bold' : 'normal'
                 }}>
                   {maxStock === 0 
@@ -468,24 +471,26 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                     style={{
                       position: 'relative',
                       overflow: 'hidden',
-                      padding: '12px 20px',
+                      padding: '12px 22px',
                       fontSize: '0.9rem',
-                      fontWeight: 600,
+                      fontWeight: 700,
+                      borderRadius: '6px',
                       border: isSelected 
                         ? '1px solid var(--accent)' 
                         : isAvailable 
-                          ? '1px solid var(--border-highlight)' 
-                          : '1px solid #282828',
+                          ? '1px solid rgba(255,255,255,0.15)' 
+                          : '1px solid #222222',
                       background: isSelected 
                         ? 'var(--accent)' 
-                        : 'transparent',
+                        : 'rgba(255,255,255,0.03)',
                       color: isSelected 
                         ? '#030303' 
                         : isAvailable 
                           ? 'var(--text-primary)' 
                           : '#555555',
                       cursor: isAvailable ? 'pointer' : 'not-allowed',
-                      opacity: isAvailable ? 1 : 0.6,
+                      opacity: isAvailable ? 1 : 0.5,
+                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                     }}
                   >
                     {v.size}

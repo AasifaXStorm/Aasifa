@@ -42,9 +42,9 @@ export function ProductCard({ product }: ProductCardProps) {
       flexDirection: 'column',
       background: 'var(--bg-elevated)',
       border: '1px solid var(--border-color)',
-      borderRadius: '0px',
+      borderRadius: '8px',
       overflow: 'hidden',
-      transition: 'var(--transition-smooth)',
+      transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
       position: 'relative',
     }} className="product-card-hover">
       {/* Product Image Link */}
@@ -57,7 +57,7 @@ export function ProductCard({ product }: ProductCardProps) {
           loading="lazy"
           style={{
             objectFit: 'cover',
-            filter: isOutOfStock ? 'brightness(0.5) contrast(1.1)' : 'brightness(0.85) contrast(1.1)',
+            filter: isOutOfStock ? 'brightness(0.5) contrast(1.1)' : 'brightness(0.9) contrast(1.05)',
             transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease',
           }}
           className="product-card-img"
@@ -67,16 +67,18 @@ export function ProductCard({ product }: ProductCardProps) {
         {isOutOfStock && (
           <div style={{
             position: 'absolute',
-            top: '15px',
-            left: '15px',
+            top: '12px',
+            left: '12px',
             background: 'rgba(0,0,0,0.85)',
-            border: '1px solid #555555',
-            color: '#cc3333',
-            fontSize: '0.7rem',
+            backdropFilter: 'blur(6px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            color: '#ef4444',
+            fontSize: '0.68rem',
             padding: '4px 10px',
-            fontWeight: 'bold',
-            letterSpacing: '0.1em',
+            fontWeight: 800,
+            letterSpacing: '0.12em',
             textTransform: 'uppercase',
+            borderRadius: '4px',
             zIndex: 10,
           }}>
             Out of Storm
@@ -100,11 +102,11 @@ export function ProductCard({ product }: ProductCardProps) {
             <span style={{
               fontSize: 'clamp(1.2rem, 4vw, 1.8rem)',
               fontWeight: 900,
-              color: '#cc3333',
+              color: '#ef4444',
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
               fontStyle: 'italic',
-              textShadow: '0 2px 20px rgba(204, 51, 51, 0.4)',
+              textShadow: '0 2px 20px rgba(239, 68, 68, 0.4)',
             }}>
               OUT OF STORM
             </span>
@@ -116,41 +118,53 @@ export function ProductCard({ product }: ProductCardProps) {
       <div 
         className="product-card-info"
         style={{
-          padding: '20px',
+          padding: '18px 20px 22px 20px',
           display: 'flex',
           flexDirection: 'column',
           gap: '8px',
           borderTop: '1px solid var(--border-color)',
+          background: 'rgba(18, 18, 18, 0.8)',
+          backdropFilter: 'blur(8px)',
         }}
       >
         {/* Category */}
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
           {product.category || 'Apparel'}
         </span>
 
         {/* Title */}
-        <Link href={`/products/${product.id}`} className="product-card-title" style={{ color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 600, letterSpacing: '0.02em' }}>
+        <Link href={`/products/${product.id}`} className="product-card-title" style={{ color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 700, letterSpacing: '0.02em', lineHeight: '1.3' }}>
           {product.name}
         </Link>
 
         {/* Price */}
-        <span className="product-card-price" style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 500 }}>
-          {product.price} EGP
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '2px' }}>
+          <span className="product-card-price" style={{ color: 'var(--text-primary)', fontSize: '1.05rem', fontWeight: 800 }}>
+            {product.price} <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>EGP</span>
+          </span>
 
-        {/* Sizes preview */}
-        {sizes.length > 0 && !isOutOfStock && (
-          <div style={{
-            display: 'flex',
-            gap: '6px',
-            marginTop: '8px',
-            fontSize: '0.75rem',
-            color: 'var(--text-muted)',
-          }}>
-            <span>Sizes:</span>
-            <span style={{ color: 'var(--text-muted)' }}>{sizes.join(', ')}</span>
-          </div>
-        )}
+          {/* Available Sizes Pills */}
+          {sizes.length > 0 && !isOutOfStock && (
+            <div style={{ display: 'flex', gap: '4px' }}>
+              {sizes.map(size => (
+                <span 
+                  key={size}
+                  style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 800,
+                    padding: '2px 6px',
+                    borderRadius: '3px',
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  {size}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

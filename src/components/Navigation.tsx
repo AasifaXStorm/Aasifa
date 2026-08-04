@@ -134,7 +134,7 @@ export function Navigation() {
         </div>
       )}
 
-      {/* Main Nav Bar — NO border-bottom */}
+      {/* Main Nav Bar */}
       <header style={{
         position: 'fixed',
         top: marquee.visible ? '32px' : 0,
@@ -149,6 +149,7 @@ export function Navigation() {
         background: 'var(--nav-bg)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
       }}>
         {/* Left: STORM logo */}
         <Link 
