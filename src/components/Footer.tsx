@@ -43,11 +43,12 @@ export function Footer() {
         {/* Links column */}
         <div style={{ flex: '1 1 200px' }}>
           <h4 style={{ color: 'var(--text-primary)', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '20px' }}>
-            {t('nav.shop')}
+            Information
           </h4>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px', padding: 0 }}>
-            <li><Link href="/#shop" className="footer-link-hover">{t('nav.shop')}</Link></li>
             <li><Link href="/shipping-policy" className="footer-link-hover">Shipping & Returns</Link></li>
+            <li><Link href="/contact" className="footer-link-hover">Contact Us</Link></li>
+            <li><Link href="/about" className="footer-link-hover">About Us</Link></li>
           </ul>
         </div>
 
