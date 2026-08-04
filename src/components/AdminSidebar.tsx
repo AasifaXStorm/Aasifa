@@ -77,8 +77,10 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
       )}
 
       <div className={`admin-sidebar ${isOpen ? 'open' : ''}`} style={{
-        background: 'linear-gradient(180deg, #070707 0%, #121212 100%)',
-        borderRight: '1px solid #222222',
+        background: 'rgba(8, 8, 8, 0.96)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderRight: '1px solid rgba(255, 255, 255, 0.08)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -86,15 +88,15 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
         width: '260px',
         padding: '30px 0',
         boxSizing: 'border-box',
-        boxShadow: '4px 0 25px rgba(0,0,0,0.5)',
+        boxShadow: '4px 0 30px rgba(0,0,0,0.8)',
         flexShrink: 0
       }}>
         <div style={{ overflowY: 'auto' }}>
           {/* Brand Header */}
-          <div style={{ padding: '0 25px 25px 25px', borderBottom: '1px solid #222222', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ padding: '0 25px 25px 25px', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <img src="/images/WhiteStorm.png" alt="AASIFA" style={{ height: '26px', width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.4))' }} />
-              <span style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.2em', color: '#ffffff', textShadow: '0 0 8px rgba(255,255,255,0.3)' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.22em', color: '#ffffff', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.15)' }}>
                 CONSOLE
               </span>
             </div>
@@ -109,7 +111,7 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
           <nav style={{ padding: '25px 0' }}>
             {menuGroups.map((group, gIdx) => (
               <div key={gIdx} style={{ marginBottom: '25px' }}>
-                <span style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.2em', color: '#555555', padding: '0 25px', display: 'block', marginBottom: '12px' }}>
+                <span style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.2em', color: '#666666', padding: '0 25px', display: 'block', marginBottom: '12px' }}>
                   {group.title}
                 </span>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -130,7 +132,7 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
                           fontWeight: 700,
                           textDecoration: 'none',
                           color: isActive ? '#ffffff' : '#888888',
-                          background: isActive ? 'linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%)' : 'transparent',
+                          background: isActive ? 'linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 100%)' : 'transparent',
                           borderLeft: isActive ? '3px solid #ffffff' : '3px solid transparent',
                           boxShadow: isActive ? 'inset 4px 0 15px rgba(255,255,255,0.05)' : 'none',
                           textShadow: isActive ? '0 0 10px rgba(255,255,255,0.4)' : 'none',

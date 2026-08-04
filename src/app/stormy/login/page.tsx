@@ -44,16 +44,18 @@ export default function LoginPage() {
       padding: '20px'
     }}>
       <form onSubmit={handleLogin} style={{
-        background: '#0d0d0d',
-        border: '1px solid #1a1a1a',
-        borderRadius: '8px',
-        padding: '35px 30px',
+        background: 'rgba(13, 13, 13, 0.85)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.12)',
+        borderRadius: '12px',
+        padding: '40px 32px',
         width: '100%',
-        maxWidth: '380px',
+        maxWidth: '400px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px',
-        boxShadow: '0 15px 50px rgba(0,0,0,0.9)'
+        gap: '22px',
+        boxShadow: '0 25px 60px rgba(0,0,0,0.9)'
       }}>
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Image src="/images/WhiteStorm.png" alt="AASIFA" width={180} height={40} style={{ height: '24px', width: 'auto', marginBottom: '12px' }} />

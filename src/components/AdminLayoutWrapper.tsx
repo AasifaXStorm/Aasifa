@@ -148,7 +148,7 @@ export function AdminLayoutWrapper({ children }: { children: React.ReactNode }) 
           padding: 50px 5%;
           overflow-y: auto;
           max-height: 100vh;
-          background: radial-gradient(circle at top right, rgba(20,20,20,0.8) 0%, rgba(4,4,4,1) 70%);
+          background: radial-gradient(circle at top right, rgba(25,25,25,0.7) 0%, rgba(4,4,4,1) 75%);
         }
 
         @media (max-width: 900px) {
@@ -156,9 +156,10 @@ export function AdminLayoutWrapper({ children }: { children: React.ReactNode }) 
           .admin-mobile-topbar {
             display: flex;
             align-items: center;
-            padding: 15px 20px;
-            background: #070707;
-            border-bottom: 1px solid #1a1a1a;
+            padding: 16px 20px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             z-index: 90;
           }
           .admin-menu-btn {
@@ -172,13 +173,13 @@ export function AdminLayoutWrapper({ children }: { children: React.ReactNode }) 
           }
           .admin-mobile-title {
             margin-left: 15px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 800;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.15em;
           }
           .admin-main-area {
             max-height: calc(100vh - 55px);
-            padding: 20px 5%;
+            padding: 24px 5%;
           }
         }
       `}</style>

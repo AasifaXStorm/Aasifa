@@ -156,14 +156,22 @@ export default function OverviewPage() {
           {/* Row of Metrics Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
             {cards.map((card, idx) => (
-              <div key={idx} style={{ background: '#0d0d0d', border: '1px solid #1a1a1a', padding: '24px', borderRadius: '6px' }}>
-                <span style={{ fontSize: '0.7rem', color: '#666', fontWeight: 800, letterSpacing: '0.1em', display: 'block', marginBottom: '10px' }}>
+              <div key={idx} style={{ 
+                background: 'rgba(18, 18, 18, 0.7)', 
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255, 255, 255, 0.08)', 
+                padding: '24px', 
+                borderRadius: '8px',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+                transition: 'all 0.3s ease'
+              }}>
+                <span style={{ fontSize: '0.7rem', color: '#888888', fontWeight: 800, letterSpacing: '0.1em', display: 'block', marginBottom: '10px' }}>
                   {card.title}
                 </span>
-                <span style={{ fontSize: '1.8rem', fontWeight: 'bold', display: 'block', marginBottom: '5px', color: '#fff', letterSpacing: '-0.02em' }}>
+                <span style={{ fontSize: '1.9rem', fontWeight: 900, display: 'block', marginBottom: '5px', color: '#ffffff', letterSpacing: '-0.02em' }}>
                   {card.value}
                 </span>
-                <span style={{ fontSize: '0.65rem', color: '#444', fontWeight: 600, letterSpacing: '0.05em' }}>
+                <span style={{ fontSize: '0.68rem', color: '#666666', fontWeight: 700, letterSpacing: '0.05em' }}>
                   {card.sub}
                 </span>
               </div>
@@ -173,28 +181,36 @@ export default function OverviewPage() {
           {/* Charts Row */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
             {/* Sales Trend Chart */}
-            <div style={{ background: '#0d0d0d', border: '1px solid #1a1a1a', padding: '24px', borderRadius: '6px', display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#888', display: 'block', marginBottom: '25px', letterSpacing: '0.05em' }}>
+            <div style={{ 
+              background: 'rgba(18, 18, 18, 0.7)', 
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255, 255, 255, 0.08)', 
+              padding: '24px', 
+              borderRadius: '8px', 
+              display: 'flex', 
+              flexDirection: 'column' 
+            }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#888888', display: 'block', marginBottom: '25px', letterSpacing: '0.08em' }}>
                 DAILY SALES TREND (LAST 7 DAYS)
               </span>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '180px', paddingBottom: '10px', borderBottom: '1px solid #1a1a1a', gap: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '180px', paddingBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.08)', gap: '8px' }}>
                 {salesTrend.map((s, idx) => {
                   const pctHeight = (s.amount / maxSale) * 100;
                   return (
                     <div key={idx} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
-                      <span style={{ fontSize: '0.65rem', color: '#aaa', marginBottom: '6px', fontWeight: 'bold' }}>
+                      <span style={{ fontSize: '0.65rem', color: '#aaaaaa', marginBottom: '6px', fontWeight: 'bold' }}>
                         {s.amount > 0 ? `${(s.amount / 1000).toFixed(1)}k` : ''}
                       </span>
                       <div style={{
                         width: '70%',
-                        maxWidth: '24px',
+                        maxWidth: '26px',
                         height: `${pctHeight}%`,
                         background: '#ffffff',
-                        borderRadius: '2px 2px 0 0',
-                        transition: 'height 0.4s ease-out',
-                        boxShadow: '0 0 10px rgba(255,255,255,0.15)'
+                        borderRadius: '4px 4px 0 0',
+                        transition: 'height 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                        boxShadow: '0 0 15px rgba(255,255,255,0.2)'
                       }} />
-                      <span style={{ fontSize: '0.6rem', color: '#555', marginTop: '8px', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: '0.6rem', color: '#666666', marginTop: '8px', whiteSpace: 'nowrap' }}>
                         {s.day}
                       </span>
                     </div>
@@ -204,7 +220,13 @@ export default function OverviewPage() {
             </div>
 
             {/* Size Popularity List */}
-            <div style={{ background: '#0d0d0d', border: '1px solid #1a1a1a', padding: '24px', borderRadius: '6px' }}>
+            <div style={{ 
+              background: 'rgba(18, 18, 18, 0.7)', 
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255, 255, 255, 0.08)', 
+              padding: '24px', 
+              borderRadius: '8px' 
+            }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#888', display: 'block', marginBottom: '20px', letterSpacing: '0.05em' }}>
                 SIZE POPULARITY (ITEMS SOLD)
               </span>
