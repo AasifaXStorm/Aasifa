@@ -460,25 +460,88 @@ button {
 
 /* Light theme glass panel override */
 .light-theme .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
 }
 
-/* Light theme product card shadow */
+/* Light theme product card */
+.light-theme .product-card-hover {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
 .light-theme .product-card-hover:hover {
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12), 0 0 10px rgba(0,0,0,0.04);
+  box-shadow: 0 14px 35px rgba(0,0,0,0.08), 0 2px 10px rgba(0,0,0,0.03) !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.light-theme .product-card-info {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-top-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Light theme inputs */
+.light-theme .styled-input,
+.light-theme .checkout-input {
+  background: #ffffff !important;
+  border: 1px solid #d2d2d7 !important;
+  color: #1a1a1d !important;
+}
+
+.light-theme .styled-input:focus,
+.light-theme .checkout-input:focus {
+  border-color: #1a1a1d !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.light-theme .styled-input::placeholder,
+.light-theme .checkout-input::placeholder {
+  color: #999999 !important;
+}
+
+.light-theme .input-label {
+  color: #555555 !important;
+}
+
+/* Light theme buttons & links */
+.light-theme .btn-primary {
+  background: #1a1a1d !important;
+  color: #ffffff !important;
+  border-color: #1a1a1d !important;
+}
+
+.light-theme .btn-primary:hover {
+  background: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+.light-theme .back-btn-hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #1a1a1d !important;
+}
+
+.light-theme .back-btn-hover:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  border-color: #1a1a1d !important;
+}
+
+/* Light theme mobile sticky checkout bar */
+.light-theme .mobile-sticky-bar {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-top: 1px solid #d2d2d7 !important;
+}
+
+.light-theme .mobile-sticky-bar span {
+  color: #1a1a1d !important;
 }
 
 /* Light theme brand title shadow flip */
 .light-theme .brand-title {
   text-shadow: none;
-}
-
-/* Light theme btn-primary hover inversion */
-.light-theme .btn-primary:hover {
-  background: var(--text-primary);
-  color: #ffffff;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
 }
 
 /* Global Theme Transition */
