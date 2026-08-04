@@ -42,36 +42,126 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const isFullyOutOfStock = totalStock === 0;
 
   // Drag / Swipe State for zero-lag touch and PC mouse swipe
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const sliderRef = React.useRef<HTMLDivElement>(null);
+  const touchStartRef = React.useRef<{ x: number; y: number } | null>(null);
+  const isHorizontalSwipeRef = React.useRef<boolean>(false);
+  const activeImgIdxRef = React.useRef<number>(activeImgIdx);
+  activeImgIdxRef.current = activeImgIdx;
+
   const [dragOffset, setDragOffset] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
-  const handlePointerDown = (clientX: number) => {
-    setTouchStartX(clientX);
+  // Native non-passive touch listeners to block vertical page scroll ONLY during horizontal image swipe
+  React.useEffect(() => {
+    const el = sliderRef.current;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+      isHorizontalSwipeRef.current = false;
+      setIsDragging(true);
+      setDragOffset(0);
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!touchStartRef.current) return;
+      const touch = e.touches[0];
+      const diffX = touch.clientX - touchStartRef.current.x;
+      const diffY = touch.clientY - touchStartRef.current.y;
+
+      const absX = Math.abs(diffX);
+      const absY = Math.abs(diffY);
+
+      // Lock horizontal swipe gesture when horizontal distance > vertical distance
+      if (!isHorizontalSwipeRef.current && absX > 6) {
+        if (absX > absY) {
+          isHorizontalSwipeRef.current = true;
+        }
+      }
+
+      if (isHorizontalSwipeRef.current) {
+        // Prevent default browser page scrolling while swiping pictures
+        if (e.cancelable) e.preventDefault();
+
+        // Rubberband effect at boundaries
+        const currentIdx = activeImgIdxRef.current;
+        const total = images.length;
+        if ((currentIdx === 0 && diffX > 0) || (currentIdx === total - 1 && diffX < 0)) {
+          setDragOffset(diffX * 0.3);
+        } else {
+          setDragOffset(diffX);
+        }
+      }
+    };
+
+    const onTouchEnd = () => {
+      if (!touchStartRef.current) return;
+
+      if (isHorizontalSwipeRef.current) {
+        const threshold = 40;
+        setDragOffset((finalOffset) => {
+          if (finalOffset < -threshold && activeImgIdxRef.current < images.length - 1) {
+            setActiveImgIdx((prev) => prev + 1);
+          } else if (finalOffset > threshold && activeImgIdxRef.current > 0) {
+            setActiveImgIdx((prev) => prev - 1);
+          }
+          return 0;
+        });
+      }
+
+      touchStartRef.current = null;
+      isHorizontalSwipeRef.current = false;
+      setIsDragging(false);
+      setDragOffset(0);
+    };
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('touchcancel', onTouchEnd);
+    };
+  }, [images.length]);
+
+  // Mouse handlers for PC desktop drag
+  const handleMouseDown = (e: React.MouseEvent) => {
+    touchStartRef.current = { x: e.clientX, y: e.clientY };
+    isHorizontalSwipeRef.current = true;
     setIsDragging(true);
     setDragOffset(0);
   };
 
-  const handlePointerMove = (clientX: number) => {
-    if (touchStartX === null || !isDragging) return;
-    const diff = clientX - touchStartX;
-    // Rubberband effect at boundaries
-    if ((activeImgIdx === 0 && diff > 0) || (activeImgIdx === images.length - 1 && diff < 0)) {
-      setDragOffset(diff * 0.3);
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!touchStartRef.current || !isHorizontalSwipeRef.current || !isDragging) return;
+    const diffX = e.clientX - touchStartRef.current.x;
+    const currentIdx = activeImgIdxRef.current;
+    const total = images.length;
+    if ((currentIdx === 0 && diffX > 0) || (currentIdx === total - 1 && diffX < 0)) {
+      setDragOffset(diffX * 0.3);
     } else {
-      setDragOffset(diff);
+      setDragOffset(diffX);
     }
   };
 
-  const handlePointerEnd = () => {
-    if (touchStartX === null) return;
-    const threshold = 40; // minimum drag distance in px
-    if (dragOffset < -threshold && activeImgIdx < images.length - 1) {
-      setActiveImgIdx((prev) => prev + 1);
-    } else if (dragOffset > threshold && activeImgIdx > 0) {
-      setActiveImgIdx((prev) => prev - 1);
-    }
-    setTouchStartX(null);
+  const handleMouseUp = () => {
+    if (!touchStartRef.current || !isDragging) return;
+    const threshold = 40;
+    setDragOffset((finalOffset) => {
+      if (finalOffset < -threshold && activeImgIdxRef.current < images.length - 1) {
+        setActiveImgIdx((prev) => prev + 1);
+      } else if (finalOffset > threshold && activeImgIdxRef.current > 0) {
+        setActiveImgIdx((prev) => prev - 1);
+      }
+      return 0;
+    });
+    touchStartRef.current = null;
+    isHorizontalSwipeRef.current = false;
     setIsDragging(false);
     setDragOffset(0);
   };
@@ -128,14 +218,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         }}>
           {/* Main Display Image Slider viewport */}
           <div
+            ref={sliderRef}
             className="image-skeleton-loader"
-            onMouseDown={(e) => handlePointerDown(e.clientX)}
-            onMouseMove={(e) => handlePointerMove(e.clientX)}
-            onMouseUp={handlePointerEnd}
-            onMouseLeave={handlePointerEnd}
-            onTouchStart={(e) => handlePointerDown(e.touches[0].clientX)}
-            onTouchMove={(e) => handlePointerMove(e.touches[0].clientX)}
-            onTouchEnd={handlePointerEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
             style={{
               position: 'relative',
               width: '100%',
