@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingBag, ChevronLeft } from 'lucide-react';
 import { useTranslation } from '@/context/LanguageContext';
 import { LOW_STOCK_THRESHOLD } from '@/lib/constants';
 import Link from 'next/link';
@@ -41,12 +41,39 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const totalStock = allowedVariants.reduce((sum, v) => sum + v.stock_quantity, 0) ?? 0;
   const isFullyOutOfStock = totalStock === 0;
 
-  const handleNextImage = () => {
-    setActiveImgIdx((prev) => (prev + 1) % images.length);
+  // Drag / Swipe State for zero-lag touch and PC mouse swipe
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [dragOffset, setDragOffset] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+
+  const handlePointerDown = (clientX: number) => {
+    setTouchStartX(clientX);
+    setIsDragging(true);
+    setDragOffset(0);
   };
 
-  const handlePrevImage = () => {
-    setActiveImgIdx((prev) => (prev - 1 + images.length) % images.length);
+  const handlePointerMove = (clientX: number) => {
+    if (touchStartX === null || !isDragging) return;
+    const diff = clientX - touchStartX;
+    // Rubberband effect at boundaries
+    if ((activeImgIdx === 0 && diff > 0) || (activeImgIdx === images.length - 1 && diff < 0)) {
+      setDragOffset(diff * 0.3);
+    } else {
+      setDragOffset(diff);
+    }
+  };
+
+  const handlePointerEnd = () => {
+    if (touchStartX === null) return;
+    const threshold = 40; // minimum drag distance in px
+    if (dragOffset < -threshold && activeImgIdx < images.length - 1) {
+      setActiveImgIdx((prev) => prev + 1);
+    } else if (dragOffset > threshold && activeImgIdx > 0) {
+      setActiveImgIdx((prev) => prev - 1);
+    }
+    setTouchStartX(null);
+    setIsDragging(false);
+    setDragOffset(0);
   };
 
   const handleAddToCart = () => {
@@ -92,78 +119,134 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         flexWrap: 'wrap',
         gap: 'clamp(20px, 6vw, 50px)',
       }}>
-        {/* Left Column: Image Slider */}
+        {/* Left Column: Hardware-Accelerated Swipe Gallery (No arrows, Mobile Touch & PC Mouse Drag) */}
         <div style={{
           flex: '1 1 500px',
           display: 'flex',
           flexDirection: 'column',
           gap: '15px',
         }}>
-          {/* Main Display Image */}
-          <div className="image-skeleton-loader" style={{
-            position: 'relative',
-            width: '100%',
-            aspectRatio: '3/4',
-            border: '1px solid #1a1a1a',
-            overflow: 'hidden',
-          }}>
-            <Image
-              src={images[activeImgIdx]}
-              alt={product.name}
-              fill
-              sizes="(max-width: 768px) 100vw, 550px"
-              priority={activeImgIdx === 0}
-              loading={activeImgIdx === 0 ? undefined : 'lazy'}
-              style={{
-                objectFit: 'cover',
-                filter: 'brightness(0.9) contrast(1.05)',
-              }}
-            />
+          {/* Main Display Image Slider viewport */}
+          <div
+            className="image-skeleton-loader"
+            onMouseDown={(e) => handlePointerDown(e.clientX)}
+            onMouseMove={(e) => handlePointerMove(e.clientX)}
+            onMouseUp={handlePointerEnd}
+            onMouseLeave={handlePointerEnd}
+            onTouchStart={(e) => handlePointerDown(e.touches[0].clientX)}
+            onTouchMove={(e) => handlePointerMove(e.touches[0].clientX)}
+            onTouchEnd={handlePointerEnd}
+            style={{
+              position: 'relative',
+              width: '100%',
+              aspectRatio: '3/4',
+              border: '1px solid #1a1a1a',
+              overflow: 'hidden',
+              cursor: isDragging ? 'grabbing' : 'grab',
+              touchAction: 'pan-y',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+            }}
+          >
+            {/* GPU Hardware-accelerated sliding track containing pre-loaded images */}
+            <div style={{
+              display: 'flex',
+              width: '100%',
+              height: '100%',
+              transform: `translateX(calc(-${activeImgIdx * 100}% + ${dragOffset}px))`,
+              transition: isDragging ? 'none' : 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)',
+              willChange: 'transform',
+            }}>
+              {images.map((img, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    flex: '0 0 100%',
+                    width: '100%',
+                    height: '100%',
+                    position: 'relative',
+                    userSelect: 'none',
+                  }}
+                >
+                  <Image
+                    src={img}
+                    alt={`${product.name} image ${idx + 1}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 550px"
+                    priority={idx === 0}
+                    loading={idx === 0 ? undefined : 'lazy'}
+                    draggable={false}
+                    style={{
+                      objectFit: 'cover',
+                      filter: 'brightness(0.9) contrast(1.05)',
+                      pointerEvents: 'none',
+                      userSelect: 'none',
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
 
-            {/* Slider arrows if multiple images */}
+            {/* Image Counter Badge (e.g. 1 / 3) */}
             {images.length > 1 && (
-              <>
-                <button
-                  onClick={handlePrevImage}
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '15px',
-                    transform: 'translateY(-50%)',
-                    background: 'rgba(0,0,0,0.6)',
-                    color: '#fff',
-                    borderRadius: '50%',
-                    width: '40px',
-                    height: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '1px solid #222',
-                  }}
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <button
-                  onClick={handleNextImage}
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    right: '15px',
-                    transform: 'translateY(-50%)',
-                    background: 'rgba(0,0,0,0.6)',
-                    color: '#fff',
-                    borderRadius: '50%',
-                    width: '40px',
-                    height: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '1px solid #222',
-                  }}
-                >
-                  <ChevronRight size={20} />
-                </button>
-              </>
+              <div style={{
+                position: 'absolute',
+                top: '15px',
+                right: '15px',
+                background: 'rgba(0,0,0,0.7)',
+                backdropFilter: 'blur(6px)',
+                color: 'rgba(255,255,255,0.9)',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                letterSpacing: '0.08em',
+                padding: '4px 10px',
+                borderRadius: '12px',
+                border: '1px solid rgba(255,255,255,0.12)',
+                zIndex: 10,
+                pointerEvents: 'none',
+              }}>
+                {activeImgIdx + 1} / {images.length}
+              </div>
+            )}
+
+            {/* Pagination Dots (No arrows!) */}
+            {images.length > 1 && (
+              <div style={{
+                position: 'absolute',
+                bottom: '15px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                display: 'flex',
+                gap: '8px',
+                background: 'rgba(0,0,0,0.5)',
+                backdropFilter: 'blur(6px)',
+                padding: '6px 12px',
+                borderRadius: '20px',
+                border: '1px solid rgba(255,255,255,0.12)',
+                zIndex: 10,
+              }}>
+                {images.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImgIdx(idx);
+                    }}
+                    aria-label={`View slide ${idx + 1}`}
+                    style={{
+                      width: activeImgIdx === idx ? '20px' : '7px',
+                      height: '7px',
+                      borderRadius: '4px',
+                      background: activeImgIdx === idx ? '#ffffff' : 'rgba(255,255,255,0.35)',
+                      border: 'none',
+                      padding: 0,
+                      cursor: 'pointer',
+                      transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                    }}
+                  />
+                ))}
+              </div>
             )}
           </div>
 
@@ -181,6 +264,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                     padding: 0,
                     overflow: 'hidden',
                     background: 'var(--bg-base)',
+                    cursor: 'pointer',
+                    opacity: activeImgIdx === idx ? 1 : 0.6,
+                    transition: 'opacity 0.2s ease, border 0.2s ease',
                   }}
                 >
                   <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -190,7 +276,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                       fill
                       sizes="70px"
                       loading="lazy"
-                      style={{ objectFit: 'cover', filter: 'brightness(0.7)' }}
+                      style={{ objectFit: 'cover', filter: 'brightness(0.8)' }}
                     />
                   </div>
                 </button>
